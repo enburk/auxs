@@ -1,0 +1,219 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="aux">
+      <UniqueIdentifier>{62936ac7-8c26-4cb0-a321-12420e6b54dc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="doc">
+      <UniqueIdentifier>{4c50c503-6265-45dd-a196-5410fc6ec966}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="gui">
+      <UniqueIdentifier>{5461c11b-638e-4f38-8b08-a2a181527978}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="pix">
+      <UniqueIdentifier>{955662c1-6c86-4c45-b342-6f5c8d9ba947}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="sys">
+      <UniqueIdentifier>{306cddbe-57c3-4d0f-b6b2-2a028c02182f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="test">
+      <UniqueIdentifier>{077f124f-6300-4d9f-bbff-274cc079832a}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="aux_abc.h">
+      <Filter>aux</Filter>
+    </ClInclude>
+    <ClInclude Include="aux_algo.h">
+      <Filter>aux</Filter>
+    </ClInclude>
+    <ClInclude Include="aux_array.h">
+      <Filter>aux</Filter>
+    </ClInclude>
+    <ClInclude Include="aux_aux.h">
+      <Filter>aux</Filter>
+    </ClInclude>
+    <ClInclude Include="aux_coro.h">
+      <Filter>aux</Filter>
+    </ClInclude>
+    <ClInclude Include="aux_hask.h">
+      <Filter>aux</Filter>
+    </ClInclude>
+    <ClInclude Include="aux_math.h">
+      <Filter>aux</Filter>
+    </ClInclude>
+    <ClInclude Include="aux_registry.h">
+      <Filter>aux</Filter>
+    </ClInclude>
+    <ClInclude Include="aux_string.h">
+      <Filter>aux</Filter>
+    </ClInclude>
+    <ClInclude Include="aux_timing.h">
+      <Filter>aux</Filter>
+    </ClInclude>
+    <ClInclude Include="aux_unicode.h">
+      <Filter>aux</Filter>
+    </ClInclude>
+    <ClInclude Include="aux_unittest.h">
+      <Filter>aux</Filter>
+    </ClInclude>
+    <ClInclude Include="aux_unittest_array.h">
+      <Filter>aux</Filter>
+    </ClInclude>
+    <ClInclude Include="aux_unittest_coro.h">
+      <Filter>aux</Filter>
+    </ClInclude>
+    <ClInclude Include="aux_unittest_string.h">
+      <Filter>aux</Filter>
+    </ClInclude>
+    <ClInclude Include="doc.h">
+      <Filter>doc</Filter>
+    </ClInclude>
+    <ClInclude Include="doc_html.h">
+      <Filter>doc</Filter>
+    </ClInclude>
+    <ClInclude Include="doc_html_lexica.h">
+      <Filter>doc</Filter>
+    </ClInclude>
+    <ClInclude Include="doc_html_model.h">
+      <Filter>doc</Filter>
+    </ClInclude>
+    <ClInclude Include="doc_html_syntax.h">
+      <Filter>doc</Filter>
+    </ClInclude>
+    <ClInclude Include="doc_html_utils.h">
+      <Filter>doc</Filter>
+    </ClInclude>
+    <ClInclude Include="doc_text_glyph.h">
+      <Filter>doc</Filter>
+    </ClInclude>
+    <ClInclude Include="doc_text_model.h">
+      <Filter>doc</Filter>
+    </ClInclude>
+    <ClInclude Include="doc_text_model_a.h">
+      <Filter>doc</Filter>
+    </ClInclude>
+    <ClInclude Include="doc_text_model_b.h">
+      <Filter>doc</Filter>
+    </ClInclude>
+    <ClInclude Include="doc_text_repo.h">
+      <Filter>doc</Filter>
+    </ClInclude>
+    <ClInclude Include="doc_text_text.h">
+      <Filter>doc</Filter>
+    </ClInclude>
+    <ClInclude Include="doc_view.h">
+      <Filter>doc</Filter>
+    </ClInclude>
+    <ClInclude Include="gui_colors.h">
+      <Filter>gui</Filter>
+    </ClInclude>
+    <ClInclude Include="gui_effect.h">
+      <Filter>gui</Filter>
+    </ClInclude>
+    <ClInclude Include="gui_widget.h">
+      <Filter>gui</Filter>
+    </ClInclude>
+    <ClInclude Include="gui_widget_button.h">
+      <Filter>gui</Filter>
+    </ClInclude>
+    <ClInclude Include="gui_widget_canvas.h">
+      <Filter>gui</Filter>
+    </ClInclude>
+    <ClInclude Include="gui_widget_console.h">
+      <Filter>gui</Filter>
+    </ClInclude>
+    <ClInclude Include="gui_widget_image.h">
+      <Filter>gui</Filter>
+    </ClInclude>
+    <ClInclude Include="gui_widget_player.h">
+      <Filter>gui</Filter>
+    </ClInclude>
+    <ClInclude Include="gui_widget_scroller.h">
+      <Filter>gui</Filter>
+    </ClInclude>
+    <ClInclude Include="gui_widget_text_aux.h">
+      <Filter>gui</Filter>
+    </ClInclude>
+    <ClInclude Include="gui_widget_text_aux_line.h">
+      <Filter>gui</Filter>
+    </ClInclude>
+    <ClInclude Include="gui_widget_text_aux_lines.h">
+      <Filter>gui</Filter>
+    </ClInclude>
+    <ClInclude Include="gui_widget_text_cell.h">
+      <Filter>gui</Filter>
+    </ClInclude>
+    <ClInclude Include="gui_widget_text_editline.h">
+      <Filter>gui</Filter>
+    </ClInclude>
+    <ClInclude Include="gui_widget_text_editor.h">
+      <Filter>gui</Filter>
+    </ClInclude>
+    <ClInclude Include="gui_widget_text_page.h">
+      <Filter>gui</Filter>
+    </ClInclude>
+    <ClInclude Include="gui_widget_text_view.h">
+      <Filter>gui</Filter>
+    </ClInclude>
+    <ClInclude Include="gui_widgetarium.h">
+      <Filter>gui</Filter>
+    </ClInclude>
+    <ClInclude Include="pix_color.h">
+      <Filter>pix</Filter>
+    </ClInclude>
+    <ClInclude Include="pix_coord.h">
+      <Filter>pix</Filter>
+    </ClInclude>
+    <ClInclude Include="pix_image.h">
+      <Filter>pix</Filter>
+    </ClInclude>
+    <ClInclude Include="pix_process.h">
+      <Filter>pix</Filter>
+    </ClInclude>
+    <ClInclude Include="pix_sampling.h">
+      <Filter>pix</Filter>
+    </ClInclude>
+    <ClInclude Include="pix_text.h">
+      <Filter>pix</Filter>
+    </ClInclude>
+    <ClInclude Include="sys_aux.h">
+      <Filter>sys</Filter>
+    </ClInclude>
+    <ClInclude Include="sys_ui.h">
+      <Filter>sys</Filter>
+    </ClInclude>
+    <ClInclude Include="windows_aux.h">
+      <Filter>sys</Filter>
+    </ClInclude>
+    <ClInclude Include="windows_fonts.h">
+      <Filter>sys</Filter>
+    </ClInclude>
+    <ClInclude Include="windows_images.h">
+      <Filter>sys</Filter>
+    </ClInclude>
+    <ClInclude Include="windows_system.h">
+      <Filter>sys</Filter>
+    </ClInclude>
+    <ClInclude Include="windows_windows.h">
+      <Filter>sys</Filter>
+    </ClInclude>
+    <ClInclude Include="test_aux.h">
+      <Filter>test</Filter>
+    </ClInclude>
+    <ClInclude Include="test_doc.h">
+      <Filter>test</Filter>
+    </ClInclude>
+    <ClInclude Include="test_gui.h">
+      <Filter>test</Filter>
+    </ClInclude>
+    <ClInclude Include="test_pix.h">
+      <Filter>test</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="test.cpp">
+      <Filter>test</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>
