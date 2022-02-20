@@ -42,6 +42,7 @@ namespace doc::view
     struct line
     {
         format format;
+        style_index style;
         int indent = 0;
         int number = -1;
         bool modified = true;

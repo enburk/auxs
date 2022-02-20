@@ -176,10 +176,6 @@ pix::glyph::glyph (str text, text::style_index i) : text(text), style_index(i)
 
         width = max(advance, advance - rpadding);
 
-        // for text editor
-        if (width == 0 and text == "\n")
-            width = max(1, (ascent+descent)/16);
-
         cache_metrics.emplace(key, *this);
     }
 

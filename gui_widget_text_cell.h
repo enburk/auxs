@@ -23,7 +23,9 @@ namespace gui::text
         void fill(array<doc::view::line> data)
         {
             lines.fill(std::move(data));
-            resize(lines.coord.now.size);
+            resize(XY(virtual_space.now? max<int>()/2:
+                lines.coord.now.size.x,
+                lines.coord.now.size.y));
         }
 
         void on_change (void* what) override
@@ -41,7 +43,7 @@ namespace gui::text
             {
                 int n = 0;
                 for (auto range: highlights.now)
-                for (XYWH r: lines.bars(range)) {
+                for (XYWH r: lines.bars(range, virtual_space)) {
                     auto& bar = highlight_bars(n++);
                     bar.color = skins[skin.now].highlight.first;
                     bar.coord = r; }
@@ -52,7 +54,7 @@ namespace gui::text
             {
                 int n = 0;
                 for (auto range: selections.now)
-                for (XYWH r: lines.bars(range)) {
+                for (XYWH r: lines.bars(range, virtual_space)) {
                     auto& bar = selection_bars(n++);
                     bar.color = skins[skin.now].selection.first;
                     bar.coord = r; }
@@ -65,7 +67,8 @@ namespace gui::text
             {
                 int n = 0;
                 for (auto range: selections.now)
-                    carets(n++).coord = bar(range.upto);
+                    carets(n++).coord = lines.bar(
+                        range.upto, true); // could be after end of line
 
                 carets.truncate(n);
 
@@ -79,15 +82,6 @@ namespace gui::text
         }
 
         void on_focus (bool on) override { focused = on; }
-
-        generator<XYWH> bars(range range) {
-            for (XYWH bar: lines.bars(range))
-                co_yield bar +
-                lines.coord.now.origin; }
-
-        XYWH bar(place place) {
-            return lines.bar(place, virtual_space.now) +
-                lines.coord.now.origin; }
 
         str selected () const
         {
@@ -127,5 +121,21 @@ namespace gui::text
 
             return s;
         }
+
+        XYWH bar(place place) {
+            return lines.bar(place,
+                virtual_space.now); }
+
+        generator<XYWH> bars(range range) {
+            for (XYWH bar: lines.bars(range, virtual_space))
+                co_yield bar; }
+
+        place point (XY p) { return lines.
+            point(p, virtual_space.now); }
+
+        auto rows() { return lines.rows(); }
+        auto row(int n) { return lines.row(n); }
+        place lines2rows(place p) { return lines.lines2rows(p); }
+        place rows2lines(place p) { return lines.rows2lines(p); }
     };
 }

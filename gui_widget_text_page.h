@@ -12,7 +12,6 @@ namespace gui::text
         scroll scroll;
         gui::text::view info;
 
-        lines& lines = view.lines;
         canvas& canvas = view.canvas;
         view::text_type& text = view.text;
         view::html_type& html = view.html;
@@ -53,12 +52,12 @@ namespace gui::text
                     scroll_x =
                     scroll.x.mode == scroll::mode::permanent or (
                     scroll.x.mode == scroll::mode::automatic and
-                        lines.coord.now.size.x > size.x );
+                        view.cell.coord.now.size.x > size.x );
                 bool
                     scroll_y =
                     scroll.y.mode == scroll::mode::permanent or (
                     scroll.y.mode == scroll::mode::automatic and
-                        lines.coord.now.size.y > size.y );
+                        view.cell.coord.now.size.y > size.y );
             
                 int d = gui::metrics::text::height +
                     2 * gui::metrics::line::width;
@@ -72,8 +71,8 @@ namespace gui::text
                 scroll.x.coord = XYWH(0, size.y-d, x, d);
                 scroll.y.coord = XYWH(size.x-d, 0, d, y);
 
-                scroll.x.span = lines.coord.now.size.x;
-                scroll.y.span = lines.coord.now.size.y;
+                scroll.x.span = view.cell.coord.now.size.x;
+                scroll.y.span = view.cell.coord.now.size.y;
 
                 scroll.x.step = gui::metrics::text::height;
                 scroll.y.step = gui::metrics::text::height;
@@ -113,7 +112,7 @@ namespace gui::text
             int sign = delta < 0 ? -1 : 1;
             if (sys::keyboard::shift) delta = sign * coord.now.h;
             if (sys::keyboard::ctrl) delta *= 5;
-            int d = view.coord.now.h - lines.coord.now.h; // could be negative
+            int d = view.coord.now.h - view.cell.coord.now.h; // could be negative
             int y = view.shift.now.y + delta;
             if (y < d) y = d;
             if (y > 0) y = 0;
@@ -123,8 +122,11 @@ namespace gui::text
 
         auto selected () { return view.selected(); }
 
+        auto rows() { return view.rows(); }
+        auto row(int n) { return view.row(n); }
+
         bool  touch = false;
-        range touch_range;
+        place touch_place;
         time  touch_time;
         XY    touch_point;
         
@@ -154,7 +156,7 @@ namespace gui::text
                 else
                 {
                     select_point = p;
-                    touch_range = view.point(p);
+                    touch_place = view.point(p);
                 }
                 touch_point = p;
                 touch_time = time::now;
@@ -181,27 +183,27 @@ namespace gui::text
                 {
                     select_point = p;
                     range selection;
-                    selection.from = touch_range.from;
-                    selection.upto = view.point(p).from; // not point(p).upto !
+                    selection.from = touch_place;
+                    selection.upto = view.point(p);
                     selections = array<range>{selection};
                     info.hide();
                 }
                 else if (infotip.now)
                 {
-                    if (auto token = view.target(p); token && token->info != "")
-                    {
-                        XYWH r = view.cell.bar(view.point(p).from);
-                        info.hide(); r.w = r.h*100;
-                        info.alignment = XY{pix::left, pix::top};
-                        info.coord = r;
-                        info.html = token->info;
-                        r.w = info.cell.coord.now.w + r.h*2; r.y += r.h;
-                        r.h = info.cell.coord.now.h + r.h/2;
-                        info.coord = r;
-                        info.alignment = XY{pix::center, pix::center};
-                        info.show();
-                    }
-                    else info.hide();
+                    //if (auto token = view.target(p); token && token->info != "")
+                    //{
+                    //    XYWH r = view.cell.bar(view.point(p).from);
+                    //    info.hide(); r.w = r.h*100;
+                    //    info.alignment = XY{pix::left, pix::top};
+                    //    info.coord = r;
+                    //    info.html = token->info;
+                    //    r.w = info.cell.coord.now.w + r.h*2; r.y += r.h;
+                    //    r.h = info.cell.coord.now.h + r.h/2;
+                    //    info.coord = r;
+                    //    info.alignment = XY{pix::center, pix::center};
+                    //    info.show();
+                    //}
+                    //else info.hide();
                 }
             }
         }
@@ -212,49 +214,93 @@ namespace gui::text
             if (touch) return; // mouse
             if (selections.now.size() != 1) return;
             auto selection = selections.now[0];
-            auto & [from, upto] = selection;
+
+            auto& [from, upto] = selection;
+            auto& [row, offset] = upto;
+
+            upto = view.lines2rows(upto);
+
+            auto rows = view.rows();
+            auto current_row = [this, &row](){
+                return view.row(row); };
+
+            auto apply = [&]()
+            {
+                if (row > rows - 1)
+                    row = rows - 1;
+                if (row < 0)
+                    row = 0;
+
+                if (not virtual_space.now and
+                    offset > current_row().length)
+                    offset = current_row().length;
+                if (offset < 0)
+                    offset = 0;
+
+                upto = view.rows2lines(upto);
+                selections = array<range>{
+                selection};
+            };
 
             if (key == "shift+left")
             {
-                if (upto.offset > 0) {
-                    upto.offset--;
-                    selections = array<range>{
-                    selection};
-                }
+                offset--;
+                if (not virtual_space.now)
+                if (offset < 0 and row > 0) { row--;
+                    offset = current_row().length; }
+                apply();
             }
             if (key == "shift+right")
             {
-                int n = lines(from.line).length;
-                if (upto.offset < n) {
-                    upto.offset++;
-                    selections = array<range>{
-                    selection};
-                }
+                offset++;
+                if (not virtual_space.now)
+                if (offset > current_row().length
+                    and row < rows-1) {
+                    row++; offset = 0; }
+                apply();
             }
             if (key == "ctrl+left" or
                 key == "ctrl+shift+left")
             {
-                if (from.offset > 0) {
-                    from.offset--;
-                    selections = array<range>{
-                    selection};
-                }
+                offset--;
+                if (not virtual_space.now)
+                if (offset < 0 and row > 0) { row--;
+                    offset = current_row().length; }
+                apply();
             }
             if (key == "ctrl+right" or
                 key == "ctrl+shift+right")
             {
-                int n = lines(from.line).length;
-                if (from.offset < n) {
-                    from.offset++;
-                    selections = array<range>{
-                    selection};
-                }
+                offset++;
+                if (not virtual_space.now)
+                if (offset > current_row().length
+                    and row < rows-1) {
+                    row++; offset = 0; }
+                apply();
+            }
+            if (key == "ctrl+up" or
+                key == "ctrl+shift+up" or
+                key == "shift+up")
+            {
+                row--;
+                apply();
+            }
+            if (key == "ctrl+down" or
+                key == "ctrl+shift+down" or
+                key == "shift+down")
+            {
+                row++;
+                apply();
             }
 
             if (key == "ctrl+C" or
                 key == "ctrl+insert") {
                 sys::clipboard::set(selected());
             }
+        }
+        void on_focus (bool on) override
+        {
+            view.on_focus(on);
         }
     };
 } 

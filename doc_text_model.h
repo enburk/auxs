@@ -90,21 +90,21 @@ namespace doc::text
 
         void set (doc::view::style s, doc::view::format f) override
         {
-            view_lines = {doc::view::line{f}};
-
             auto i = pix::text::style_index(s);
         
+            view_lines = {doc::view::line{f, i}};
+
             for (const auto & t : tokens)
             {
                 if (t.text == "\n")
                 {
-                    view_lines += {doc::view::line{f}};
+                    view_lines += {doc::view::line{f, i}};
                 }
                 else
                 {
                     auto style = i;
-                    if (auto it = styles.find(t.kind);
-                        it != styles.end())
+                    auto it = styles.find(t.kind);
+                    if (it != styles.end())
                         style = it->second;
             
                     view_lines.back().tokens +=

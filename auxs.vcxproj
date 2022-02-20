@@ -60,6 +60,9 @@
     <ClInclude Include="gui_widget_text_aux.h" />
     <ClInclude Include="gui_widget_text_aux_line.h" />
     <ClInclude Include="gui_widget_text_aux_lines.h" />
+    <ClInclude Include="gui_widget_text_aux_row.h" />
+    <ClInclude Include="gui_widget_text_aux_solid.h" />
+    <ClInclude Include="gui_widget_text_aux_token.h" />
     <ClInclude Include="gui_widget_text_cell.h" />
     <ClInclude Include="gui_widget_text_editline.h" />
     <ClInclude Include="gui_widget_text_editor.h" />
@@ -114,7 +117,7 @@
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -204,7 +207,7 @@
       <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
-      <SubSystem>Windows</SubSystem>
+      <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>

@@ -210,6 +210,15 @@
     <ClInclude Include="test_pix.h">
       <Filter>test</Filter>
     </ClInclude>
+    <ClInclude Include="gui_widget_text_aux_row.h">
+      <Filter>gui</Filter>
+    </ClInclude>
+    <ClInclude Include="gui_widget_text_aux_solid.h">
+      <Filter>gui</Filter>
+    </ClInclude>
+    <ClInclude Include="gui_widget_text_aux_token.h">
+      <Filter>gui</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="test.cpp">

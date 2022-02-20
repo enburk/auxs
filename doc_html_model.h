@@ -75,21 +75,20 @@ namespace doc::html
             {
                 if (lines.size() == 0 ||
                     lines.back().format != format)
-                    lines += line{format};
+                    lines += line{format, style_index(style)};
 
                 for (auto token : entity.head)
                     lines.back().tokens +=
                         doc::view::token{token.text,
                             style_index(style),
-                            link};
+                            "", link};
             }
             else
             if (entity.name == "br")
             {
                 if (lines.size() == 0)
-                lines += line{format};
-                lines.back().tokens += token{"\n", style_index(style)};
-                lines += line{format};
+                lines += line{format, style_index(style)};
+                lines += line{format, style_index(style)};
             }
             else
             if (entity.name == "h4") {
@@ -221,11 +220,9 @@ namespace doc::html
                 proceed(e, style, format, link);
 
             if (entity.name == "h4") {
-                if (lines.size() > 0 &&
-                    lines.back().tokens.size() > 0) {
-                    lines.back().tokens += token{"\n", style_index(style)};
-                    lines += line{format};
-                }
+                if (lines.size() > 0 and
+                    lines.back().tokens.size() > 0)
+                    lines += line{format, style_index(style)};
             }
         }
     };

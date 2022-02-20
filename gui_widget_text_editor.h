@@ -8,7 +8,8 @@ namespace gui::text
     widget<editor>
     {
         page page;
-        lines& lines = page.lines;
+        view& view = page.view;
+        scroll& scroll = page.scroll;
         canvas& canvas = page.canvas;
         view::text_type& text = page.text;
         view::html_type& html = page.html;
@@ -31,13 +32,13 @@ namespace gui::text
         property<bool>& update_colors = page.update_colors;
         property<bool>& update_layout = page.update_layout;
 
+        doc::model*& model = view.model;
         doc::text::model model_;
-        doc::model*& model = page.view.model;
 
         editor ()
         {
             model = &model_;
-            page.alignment = XY{left, top};
+            alignment = XY{left, top};
         }
 
         void on_change (void* what) override
@@ -50,8 +51,8 @@ namespace gui::text
             }
             if (what == &selections and not selections.now.empty())
             {
-                XYXY r = page.view.cell.carets.back().coord.now +
-                         page.view.shift.now;
+                XYXY r = view.cell.carets.back().coord.now +
+                         view.shift.now;
 
                 int d = gui::metrics::text::height;
                 int w = coord.now.size.x, dx = 0;
@@ -60,8 +61,8 @@ namespace gui::text
                 if (r.xl-d < 0) dx = r.xl-d; else if (r.xh+d > w) dx = r.xh+d-w;
                 if (r.yl-d < 0) dy = r.yl-d; else if (r.yh+d > h) dy = r.yh+d-h;
 
-                if (dx != 0) page.scroll.x.top = page.scroll.x.top.now + dx;
-                if (dy != 0) page.scroll.y.top = page.scroll.y.top.now + dy;
+                if (dx != 0) scroll.x.top = scroll.x.top.now + dx;
+                if (dy != 0) scroll.y.top = scroll.y.top.now + dy;
             }
                 
             notify(what);
@@ -76,6 +77,9 @@ namespace gui::text
         void erase       () { does([=](){ return model->erase    (); }); }
         void backspace   () { does([=](){ return model->backspace(); }); }
         void insert (str s) { does([=](){ return model->insert  (s); }); }
+
+        auto rows() { return page.rows(); }
+        auto row(int n) { return page.row(n); }
 
         enum WHERE { THERE = 0,
              GLYPH, LINE, LINE_BEGIN, LINE_END, PAGE_TOP,
@@ -102,75 +106,80 @@ namespace gui::text
         }
         void go (range& caret, int where, bool selective)
         {
-            if (lines.empty()) return;
+            if (rows() == 0) return;
 
-            auto & [from, upto] = caret;
-            auto & [line, offset] = upto;
+            auto& [from, upto] = caret;
+            auto& [r, offset] = upto;
 
-            int lines_on_page =
-                page.view.coord.now.h /
+            upto = view.lines2rows(upto);
+
+            int rows_on_page =
+                view.coord.now.h /
                 sys::metrics(font.now).height;
 
             switch(where){
-            case THERE: from = upto; break;
+            case THERE: selective = false; break;
 
             case-GLYPH:
                 offset--;
-                if (!virtual_space.now)
-                if (offset < 0 and line > 0)
-                    offset = lines[--line].length;
+                if (not virtual_space.now)
+                if (offset < 0 and r > 0) { r--;
+                    offset = row(r).length; }
                 break;
             case+GLYPH:
                 offset++;
-                if (!virtual_space.now)
-                if (offset > lines[line].length and
-                    line < lines.size()-1) {
-                    line++; offset = 0; }
+                if (not virtual_space.now)
+                if (offset > row(r).length
+                    and r < rows()-1) {
+                    r++; offset = 0; }
                 break;
 
             //case-TOKEN: break;
             //case+TOKEN: break;
 
-            case-LINE: line--; break;
-            case+LINE: line++; break;
+            case-LINE: r--; break;
+            case+LINE: r++; break;
 
-            case LINE_END  : offset = lines[line].length; break;
+            case LINE_END  : offset = row(r).length; break;
             case LINE_BEGIN: offset = offset !=
-                lines[line].start ?
-                lines[line].start : 0;
+                row(r).indent ?
+                row(r).indent : 0;
                 break;
 
             //case PAGE_TOP   : break;
             //case PAGE_BOTTOM: break;
 
-            case-PAGE: line -= lines_on_page; break;
-            case+PAGE: line += lines_on_page; break;
+            case-PAGE: r -= rows_on_page; break;
+            case+PAGE: r += rows_on_page; break;
 
             case TEXT_BEGIN: upto = place{}; break;
             case TEXT_END  : upto = place{
-                lines.size()-1,
-                lines.back().length};
+                rows()-1, row(
+                rows()-1).length};
                 break;
             }
 
-            if (line > lines.size()-1)
-                line = lines.size()-1;
-            if (line < 0)
-                line = 0;
+            if (r > rows()-1)
+                r = rows()-1;
+            if (r < 0)
+                r = 0;
 
-            if (offset > lines[line].length && !virtual_space.now)
-                offset = lines[line].length;
+            if (not virtual_space.now and
+                offset > row(r).length-1)
+                offset = row(r).length-1;
             if (offset < 0)
                 offset = 0;
 
-            if (!selective) from = upto;
+            upto = view.rows2lines(upto);
+
+            if (not selective) from = upto;
         }
 
         void go (place place)
         {
-            page.scroll.y.top = place.line *
+            scroll.y.top = place.line *
                 sys::metrics(font.now).height -
-                    page.view.coord.now.h / 2;
+                    view.coord.now.h / 2;
 
             selections = array<range>{
                 range{place, place}};
@@ -182,22 +191,22 @@ namespace gui::text
 
             switch(where){
             case-LINE:
-                page.scroll.y.top =
-                page.scroll.y.top.now - h;
+                scroll.y.top =
+                scroll.y.top.now - h;
                 break;
             case+LINE:
-                page.scroll.y.top =
-                page.scroll.y.top.now + h;
+                scroll.y.top =
+                scroll.y.top.now + h;
                 break;
             case-PAGE:
-                page.scroll.y.top =
-                page.scroll.y.top.now -
-                page.view.coord.now.h/h*h;
+                scroll.y.top =
+                scroll.y.top.now -
+                view.coord.now.h/h*h;
                 break;
             case+PAGE:
-                page.scroll.y.top =
-                page.scroll.y.top.now +
-                page.view.coord.now.h/h*h;
+                scroll.y.top =
+                scroll.y.top.now +
+                view.coord.now.h/h*h;
                 break;
             }
         }
@@ -255,7 +264,7 @@ namespace gui::text
                 else
                 if (n >= 1) {
                     auto [from, upto] = ss[n-1];
-                    if (upto.line >= lines.size()-1) return;
+                    if (upto.line >= view.cell.lines.size()-1) return;
                     ss += range{{from.line+1, from.offset},
                                 {upto.line+1, upto.offset}};
                 }
@@ -335,7 +344,7 @@ namespace gui::text
         }
         void on_focus (bool on) override
         {
-            page.view.on_focus(on);
+            page.on_focus(on);
         }
     };
 } 

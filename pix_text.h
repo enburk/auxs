@@ -54,15 +54,15 @@ namespace pix
 
             static inline array<style> styles = {style{}};
 
+            style_index () = default;
+            style_index (text::style const& style) :
+                value ((int)(styles.find_or_emplace(style) -
+                             styles.begin())) {}
+
             text::style const& style () const { return styles[value]; }
             text::style /***/& style () /***/ { return styles[value]; }
 
             auto operator <=> (style_index const&) const = default;
-
-            explicit style_index () = default;
-            explicit style_index (text::style const& style) :
-                value ((int)(styles.find_or_emplace(style) -
-                             styles.begin())) {}
         };
 
         struct metrics

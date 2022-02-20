@@ -51,14 +51,14 @@ namespace pix
 
         friend XYXY operator & (XYXY a, XYXY q) {
             if (!a || !q) return XYXY();
-            a.l = max(a.l, q.l); a.t = max(a.t, q.t);
-            a.r = min(a.r, q.r); a.b = min(a.b, q.b);
+            a.l = max(a.l, q.l); a.r = min(a.r, q.r);
+            a.t = max(a.t, q.t); a.b = min(a.b, q.b);
             return a ? a : XYXY();
         }
         friend XYXY operator | (XYXY a, XYXY q) {
             if (!q) return a; if (!a) return q;
-            a.l = min(a.l, q.l); a.t = min(a.t, q.t);
-            a.r = max(a.r, q.r); a.b = max(a.b, q.b);
+            a.l = min(a.l, q.l); a.r = max(a.r, q.r);
+            a.t = min(a.t, q.t); a.b = max(a.b, q.b);
             return a;
         }
         void operator &= (XYXY q) { *this = *this & q; };

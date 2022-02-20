@@ -59,139 +59,10 @@ namespace gui::text
 
             truncate(n);
 
+            if (n > 0) at(n-1).last = true;
+
             resize(XY(width, height));
         }        
-
-        range point (XY p)
-        {
-            range point;
-            point.from.line = -1;
-            point.upto.line = -1;
-
-            for (auto & line : *this)
-            {
-                XY lp = p - line.coord.now.origin;
-                if (lp.y < 0) break;
-                point.from.line++;
-                point.from.offset = 0;
-                point.upto = point.from;
-                if (lp.y >= line.coord.now.size.y) {
-                    point.from.offset += line.length;
-                    point.upto = point.from;
-                    continue;
-                }
-
-                for (auto & token : line)
-                {
-                    XY tp = lp - token.coord.now.origin;
-                    if (tp.y < 0) break;
-                    if (tp.y >= token.coord.now.size.y ||
-                        tp.x >= token.coord.now.size.x) {
-                        point.from.offset += token.size();
-                        point.upto = point.from;
-                        continue;
-                    }
-
-                    for (auto & glyph : token.glyphs)
-                    {
-                        XY gp = tp - glyph.offset;
-                        if (gp.x < 0) return point;
-                        point.from.offset = point.upto.offset;
-                        point.upto.offset++;
-                    }
-                }
-            }
-
-            return point;
-        }
-
-        token* target (XY p)
-        {
-            range point;
-            point.from.line = -1;
-            point.upto.line = -1;
-
-            for (auto & line : *this)
-            {
-                XY lp = p - line.coord.now.origin;
-                if (lp.y < 0) break;
-                point.from.line++;
-                point.from.offset = 0;
-                point.upto = point.from;
-                if (lp.y >= line.coord.now.size.y) {
-                    point.from.offset += line.length;
-                    point.upto = point.from;
-                    continue;
-                }
-
-                for (auto & token : line)
-                {
-                    XY tp = lp - token.coord.now.origin;
-                    if (tp.y < 0) break;
-                    if (tp.y >= token.coord.now.size.y ||
-                        tp.x >= token.coord.now.size.x) {
-                        point.from.offset += token.size();
-                        point.upto = point.from;
-                        continue;
-                    }
-
-                    for (auto & glyph : token.glyphs)
-                    {
-                        XY gp = tp - glyph.offset;
-                        if (gp.x < 0) return &token;
-                        point.from.offset = point.upto.offset;
-                        point.upto.offset++;
-                    }
-                }
-            }
-
-            return nullptr;
-        }
-
-        array<XYWH> bars (range range)
-        {
-            array<XYWH> bars;
-
-            auto [from, upto] = range;
-            
-            if (from > upto) std::swap (from, upto);
-
-            for (; from.line <= upto.line; from.line++, from.offset = 0)
-            {
-                if (from.line >= size()) break;
-                int from_offset = from.offset;
-                int upto_offset = from.line == upto.line ?
-                    upto.offset : (*this)(from.line).length;
-                if (from_offset >= upto_offset) continue;
-
-                int offset = 0;
-
-                for (auto & token : (*this)(from.line))
-                {
-                    if (upto_offset <= offset) break;
-                    if (from_offset <= offset + token.size() - 1)
-                    {
-                        int from_glyph = max(from_offset - offset, 0);
-                        int upto_glyph = min(upto_offset - offset, token.size());
-
-                        auto & g1 = token.glyphs[from_glyph];
-                        auto & g2 = token.glyphs[upto_glyph-1];
-                        bars += XYXY (
-                            g1.offset.x,
-                            g1.offset.y,
-                            g2.offset.x + g2.advance,
-                            g2.offset.y + g2.ascent + g2.descent
-                        )
-                        + token.coord.now.origin
-                        + (*this)(from.line).coord.now.origin;
-                    }
-
-                    offset += token.size();
-                }
-            }
-
-            return bars;
-        }
 
         XYWH bar (place place, bool virtual_space)
         {
@@ -200,30 +71,140 @@ namespace gui::text
             if (place.offset < 0)
                 place.offset = 0;
 
-            int offset = 0;
+            auto& line = at(place.line);
 
-            for (auto & token : (*this)(place.line))
-            {
-                if (place.offset - offset < token.size())
-                    return token.glyphs[place.offset - offset].coord()
-                    + token.coord.now.origin
-                    + (*this)(place.line).coord.now.origin;
+            if (place.offset >= line.length)
+                place.offset -= line.length;
+            else return
+                line.bar(place.offset) +
+                line.coord.now.origin;
 
-                offset += token.size();
-            }
+            if (not virtual_space)
+                place.offset = 0;
 
-            style_index style;
+            sys::glyph space (" ", line.style);
 
-            for (int line = place.line; line >= 0; line--)
-                if ((*this)(line).size() > 0) { style =
-                    (*this)(line).back().style; break; }
-
-            sys::glyph space (" ", style);
-
-            XYWH r = (*this)(place.line).coord.now;
-            r.x = r.x + r.w + (place.offset - offset) * space.advance;
+            XYWH r = line.coord.now;
+            r.x = r.x + r.w + place.offset * space.advance;
             r.w = space.advance;
             return r;
+        }
+
+        array<XYWH> bars (range range, bool virtual_space)
+        {
+            array<XYWH> bars;
+            auto[from, upto] = range;
+            if  (from> upto) std::swap
+                (from, upto);
+        
+            for (; from.line <= upto.line;
+                from.line++, from.offset = 0)
+            {
+                if (from.line >= size()) break;
+                int from_offset = from.offset;
+                int upto_offset = from.line == upto.line ?
+                    upto.offset : max<int>();
+
+                array<XYWH> rr =
+                at (from.line).bars(
+                    from_offset,
+                    upto_offset,
+                    virtual_space);
+                for (auto& r: rr) r +=
+                at (from.line).coord.now.origin;
+                if (rr.empty()) continue;
+                if (bars.size() > 0 and rr.size() == 1
+                and bars.back().x == rr.back().x
+                and bars.back().w == rr.back().w)
+                    bars.back() |= rr.back(); else
+                    bars += rr;
+            }
+            return bars;
+        }
+
+        place point (XY p, bool virtual_space)
+        {
+            int l = 0;
+
+            for (auto& line : *this)
+            {
+                XYWH r = line.coord.now;
+                if (r.y + r.h > p.y or line.last) return
+                {
+                    l, line.point(
+                    p - r.origin,
+                    virtual_space)
+                };
+                else l++;
+            }
+
+            return {};
+        }
+
+        struct row_type
+        {
+            int length = 0;
+            int indent = 0;
+        };
+
+        auto rows()
+        {
+            int n = 0;
+            for (auto& line : *this)
+            n += line.rows.size();
+            return n;
+        }
+
+        auto row(int n)
+        {
+            for (auto& line : *this)
+            if (n >= line.rows.size())
+                n -= line.rows.size();
+            else return row_type{
+                line.rows[n].length,
+                line.rows[n].indent};
+            return row_type{};
+        }
+
+        place lines2rows(place p)
+        {
+            int r = 0;
+            int l = p.line;
+            int o = p.offset;
+
+            if (l > size()-1)
+                l = size()-1;
+            if (l < 0) return place{};
+
+            for (int i=0; i<l; i++)
+            r += at(i).rows.size();
+
+            for (auto& row : at(l).rows)
+                if (not row.the_last_row and
+                    o >= row.length) {
+                    o -= row.length;
+                    r++; }
+                else break;
+
+            return {r,o};
+        }
+
+        place rows2lines(place p)
+        {
+            int l = 0;
+            int r = p.line;
+            int o = p.offset;
+            for (auto& line : *this)
+            if (r >= line.rows.size()) {
+                r -= line.rows.size();
+                l++; }
+            else
+            {
+                for (int i=0; i<r; i++)
+                o += line.rows[i].length;
+                break;
+            }
+            return {l,o};
         }
     };
 } 

@@ -43,7 +43,6 @@ namespace gui::text
         doc::html::model model_;
         doc::model* model = &model_;
 
-        lines& lines = cell.lines;
         unary_property<array<range>>& highlights = cell.highlights;
         unary_property<array<range>>& selections = cell.selections;
         binary_property<bool>& virtual_space = cell.virtual_space;
@@ -181,8 +180,11 @@ namespace gui::text
 
         auto selected () { return cell.selected(); }
 
-        range point (XY p) { return lines.point(p - shift.now); }
+        place point (XY p) { return cell.point(p - shift.now); }
 
-        token* target (XY p) { return lines.target(p - shift.now); }
+        auto rows() { return cell.rows(); }
+        auto row(int n) { return cell.row(n); }
+        place lines2rows(place p) { return cell.lines2rows(p); }
+        place rows2lines(place p) { return cell.rows2lines(p); }
     };
 }
