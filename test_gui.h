@@ -1,70 +1,30 @@
 #pragma once
 #include "gui_widget_console.h"
-#include "aux_unittest_coro.h"
-#include "aux_unittest_array.h"
-#include "aux_unittest_string.h"
-#include "doc_text_model_a.h"
-#include "doc_text_model_b.h"
+#include "gui_widget_text_editor.h"
 using namespace pix;
 using gui::widget;
 
-struct TestTexts:
-widget<TestTexts>
-{
-    gui::button doubling;
-    gui::area<gui::console> console1;
-    gui::area<gui::console> console2;
-    gui::splitter splitter; int x = 40'00; int xx = 80;
-    TestTexts () { on_change(&doubling); }
-    str text = "<b>Lorem ipsum</b> dolor sit amet, consectetur adipiscing <i>elit</i>, "
-    "sed do eiusmod tempor incididunt ut labore et dolore <b>magna <i>aliqua.</i></b> "
-    "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip "
-    "<font color=#008000><i>ex ea commodo</i></font> consequat. Duis aute irure dolor "
-    "in reprehenderit <b><i><u>in</u></i></b> voluptate <font color=#000080>velit</font> "
-    "esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non "
-    "proident, sunt in culpa qui officia deserunt mollit anim id est "
-    "<b><font color=#008000>laborum.</font></b><br><br>";
-    void on_change (void* what) override
-    {
-        if (what == &skin)
-        {
-            console1.object.page.view.canvas.color = RGBA::white;
-            console2.object.page.view.canvas.color = RGBA::white;
-        }
-        if (what == &coord && coord.was.size != coord.now.size)
-        {
-            int W = coord.now.w; if (W <= 0) return;
-            int H = coord.now.h; if (H <= 0) return;
-            int w = gui::metrics::text::height*xx;
-            int h = gui::metrics::text::height*12/7;
-            int d = gui::metrics::line::width * 6;
-            int m = w * x / 100'00;
-            doubling.coord = XYWH(w-0, 0, w/9, h);
-            console1.coord = XYXY(0-0, 0, m+0, H);
-            console2.coord = XYXY(m-0, 0, w+0, H);
-            splitter.coord = XYXY(m-d, 0, m+d, H);
-            splitter.lower = 20'00 * w / 100'00;
-            splitter.upper = 80'00 * w / 100'00;
-        }
-        if (what == &doubling)
-        {
-            doubling.text.text = "double text";
-            console1.object.page.html = text;
-            console2.object.page.html = text;
-            text = text + text;
-        }
-        if (what == &splitter)
-        {
-            int w = gui::metrics::text::height*xx;
-            x = 100'00 * splitter.middle / w;
-            on_change(&coord);
-        }
-    }
-};
+str lorem = 
+"Lorem ipsum dolor sit amet, consectetur "
+"adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. "
+"Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip "
+"ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit "
+"esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non "
+"proident, sunt in culpa qui officia deserunt mollit anim id est laborum.";
 
+str Lorem = "<b>Lorem ipsum</b><br>"
+"Lorem ipsum dolor sit amet, <font color=#008000>consectetur</font> "
+"<font color=#000080>adipiscing</font> <i>elit</i>, sed do eiusmod tempor incididunt "
+"<font color=#800000>ut labore et dolore</font> <b>magna <i>aliqua.</i></b> "
+"Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip "
+"<font color=#008000><i>ex ea commodo</i></font> consequat. Duis aute irure dolor "
+"in reprehenderit <b><i><u>in</u></i></b> voluptate <font color=#000080>velit</font> "
+"esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non "
+"proident, sunt in culpa qui officia deserunt mollit anim id est "
+"<b><font color=#008000>laborum.</font></b><br><br>";
 
-struct TestWideo:
-widget<TestWideo>
+struct TestGui00:
+widget<TestGui00>
 {
     bool ok = true;
     bool done = false;
@@ -72,7 +32,9 @@ widget<TestWideo>
     gui::area<gui::console> console;
     void on_change(void* what) override
     {
-        if (what == &coord && coord.was.size != coord.now.size)
+        if (what == &coord and
+            coord.was.size !=
+            coord.now.size)
         {
             int h = gui::metrics::text::height * 12 / 7;
             int W = coord.now.w; if (W <= 0) return; int w = W / 3;
@@ -119,8 +81,9 @@ widget<TestWideo>
     }
 };
 
-struct TestColor:
-widget<TestColor>
+// colors
+struct TestGui01:
+widget<TestGui01>
 {
     struct sample:
     widget<sample>
@@ -135,16 +98,6 @@ widget<TestColor>
         gui::canvas toolbar;
         gui::radio::group buttons;
         gui::area<gui::text::page> page;
-        str lorem = "<b>Lorem ipsum</b><br>"
-        "Lorem ipsum dolor sit amet, <font color=#008000>consectetur</font> "
-        "<font color=#000080>adipiscing</font> <i>elit</i>, sed do eiusmod tempor incididunt "
-        "<font color=#800000>ut labore et dolore</font> <b>magna <i>aliqua.</i></b> "
-        "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip "
-        "<font color=#008000><i>ex ea commodo</i></font> consequat. Duis aute irure dolor "
-        "in reprehenderit <b><i><u>in</u></i></b> voluptate <font color=#000080>velit</font> "
-        "esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non "
-        "proident, sunt in culpa qui officia deserunt mollit anim id est "
-        "<b><font color=#008000>laborum.</font></b><br><br>";
 
         void on_change (void* what) override
         {
@@ -189,7 +142,7 @@ widget<TestColor>
 
                 page.skin = name;
                 page.coord = XYXY(0,h+q+h+h, W, H);
-                page.object.html = lorem;
+                page.object.html = Lorem;
                 page.object.alignment = XY{pix::left, pix::top};
                 page.object.view.canvas.color = schema.ultralight.first;
                 page.object.style = pix::text::style{
@@ -241,6 +194,118 @@ widget<TestColor>
                 samples(i).coord = XYWH(
                 x*side, y*side, side, side);
             }
+        }
+    }
+};
+
+// console
+struct TestGui02:
+widget<TestGui02>
+{
+    str text = Lorem;
+    gui::button doubling;
+    gui::area<gui::console> console1;
+    gui::area<gui::console> console2;
+    gui::splitter splitter;
+    int x = 40'00;
+    int xx = 80;
+
+    TestGui02 () { on_change(&doubling); }
+
+    void on_change (void* what) override
+    {
+        if (what == &skin)
+        {
+            console1.object.canvas.color = RGBA::white;
+            console2.object.canvas.color = RGBA::white;
+        }
+        if (what == &coord and
+            coord.was.size !=
+            coord.now.size)
+        {
+            int W = coord.now.w; if (W <= 0) return;
+            int H = coord.now.h; if (H <= 0) return;
+            int w = gui::metrics::text::height*xx;
+            int h = gui::metrics::text::height*12/7;
+            int d = gui::metrics::line::width * 6;
+            int m = w * x / 100'00;
+            doubling.coord = XYWH(w-0, 0, w/9, h);
+            console1.coord = XYXY(0-0, 0, m+0, H);
+            console2.coord = XYXY(m-0, 0, w+0, H);
+            splitter.coord = XYXY(m-d, 0, m+d, H);
+            splitter.lower = 20'00 * w / 100'00;
+            splitter.upper = 80'00 * w / 100'00;
+        }
+        if (what == &doubling)
+        {
+            doubling.text.text = "double text";
+            console1.object.page.html += text;
+            console2.object.page.html += text;
+            text += text;
+        }
+        if (what == &splitter)
+        {
+            int w = gui::metrics::text::height*xx;
+            x = 100'00 * splitter.middle / w;
+            on_change(&coord);
+        }
+    }
+};
+
+// editors
+struct TestGui03:
+widget<TestGui03>
+{
+    gui::area<gui::text::editor> editor1; 
+    gui::area<gui::text::editor> editor2; 
+    gui::area<gui::text::editor> editor3; 
+    gui::splitter splitt1;
+    gui::splitter splitt2;
+    int x1 = 33'00;
+    int x2 = 66'00;
+
+    void on_change (void* what) override
+    {
+        if (what == &skin)
+        {
+            auto& e1 = editor1.object;
+            auto& e2 = editor2.object;
+            auto& e3 = editor3.object;
+            e1.canvas.color = RGBA::white;
+            e2.canvas.color = RGBA::white;
+            e3.canvas.color = RGBA::white;
+            e1.text = Lorem;
+            e2.text = Lorem;
+            e3.text = Lorem;
+        }
+        if (what == &coord and
+            coord.was.size !=
+            coord.now.size)
+        {
+            int W = coord.now.w; if (W <= 0) return;
+            int H = coord.now.h; if (H <= 0) return;
+            int d = gui::metrics::line::width * 6;
+            int l = W * x1 / 100'00;
+            int r = W * x2 / 100'00;
+            editor1.coord = XYXY(0-0, 0, l+0, H);
+            editor2.coord = XYXY(l-0, 0, r+0, H);
+            editor3.coord = XYXY(r-0, 0, W+0, H);
+            splitt1.coord = XYXY(l-d, 0, l+d, H);
+            splitt2.coord = XYXY(r-d, 0, r+d, H);
+            splitt1.lower = 10'00 * W / 100'00;
+            splitt1.upper = 40'00 * W / 100'00;
+            splitt2.lower = 60'00 * W / 100'00;
+            splitt2.upper = 90'00 * W / 100'00;
+        }
+        if (what == &splitt1)
+        {
+            x1 = 100'00 * splitt1.middle / coord.now.w;
+            on_change(&coord);
+        }
+        if (what == &splitt2)
+        {
+            x2 = 100'00 * splitt2.middle / coord.now.w;
+            on_change(&coord);
         }
     }
 };

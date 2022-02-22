@@ -3,17 +3,24 @@
 using namespace pix;
 using gui::widget;
 
-struct TestFonts:
-widget<TestFonts>
+struct TestPix00:
+widget<TestPix00>
+{
+};
+
+// fonts
+struct TestPix01:
+widget<TestPix01>
 {
     gui::image gui_image;
     pix::image<RGBA> image;
 
     void on_change (void* what) override
     {
-        if (what != &alpha || alpha.to == 0 ||
-            coord.now.size == image.size ||
-            coord.now.size == XY()) return;
+        if (what != &alpha or alpha.to == 0 or
+            coord.now.size == image.size or
+            coord.now.size == XY())
+            return;
 
         image.resize(coord.now.size); image.fill(RGBA::red);
         gui_image.coord = coord.now.local();

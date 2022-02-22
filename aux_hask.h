@@ -46,7 +46,7 @@ namespace aux::unittest
 {
     using namespace hask;
 
-    void test_monad1 () try
+    void test_hask1 () try
     {
         test("haskell.list");
         {
@@ -69,13 +69,15 @@ namespace aux::unittest
     }
     catch(assertion_failed){}
 
-    void test_monad2 () try
+    void test_hask2 () try
     {
+         test("-");
     }
     catch(assertion_failed){}
 
-    void test_monad3 () try
+    void test_hask3 () try
     {
+         test("-");
     }
     catch(assertion_failed){}
 }

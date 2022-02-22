@@ -6,8 +6,8 @@
 using namespace pix;
 using gui::widget;
 
-struct TestFirst:
-widget<TestFirst>
+struct TestAux00:
+widget<TestAux00>
 {
     bool ok = true;
     bool done = false;
@@ -17,7 +17,9 @@ widget<TestFirst>
     gui::area<gui::console> console3;
     void on_change (void* what) override
     {
-        if (what == &coord && coord.was.size != coord.now.size)
+        if (what == &coord and
+            coord.was.size !=
+            coord.now.size)
         {
             int W = coord.now.w; if (W <= 0) return; int w = W/3;
             int H = coord.now.h; if (H <= 0) return;
@@ -45,6 +47,7 @@ widget<TestFirst>
             aux::unittest::results; ok &= 
             aux::unittest::all_ok;
 
+            aux::unittest::test("-");
             aux::unittest::test("");
             console3.object.page.html = 
             aux::unittest::results; ok &= 
@@ -57,9 +60,9 @@ widget<TestFirst>
     }
 };
 
-
-struct TestCoros:
-widget<TestCoros>
+// coroutines
+struct TestAux01:
+widget<TestAux01>
 {
     bool ok = true;
     bool done = false;
@@ -70,7 +73,9 @@ widget<TestCoros>
     gui::area<gui::console> console3;
     void on_change (void* what) override
     {
-        if (what == &coord && coord.was.size != coord.now.size)
+        if (what == &coord and
+            coord.was.size !=
+            coord.now.size)
         {
             int h = gui::metrics::text::height*12/7;
             int W = coord.now.w; if (W <= 0) return; int w = (W-5*h)/3;
@@ -119,8 +124,9 @@ widget<TestCoros>
     }
 };
 
-struct TestMonad:
-widget<TestMonad>
+// haskell
+struct TestAux02:
+widget<TestAux02>
 {
     bool ok = true;
     bool done = false;
@@ -130,7 +136,9 @@ widget<TestMonad>
     gui::area<gui::console> console3;
     void on_change (void* what) override
     {
-        if (what == &coord && coord.was.size != coord.now.size)
+        if (what == &coord and
+            coord.was.size !=
+            coord.now.size)
         {
             int h = gui::metrics::text::height*12/7;
             int W = coord.now.w; if (W <= 0) return; int w = W/3;
@@ -147,19 +155,19 @@ widget<TestMonad>
             console2.object.page.style = style;
             console3.object.page.style = style;
 
-            aux::unittest::test_monad1();
+            aux::unittest::test_hask1();
             aux::unittest::test("");
             console1.object.page.html = 
             aux::unittest::results; ok &= 
             aux::unittest::all_ok;
 
-            aux::unittest::test_monad2();
+            aux::unittest::test_hask2();
             aux::unittest::test("");
             console2.object.page.html = 
             aux::unittest::results; ok &= 
             aux::unittest::all_ok;
 
-            aux::unittest::test_monad3();
+            aux::unittest::test_hask3();
             aux::unittest::test("");
             console3.object.page.html = 
             aux::unittest::results; ok &= 

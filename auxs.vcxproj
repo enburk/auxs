@@ -76,6 +76,7 @@
     <ClInclude Include="pix_text.h" />
     <ClInclude Include="sys_aux.h" />
     <ClInclude Include="sys_ui.h" />
+    <ClInclude Include="test.h" />
     <ClInclude Include="test_aux.h" />
     <ClInclude Include="test_doc.h" />
     <ClInclude Include="test_gui.h" />
@@ -117,7 +118,7 @@
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -207,7 +208,7 @@
       <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
-      <SubSystem>Console</SubSystem>
+      <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>

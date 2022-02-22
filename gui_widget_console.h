@@ -7,6 +7,8 @@ namespace gui
     widget<console>
     {
         text::page page;
+        scroll& scroll = page.scroll;
+        canvas& canvas = page.canvas;
         std::mutex mutex;
         property<time> timer;
         array<str> addon;

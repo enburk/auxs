@@ -5,8 +5,8 @@
 using namespace pix;
 using gui::widget;
 
-struct TestModel:
-widget<TestModel>
+struct TestDoc00:
+widget<TestDoc00>
 {
     bool ok = true;
     bool done = false;
@@ -16,7 +16,9 @@ widget<TestModel>
     gui::area<gui::console> console3;
     void on_change (void* what) override
     {
-        if (what == &coord && coord.was.size != coord.now.size)
+        if (what == &coord and
+            coord.was.size !=
+            coord.now.size)
         {
             int W = coord.now.w; if (W <= 0) return; int w = W/3;
             int H = coord.now.h; if (H <= 0) return;
@@ -44,6 +46,7 @@ widget<TestModel>
             aux::unittest::results; ok &= 
             aux::unittest::all_ok;
 
+            aux::unittest::test("-");
             aux::unittest::test("");
             console3.object.page.html = 
             aux::unittest::results; ok &= 
