@@ -47,8 +47,8 @@ namespace gui::text
 
         void select ()
         {
-            editor.go(gui::text::editor::TEXT_BEGIN, false);
-            editor.go(gui::text::editor::TEXT_END, true);
+            editor.go(TEXT_BEGIN, false);
+            editor.go(TEXT_END, true);
         }
 
         void on_key (str key, bool down, bool input) override

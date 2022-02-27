@@ -38,6 +38,7 @@ namespace gui::text
                 selection_bars.coord = r;
                 carets.coord = r;
             }
+
             if (what == &highlights)
             {
                 int n = 0;
@@ -49,6 +50,7 @@ namespace gui::text
 
                 highlight_bars.truncate(n);
             }
+
             if (what == &selections)
             {
                 int n = 0;
@@ -60,6 +62,7 @@ namespace gui::text
 
                 selection_bars.truncate(n);
             }
+
             if (what == &selections
             or  what == &insert_mode
             or  what == &focus_on)

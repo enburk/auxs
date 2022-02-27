@@ -50,22 +50,10 @@ namespace gui::text
             {
                 page.coord = coord.now.local();
             }
-            if (what == &selections and not selections.now.empty())
+            if (what == &focus_on)
             {
-                XYXY r = view.cell.carets.back().coord.now +
-                         view.shift.now;
-
-                int d = gui::metrics::text::height;
-                int w = coord.now.size.x, dx = 0;
-                int h = coord.now.size.y, dy = 0;
-
-                if (r.xl-d < 0) dx = r.xl-d; else if (r.xh+d > w) dx = r.xh+d-w;
-                if (r.yl-d < 0) dy = r.yl-d; else if (r.yh+d > h) dy = r.yh+d-h;
-
-                if (dx != 0) scroll.x.top = scroll.x.top.now + dx;
-                if (dy != 0) scroll.y.top = scroll.y.top.now + dy;
+                view.focus_on = focus_on.now;
             }
-                
             notify(what);
         }
 
@@ -82,142 +70,14 @@ namespace gui::text
         void backspace   () { does([=](){ return model->backspace(); }); }
         void insert (str s) { does([=](){ return model->insert  (s); }); }
 
-        auto rows() { return page.rows(); }
-        auto row(int n) { return page.row(n); }
+        auto rows() { return view.rows(); }
+        auto row(int n) { return view.row(n); }
+        auto selected () { return view.selected(); }
 
-        enum WHERE { THERE = 0,
-             GLYPH, LINE, LINE_BEGIN, LINE_END, PAGE_TOP,
-             TOKEN, PAGE, TEXT_BEGIN, TEXT_END, PAGE_BOTTOM,
-        };
-
-        void go (int where, bool selective = false)
-        {
-            auto ss = selections.now;
-            int n = ss.size();
-            if (n >= 2 and not selective) {
-                auto b = ss[0].from; // begin of multiline caret
-                auto e = ss[n-1].from; // end of multiline caret
-                if ((b < e and (where == +GLYPH or where == +LINE))
-                or  (b > e and (where == -GLYPH or where == -LINE)))
-                ss[0] = ss[n-1];
-                ss.resize(1);
-            }
-
-            for (auto& caret: ss)
-                go(caret, where, selective);
-
-            selections = ss;
-        }
-        void go (range& caret, int where, bool selective)
-        {
-            if (rows() == 0) return;
-
-            auto& [from, upto] = caret;
-            auto& [r, offset] = upto;
-
-            upto = view.lines2rows(upto);
-
-            int rows_on_page =
-                view.coord.now.h /
-                sys::metrics(font.now).height;
-
-            switch(where){
-            case THERE: selective = false; break;
-
-            case-GLYPH:
-                offset--;
-                if (not virtual_space.now)
-                if (offset < 0 and r > 0) { r--;
-                    offset = row(r).length; }
-                break;
-            case+GLYPH:
-                offset++;
-                if (not virtual_space.now)
-                if (offset > row(r).length
-                    and r < rows()-1) {
-                    r++; offset = 0; }
-                break;
-
-            //case-TOKEN: break;
-            //case+TOKEN: break;
-
-            case-LINE: r--; break;
-            case+LINE: r++; break;
-
-            case LINE_END  : offset = row(r).length; break;
-            case LINE_BEGIN: offset = offset !=
-                row(r).indent ?
-                row(r).indent : 0;
-                break;
-
-            //case PAGE_TOP   : break;
-            //case PAGE_BOTTOM: break;
-
-            case-PAGE: r -= rows_on_page; break;
-            case+PAGE: r += rows_on_page; break;
-
-            case TEXT_BEGIN: upto = place{}; break;
-            case TEXT_END  : upto = place{
-                rows()-1, row(
-                rows()-1).length};
-                break;
-            }
-
-            if (r > rows()-1)
-                r = rows()-1;
-            if (r < 0)
-                r = 0;
-
-            if (not virtual_space.now and
-                offset > row(r).length-1)
-                offset = row(r).length-1;
-            if (offset < 0)
-                offset = 0;
-
-            upto = view.rows2lines(upto);
-
-            if (not selective) from = upto;
-        }
-
-        void go (place place)
-        {
-            scroll.y.top = place.line *
-                sys::metrics(font.now).height -
-                    view.coord.now.h / 2;
-
-            selections = array<range>{
-                range{place, place}};
-        }
-
-        void show (int where)
-        {
-            int h = sys::metrics(font.now).height;
-
-            switch(where){
-            case-LINE:
-                scroll.y.top =
-                scroll.y.top.now - h;
-                break;
-            case+LINE:
-                scroll.y.top =
-                scroll.y.top.now + h;
-                break;
-            case-PAGE:
-                scroll.y.top =
-                scroll.y.top.now -
-                view.coord.now.h/h*h;
-                break;
-            case+PAGE:
-                scroll.y.top =
-                scroll.y.top.now +
-                view.coord.now.h/h*h;
-                break;
-            }
-        }
-
-        auto selected () { return page.selected(); }
-
-        void on_focus (bool on) override { page.on_focus(on); }
+        void see (int where) { page.see(where); }
+        void go (place place) { page.go(place); }
+        void go (int where, bool selective = false) {
+            page.go(where, selective); }
 
         void on_key (str key, bool down, bool input) override
         {
@@ -286,8 +146,8 @@ namespace gui::text
 
             if (key == "ctrl+left" ) go(-TOKEN); else
             if (key == "ctrl+right") go(+TOKEN); else
-            if (key == "ctrl+up"   ) show(-LINE); else
-            if (key == "ctrl+down" ) show(+LINE); else
+            if (key == "ctrl+up"   ) see(-LINE); else
+            if (key == "ctrl+down" ) see(+LINE); else
 
             if (key == "shift+left" ) go(-GLYPH, true); else
             if (key == "shift+right") go(+GLYPH, true); else
@@ -301,8 +161,8 @@ namespace gui::text
 
             if (key == "home"     ) go(LINE_BEGIN); else
             if (key == "end"      ) go(LINE_END  ); else
-            if (key == "page up"  ) { show(-PAGE); go(-PAGE); } else
-            if (key == "page down") { show(+PAGE); go(+PAGE); } else
+            if (key == "page up"  ) { see(-PAGE); go(-PAGE); } else
+            if (key == "page down") { see(+PAGE); go(+PAGE); } else
 
             if (key == "ctrl+home"     ) go(TEXT_BEGIN ); else
             if (key == "ctrl+end"      ) go(TEXT_END   ); else
@@ -311,8 +171,8 @@ namespace gui::text
 
             if (key == "shift+home"     ) go(LINE_BEGIN, true); else
             if (key == "shift+end"      ) go(LINE_END,   true); else
-            if (key == "shift+page up"  ) { show(-PAGE); go(-PAGE, true); } else
-            if (key == "shift+page down") { show(+PAGE); go(+PAGE, true); } else
+            if (key == "shift+page up"  ) { see(-PAGE); go(-PAGE, true); } else
+            if (key == "shift+page down") { see(+PAGE); go(+PAGE, true); } else
 
             if (key == "ctrl+shift+home"     ) go(TEXT_BEGIN , true); else
             if (key == "ctrl+shift+end"      ) go(TEXT_END   , true); else

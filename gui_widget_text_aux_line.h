@@ -216,10 +216,11 @@ namespace gui::text
                     row.offset.y > p.y or
                     row.the_last_row)
                 {
-                    if (p.x < row.width
+                    int x = p.x - row.offset.x;
+                    if (x < row.width
                     or not virtual_space
                     or not row.the_last_row)
-                    return i + row.point(p.x);
+                    return i + row.point(x);
                     else break; // anyway:
                     // it's the last row
                     // and virtual space

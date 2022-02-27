@@ -155,6 +155,10 @@ namespace gui::text
                     current_line_frame.show(); } else
                     current_line_frame.hide();
             }
+            if (what == &focus_on)
+            {
+                cell.focus_on = focus_on.now;
+            }
 
             notify(what);
         }
@@ -167,7 +171,5 @@ namespace gui::text
         auto row(int n) { return cell.row(n); }
         place lines2rows(place p) { return cell.lines2rows(p); }
         place rows2lines(place p) { return cell.rows2lines(p); }
-
-        void on_focus (bool on) override { cell.on_focus(on); }
     };
 }

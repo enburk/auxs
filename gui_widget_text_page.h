@@ -5,12 +5,18 @@
 #include "gui_widget_scroller.h"
 namespace gui::text
 {
+    enum WHERE { THERE = 0,
+    GLYPH, LINE, LINE_BEGIN, LINE_END, PAGE_TOP,
+    TOKEN, PAGE, TEXT_BEGIN, TEXT_END, PAGE_BOTTOM,
+    };
+
     struct page:
     widget<page>
     {
         view view;
         scroll scroll;
-        gui::text::view info;
+
+        page() { focusable.now = true; }
 
         canvas& canvas = view.canvas;
         view::text_type& text = view.text;
@@ -81,6 +87,21 @@ namespace gui::text
 
                 view.resize(size);
             }
+            if (what == &selections and not selections.now.empty())
+            {
+                XYXY r = view.cell.carets.back().coord.now +
+                         view.shift.now;
+
+                int d = gui::metrics::text::height;
+                int w = coord.now.size.x, dx = 0;
+                int h = coord.now.size.y, dy = 0;
+
+                if (r.xl-d < 0) dx = r.xl-d; else if (r.xh+d > w) dx = r.xh+d-w;
+                if (r.yl-d < 0) dy = r.yl-d; else if (r.yh+d > h) dy = r.yh+d-h;
+
+                if (dx != 0) scroll.x.top = scroll.x.top.now + dx;
+                if (dy != 0) scroll.y.top = scroll.y.top.now + dy;
+            }
             if (what == &timer)
             {
                 if (select_notch < time::now) {
@@ -101,7 +122,159 @@ namespace gui::text
             if (what == &scroll.x) view.shift = XY(-scroll.x.top, view.shift.now.y);
             if (what == &scroll.y) view.shift = XY(view.shift.now.x, -scroll.y.top);
 
+            if (what == &focus_on)
+            {
+                if (not focus_on.now)
+                    view.cell.selection_bars.clear();
+                else view.cell.on_change(&selections);
+            }
+
             notify(what);
+        }
+
+        auto rows() { return view.rows(); }
+        auto row(int n) { return view.row(n); }
+        auto selected () { return view.selected(); }
+
+        void go (int where, bool selective = false)
+        {
+            auto ss = selections.now;
+            int n = ss.size();
+            if (n >= 2 and not selective) {
+                auto b = ss[0].from; // begin of multiline caret
+                auto e = ss[n-1].from; // end of multiline caret
+                if ((b < e and (where == +GLYPH or where == +LINE))
+                or  (b > e and (where == -GLYPH or where == -LINE)))
+                ss[0] = ss[n-1];
+                ss.resize(1);
+            }
+
+            for (auto& caret: ss)
+                go(caret, where, selective);
+
+            selections = ss;
+        }
+        void go (range& caret, int where, bool selective)
+        {
+            if (rows() == 0) return;
+
+            auto& [from, upto] = caret;
+            auto& [r, offset] = upto;
+
+            upto = view.lines2rows(upto);
+
+            int rows_on_page =
+                view.coord.now.h /
+                sys::metrics(font.now).height;
+
+            switch(where){
+            case THERE: selective = false; break;
+
+            case-GLYPH:
+                offset--;
+                if (not virtual_space.now)
+                if (offset < 0 and r > 0) { r--;
+                    offset = row(r).length; }
+                break;
+            case+GLYPH:
+                offset++;
+                if (not virtual_space.now)
+                if (offset > row(r).length
+                    and r < rows()-1) {
+                    r++; offset = 0; }
+                break;
+
+            //case-TOKEN: break;
+            //case+TOKEN: break;
+
+            case-LINE: r--; break;
+            case+LINE: r++; break;
+
+            case LINE_END  : offset = row(r).length; break;
+            case LINE_BEGIN: offset = offset !=
+                row(r).indent ?
+                row(r).indent : 0;
+                break;
+
+            //case PAGE_TOP   : break;
+            //case PAGE_BOTTOM: break;
+
+            case-PAGE: r -= rows_on_page; break;
+            case+PAGE: r += rows_on_page; break;
+
+            case TEXT_BEGIN: upto = place{}; break;
+            case TEXT_END  : upto = place{
+                rows()-1, row(
+                rows()-1).length};
+                break;
+            }
+
+            if (r > rows()-1)
+                r = rows()-1;
+            if (r < 0)
+                r = 0;
+
+            if (not virtual_space.now and
+                offset > row(r).length-1)
+                offset = row(r).length-1;
+            if (offset < 0)
+                offset = 0;
+
+            upto = view.rows2lines(upto);
+
+            if (not selective) from = upto;
+        }
+
+        void go (place place)
+        {
+            scroll.y.top = place.line *
+                sys::metrics(font.now).height -
+                    view.coord.now.h / 2;
+
+            selections = array<range>{
+                range{place, place}};
+        }
+
+        void see (int where)
+        {
+            int h = sys::metrics(font.now).height;
+
+            switch(where){
+            case-GLYPH:
+                scroll.x.top =
+                scroll.x.top.now - h/2;
+                break;
+            case+GLYPH:
+                scroll.x.top =
+                scroll.x.top.now + h/2;
+                break;
+            case-TOKEN:
+                scroll.x.top =
+                scroll.x.top.now - h*5;
+                break;
+            case+TOKEN:
+                scroll.x.top =
+                scroll.x.top.now + h*5;
+                break;
+            case-LINE:
+                scroll.y.top =
+                scroll.y.top.now - h;
+                break;
+            case+LINE:
+                scroll.y.top =
+                scroll.y.top.now + h;
+                break;
+            case-PAGE:
+                scroll.y.top =
+                scroll.y.top.now -
+                view.coord.now.h/h*h;
+                break;
+            case+PAGE:
+                scroll.y.top =
+                scroll.y.top.now +
+                view.coord.now.h/h*h;
+                break;
+            }
         }
 
         bool on_mouse_wheel (XY p, int delta) override
@@ -118,13 +291,6 @@ namespace gui::text
             scroll.y.top =-y;
             return true;
         }
-
-        auto selected () { return view.selected(); }
-
-        auto rows() { return view.rows(); }
-        auto row(int n) { return view.row(n); }
-
-        void on_focus (bool on) override { view.on_focus(on); }
 
         bool  touch = false;
         place touch_place;
@@ -187,7 +353,7 @@ namespace gui::text
                     selection.from = touch_place;
                     selection.upto = view.point(p);
                     selections = array<range>{selection};
-                    info.hide();
+                    //info.hide();
                 }
                 else if (infotip.now)
                 {
@@ -202,103 +368,65 @@ namespace gui::text
                     //    r.h = info.cell.coord.now.h + r.h/2;
                     //    info.coord = r;
                     //    info.alignment = XY{pix::center, pix::center};
-                    //    info.show();
+                    //    info.see();
                     //}
                     //else info.hide();
                 }
             }
         }
 
+
         void on_key (str key, bool down, bool input) override
         {
-            if (not down) return;
+            if (!down) return;
             if (touch) return; // mouse
-            if (selections.now.size() != 1) return;
+            if (input) return; // letters
 
-            auto selection = selections.now[0];
-            auto& [from, upto] = selection;
-            auto& [row, offset] = upto;
-            if (from == upto) return;
+            if (key == "left" ) see(-GLYPH); else
+            if (key == "right") see(+GLYPH); else
+            if (key == "up"   ) see(-LINE); else
+            if (key == "down" ) see(+LINE); else
 
-            upto = view.lines2rows(upto);
+            if (key == "ctrl+left" ) see(-TOKEN); else
+            if (key == "ctrl+right") see(+TOKEN); else
+            if (key == "ctrl+up"   ) see(-LINE); else
+            if (key == "ctrl+down" ) see(+LINE); else
 
-            auto rows = view.rows();
-            auto current_row = [this, &row](){
-                return view.row(row); };
+            if (key == "shift+left" ) go(-GLYPH, true); else
+            if (key == "shift+right") go(+GLYPH, true); else
+            if (key == "shift+up"   ) go(-LINE,  true); else
+            if (key == "shift+down" ) go(+LINE,  true); else
 
-            auto apply = [&]()
-            {
-                if (row > rows - 1)
-                    row = rows - 1;
-                if (row < 0)
-                    row = 0;
+            if (key == "ctrl+shift+left" ) go(-TOKEN, true); else
+            if (key == "ctrl+shift+right") go(+TOKEN, true); else
+            if (key == "ctrl+shift+up"   ) go(-LINE,  true); else
+            if (key == "ctrl+shift+down" ) go(+LINE,  true); else
 
-                if (not virtual_space.now and
-                    offset > current_row().length)
-                    offset = current_row().length;
-                if (offset < 0)
-                    offset = 0;
+            if (key == "home"     ) go(LINE_BEGIN); else
+            if (key == "end"      ) go(LINE_END  ); else
+            if (key == "page up"  ) { see(-PAGE); go(-PAGE); } else
+            if (key == "page down") { see(+PAGE); go(+PAGE); } else
 
-                upto = view.rows2lines(upto);
-                selections = array<range>{
-                selection};
-            };
+            if (key == "ctrl+home"     ) go(TEXT_BEGIN ); else
+            if (key == "ctrl+end"      ) go(TEXT_END   ); else
+            if (key == "ctrl+page up"  ) go(PAGE_TOP   ); else
+            if (key == "ctrl+page down") go(PAGE_BOTTOM); else
 
-            if (key == "shift+left")
-            {
-                offset--;
-                if (not virtual_space.now)
-                if (offset < 0 and row > 0) { row--;
-                    offset = current_row().length; }
-                apply();
-            }
-            if (key == "shift+right")
-            {
-                offset++;
-                if (not virtual_space.now)
-                if (offset > current_row().length
-                    and row < rows-1) {
-                    row++; offset = 0; }
-                apply();
-            }
-            if (key == "ctrl+left" or
-                key == "ctrl+shift+left")
-            {
-                offset--;
-                if (not virtual_space.now)
-                if (offset < 0 and row > 0) { row--;
-                    offset = current_row().length; }
-                apply();
-            }
-            if (key == "ctrl+right" or
-                key == "ctrl+shift+right")
-            {
-                offset++;
-                if (not virtual_space.now)
-                if (offset > current_row().length
-                    and row < rows-1) {
-                    row++; offset = 0; }
-                apply();
-            }
-            if (key == "ctrl+up" or
-                key == "ctrl+shift+up" or
-                key == "shift+up")
-            {
-                row--;
-                apply();
-            }
-            if (key == "ctrl+down" or
-                key == "ctrl+shift+down" or
-                key == "shift+down")
-            {
-                row++;
-                apply();
-            }
+            if (key == "shift+home"     ) go(LINE_BEGIN, true); else
+            if (key == "shift+end"      ) go(LINE_END,   true); else
+            if (key == "shift+page up"  ) { see(-PAGE); go(-PAGE, true); } else
+            if (key == "shift+page down") { see(+PAGE); go(+PAGE, true); } else
 
-            if (key == "ctrl+C" or
-                key == "ctrl+insert") {
-                sys::clipboard::set(selected());
-            }
+            if (key == "ctrl+shift+home"     ) go(TEXT_BEGIN , true); else
+            if (key == "ctrl+shift+end"      ) go(TEXT_END   , true); else
+            if (key == "ctrl+shift+page up"  ) go(PAGE_TOP   , true); else
+            if (key == "ctrl+shift+page down") go(PAGE_BOTTOM, true); else
+
+            if (key == "ctrl+C"     ) { sys::clipboard::set(selected()); } else
+            if (key == "ctrl+insert") { sys::clipboard::set(selected()); } else
+            if (key == "escape"     ) { go(THERE); } else
+
+            {}
         }
     };
 } 

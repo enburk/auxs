@@ -268,6 +268,9 @@ widget<TestGui03>
     {
         if (what == &skin)
         {
+            editor1.show_focus = true;
+            editor2.show_focus = true;
+            editor3.show_focus = true;
             auto& e1 = editor1.object;
             auto& e2 = editor2.object;
             auto& e3 = editor3.object;

@@ -6,7 +6,7 @@ namespace gui
     struct console:
     widget<console>
     {
-        text::editor page;
+        text::page page;
         scroll& scroll = page.scroll;
         canvas& canvas = page.canvas;
         std::mutex mutex;
@@ -14,12 +14,6 @@ namespace gui
         array<str> addon;
         int limit = 64*1024;
         str log;
-
-        console()
-        {
-            page.read_only.now = true;
-            page.model = &page.view.model_;
-        }
 
         void operator << (str s)
         {

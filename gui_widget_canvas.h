@@ -60,6 +60,8 @@ namespace gui
         frame frame2;
         frame frame3; X object;
 
+        unary_property<bool> show_focus = false;
+
         using widget<area<X>>::skin;
         using widget<area<X>>::coord;
         using widget<area<X>>::notify;
@@ -68,12 +70,14 @@ namespace gui
         void on_change (void* what) override
         {
             if (what == &skin or
-                what == &focus_on)
+                what == &focus_on or
+                what == &show_focus)
             {
                 auto & style = skins[skin.now];
                 auto light = style.light.first;
                 auto heavy = style.heavy.first;
-                auto focus = focus_on.now ?
+                auto focus = focus_on.now
+                    and show_focus.now?
                     style.focused.first :
                     light;
 
