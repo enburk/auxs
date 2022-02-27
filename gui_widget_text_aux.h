@@ -76,7 +76,8 @@ namespace gui::text
             {
                 time_moved = time::now;
                 XYWH r = coord.now.local();
-                if (insert_mode.now) r.w = max (1, (int)(r.w*breadth.now));
+                if (insert_mode.now) r.w =
+                max (1, (int)(r.w*breadth.now));
                 image.coord = r;
             }
         }

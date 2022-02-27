@@ -29,7 +29,6 @@ namespace gui::text
         binary_property<bool>& ellipsis = view.ellipsis;
         binary_property<bool>& virtual_space = view.virtual_space;
         binary_property<bool>& insert_mode = view.insert_mode;
-        binary_property<bool>& focused = view.focused;
         property<bool>& update_text = view.update_text;
         property<bool>& update_colors = view.update_colors;
         property<bool>& update_layout = view.update_layout;
@@ -125,6 +124,8 @@ namespace gui::text
         auto rows() { return view.rows(); }
         auto row(int n) { return view.row(n); }
 
+        void on_focus (bool on) override { view.on_focus(on); }
+
         bool  touch = false;
         place touch_place;
         time  touch_time;
@@ -138,10 +139,10 @@ namespace gui::text
 
         bool mouse_sensible (XY p) override { return true; }
 
-        void on_mouse_press (XY p, char button, bool down) override
+        void on_mouse_press (XY p, str button, bool down) override
         {
-            if (button == 'R') return;
-            if (button != 'L') return;
+            if (button == "right") return;
+            if (button != "left") return;
             if (down && !touch)
             {
                 if (touch_point == p and time::now -
@@ -208,15 +209,16 @@ namespace gui::text
             }
         }
 
-        void on_key_pressed (str key, bool down) override
+        void on_key (str key, bool down, bool input) override
         {
-            if (!down) return;
+            if (not down) return;
             if (touch) return; // mouse
             if (selections.now.size() != 1) return;
-            auto selection = selections.now[0];
 
+            auto selection = selections.now[0];
             auto& [from, upto] = selection;
             auto& [row, offset] = upto;
+            if (from == upto) return;
 
             upto = view.lines2rows(upto);
 
@@ -297,10 +299,6 @@ namespace gui::text
                 key == "ctrl+insert") {
                 sys::clipboard::set(selected());
             }
-        }
-        void on_focus (bool on) override
-        {
-            view.on_focus(on);
         }
     };
 } 

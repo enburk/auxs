@@ -27,10 +27,10 @@ namespace gui::text
         binary_property<bool>& ellipsis = page.ellipsis;
         binary_property<bool>& virtual_space = page.virtual_space;
         binary_property<bool>& insert_mode = page.insert_mode;
-        binary_property<bool>& focused = page.focused;
         property<bool>& update_text = page.update_text;
         property<bool>& update_colors = page.update_colors;
         property<bool>& update_layout = page.update_layout;
+        property<bool> read_only = false;
 
         doc::model*& model = view.model;
         doc::text::model model_;
@@ -38,7 +38,8 @@ namespace gui::text
         editor ()
         {
             model = &model_;
-            alignment = XY{left, top};
+            alignment.now = XY{left, top};
+            focusable.now = true;
         }
 
         void on_change (void* what) override
@@ -68,9 +69,12 @@ namespace gui::text
             notify(what);
         }
 
-        template<class F> void does (F f) {
+        template<class F> void does (F f)
+        {
+            if (read_only.now) return;
             model->selections = selections;
-            if (f()) update_text = true; }
+            if (f()) update_text = true;
+        }
 
         void undo        () { does([=](){ return model->undo     (); }); }
         void redo        () { does([=](){ return model->redo     (); }); }
@@ -213,10 +217,13 @@ namespace gui::text
 
         auto selected () { return page.selected(); }
 
-        void on_key_pressed (str key, bool down) override
+        void on_focus (bool on) override { page.on_focus(on); }
+
+        void on_key (str key, bool down, bool input) override
         {
             if (!down) return;
             if (page.touch) return; // mouse
+            if (input) { insert(key); return; }
             if (key == "space" ) return;
             if (key.size() <= 1) return; // "", "0", "A", ...
             if (key.size() <= 7 and
@@ -337,14 +344,6 @@ namespace gui::text
             if (key == "escape"           ) { go(THERE); } else
 
             {}
-        }
-        void on_key_input (str symbol) override
-        {
-            if (!page.touch) insert(symbol);
-        }
-        void on_focus (bool on) override
-        {
-            page.on_focus(on);
         }
     };
 } 

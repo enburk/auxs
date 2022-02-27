@@ -87,21 +87,6 @@ widget<Test>
                 tests[i].first->show(
                     buttons(i).on.now);
     }
-
-    void on_focus (bool on) override {
-        for (auto [test, title] : tests)
-            if (test->alpha.to > 0)
-                test->on_focus(on); }
-
-    void on_key_input (str symbol) override {
-        for (auto [test, title] : tests)
-            if (test->alpha.to > 0)
-                test->on_key_input(symbol); }
-    
-    void on_key_pressed (str key, bool down) override {
-        for (auto [test, title] : tests)
-            if (test->alpha.to > 0)
-                test->on_key_pressed(key,down); }
 };
 
 

@@ -63,15 +63,23 @@ namespace gui
         using widget<area<X>>::skin;
         using widget<area<X>>::coord;
         using widget<area<X>>::notify;
+        using widget<area<X>>::focus_on;
 
         void on_change (void* what) override
         {
-            if (what == &skin)
+            if (what == &skin or
+                what == &focus_on)
             {
                 auto & style = skins[skin.now];
-                frame1.color = style.light.first;
-                frame2.color = style.heavy.first;
-                frame3.color = style.light.first;
+                auto light = style.light.first;
+                auto heavy = style.heavy.first;
+                auto focus = focus_on.now ?
+                    style.focused.first :
+                    light;
+
+                frame1.color = light;
+                frame2.color = heavy;
+                frame3.color = focus;
             }
             if (what == &coord and
                 coord.was.size !=
@@ -86,10 +94,6 @@ namespace gui
             if (what == &object)
                 notify (&object);
         }
-
-        void on_focus (bool on) override { object.on_focus(on); }
-        void on_key_input (str symbol) override { object.on_key_input(symbol); }
-        void on_key_pressed (str key, bool down) override { object.on_key_pressed(key,down); }
     };
 
     struct splitter:
@@ -110,9 +114,9 @@ namespace gui
 
         bool mouse_sensible (XY p) override { return true; }
 
-        void on_mouse_press (XY p, char button, bool down) override
+        void on_mouse_press (XY p, str button, bool down) override
         {
-            if (button != 'L') return;
+            if (button != "left") return;
             if (down && !touched) touch_point = p;
             touched = down;
         }

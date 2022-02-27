@@ -47,7 +47,6 @@ namespace gui::text
         unary_property<array<range>>& selections = cell.selections;
         binary_property<bool>& virtual_space = cell.virtual_space;
         binary_property<bool>& insert_mode = cell.insert_mode;
-        binary_property<bool>& focused = cell.focused;
 
         void on_change (void* what) override
         {
@@ -144,39 +143,21 @@ namespace gui::text
                 selections = model->selections;
             }
 
-            if (what == &selections)
+            if (what == &selections
+            or  what == &focus_on)
             {
-                //model->selections = selections.now;
-                int n = selections.now.size();
-                model->selections.resize(n);
-                for (int i=0; i<n; i++) {
-                    auto r = selections.now[i];
-                    model->selections[i] = range{
-                        place{r.from.line, r.from.offset},
-                        place{r.upto.line, r.upto.offset}};
-
-                    // hack to prevent focus hiding:
-                    auto & [from, upto] = model->selections[i];
-                    from = clamp(from, model->front(), model->back());
-                    upto = clamp(upto, model->front(), model->back());
-                    selections.now[i] = range{
-                        place{from.line, from.offset},
-                        place{upto.line, upto.offset}};
-                }
-
-
-                if (selections.now.size() == 1) {
-                XYWH r = cell.carets(0).coord.now;
-                r.x = 0; r.w = coord.now.w;
-                current_line_frame.coord = r;
-                current_line_frame.show(); } else
-                current_line_frame.hide();
+                model->selections = selections.now;
+                if (selections.now.size() == 1
+                    and focus_on.now) {
+                    XYWH r = cell.carets(0).coord.now;
+                    r.x = 0; r.w = coord.now.w;
+                    current_line_frame.coord = r;
+                    current_line_frame.show(); } else
+                    current_line_frame.hide();
             }
 
             notify(what);
         }
-
-        void on_focus (bool on) override { cell.on_focus(on); }
 
         auto selected () { return cell.selected(); }
 
@@ -186,5 +167,7 @@ namespace gui::text
         auto row(int n) { return cell.row(n); }
         place lines2rows(place p) { return cell.lines2rows(p); }
         place rows2lines(place p) { return cell.rows2lines(p); }
+
+        void on_focus (bool on) override { cell.on_focus(on); }
     };
 }

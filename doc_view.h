@@ -1,4 +1,7 @@
 #pragma once
+#include <map>
+#include "doc.h"
+#include "aux_abc.h"
 #include "pix_text.h"
 namespace doc::view
 {

@@ -64,6 +64,8 @@ namespace gui::text
             resize(XY(width, height));
         }        
 
+        bool focusable_now () override { return false; }
+
         XYWH bar (place place, bool virtual_space)
         {
             if (place.line < 0) return XYWH{};

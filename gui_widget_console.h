@@ -1,12 +1,12 @@
 #pragma once
 #include <mutex>
-#include "gui_widget_text_page.h"
+#include "gui_widget_text_editor.h"
 namespace gui
 {
     struct console:
     widget<console>
     {
-        text::page page;
+        text::editor page;
         scroll& scroll = page.scroll;
         canvas& canvas = page.canvas;
         std::mutex mutex;
@@ -14,6 +14,12 @@ namespace gui
         array<str> addon;
         int limit = 64*1024;
         str log;
+
+        console()
+        {
+            page.read_only.now = true;
+            page.model = &page.view.model_;
+        }
 
         void operator << (str s)
         {
@@ -43,7 +49,7 @@ namespace gui
             }
             if (what == &skin)
             {
-                page.view.canvas.color = gui::skins[skin].ultralight.first;
+                page.view.canvas.color = skins[skin].ultralight.first;
                 page.alignment = XY{pix::left, pix::top};
             }
             if (what == &timer)
@@ -67,7 +73,7 @@ namespace gui
             }
         }
 
-        void on_mouse_press (XY p, char button, bool down) override
+        void on_mouse_press (XY p, str button, bool down) override
         {
             if (parent)
                 parent->on_mouse_press (

@@ -106,7 +106,7 @@ static str wm_key (WPARAM wparam, LPARAM, bool down)
     if (sys::keyboard::ctrl ) s =  "ctrl+" + s;
     return s;
 }
-static str wm_char (WPARAM wparam, LPARAM)
+static str wm_chr (WPARAM wparam, LPARAM)
 {
     if (wparam < 32) return "";
     if (sys::keyboard::alt) return "";
@@ -122,6 +122,10 @@ LRESULT CALLBACK WindowProc (HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
     int LX = GET_X_LPARAM(lparam);
     int LY = GET_Y_LPARAM(lparam);
 
+    const str L = "left";
+    const str M = "middle";
+    const str R = "right";
+
     POINT p{0,0}; ClientToScreen(hwnd, &p); XY o {p.x, p.y};
 
     switch (msg) {
@@ -129,12 +133,12 @@ LRESULT CALLBACK WindowProc (HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 
     case WM_MOUSEMOVE     : win->mouse_on_move  (XY(LX,LY)); break;
     case WM_MOUSEWHEEL    : win->mouse_on_wheel (XY(LX,LY) - o, (short)HIWORD(wparam)); break;
-    case WM_LBUTTONDOWN   : win->mouse_on_press (XY(LX,LY), 'L', true ); SetCapture(hwnd); break;
-    case WM_LBUTTONUP     : win->mouse_on_press (XY(LX,LY), 'L', false); ReleaseCapture(); break;
-    case WM_MBUTTONDOWN   : win->mouse_on_press (XY(LX,LY), 'M', true ); break;
-    case WM_MBUTTONUP     : win->mouse_on_press (XY(LX,LY), 'M', false); break;
-    case WM_RBUTTONDOWN   : win->mouse_on_press (XY(LX,LY), 'R', true ); break;
-    case WM_RBUTTONUP     : win->mouse_on_press (XY(LX,LY), 'R', false); break;
+    case WM_LBUTTONDOWN   : win->mouse_on_press (XY(LX,LY), L, true ); SetCapture(hwnd); break;
+    case WM_LBUTTONUP     : win->mouse_on_press (XY(LX,LY), L, false); ReleaseCapture(); break;
+    case WM_MBUTTONDOWN   : win->mouse_on_press (XY(LX,LY), M, true ); break;
+    case WM_MBUTTONUP     : win->mouse_on_press (XY(LX,LY), M, false); break;
+    case WM_RBUTTONDOWN   : win->mouse_on_press (XY(LX,LY), R, true ); break;
+    case WM_RBUTTONUP     : win->mouse_on_press (XY(LX,LY), R, false); break;
     case WM_CAPTURECHANGED: win->mouse_on_leave (); break;
     case WM_MOUSELEAVE    : win->mouse_on_leave (); break;
 
@@ -144,7 +148,7 @@ LRESULT CALLBACK WindowProc (HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
     case WM_SYSKEYUP      : win->keyboard_on_press (wm_key(wparam, lparam, false), false); break;
     case WM_KEYDOWN       : win->keyboard_on_press (wm_key(wparam, lparam, true ), true ); break;
     case WM_KEYUP         : win->keyboard_on_press (wm_key(wparam, lparam, false), false); break;
-    case WM_CHAR          : win->keyboard_on_input (wm_char(wparam, lparam)); break;
+    case WM_CHAR          : win->keyboard_on_input (wm_chr(wparam, lparam)); break;
 
     case WM_SIZE:
     {

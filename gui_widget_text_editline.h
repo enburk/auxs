@@ -23,7 +23,6 @@ namespace gui::text
         binary_property<bool>& ellipsis = editor.ellipsis;
         binary_property<bool>& virtual_space = editor.virtual_space;
         binary_property<bool>& insert_mode = editor.insert_mode;
-        binary_property<bool>& focused = editor.focused;
         property<bool>& update_text = editor.update_text;
         property<bool>& update_colors = editor.update_colors;
         property<bool>& update_layout = editor.update_layout;
@@ -52,7 +51,7 @@ namespace gui::text
             editor.go(gui::text::editor::TEXT_END, true);
         }
 
-        void on_key_pressed (str key, bool down) override
+        void on_key (str key, bool down, bool input) override
         {
             if (!down) return;
 
@@ -60,6 +59,7 @@ namespace gui::text
             if (key == "ctrl+V") key = "shift+insert"; else // paste
             if (key == "ctrl+X") key = "shift+delete"; else // cut
             if (key == "ctrl+Z") key = "alt+backspace"; else // undo
+            {}
 
             if (key == "shift+insert"     )
             {
@@ -77,15 +77,7 @@ namespace gui::text
             if (key == "tab"              ) {} else
             if (key == "shift+tab"        ) {} else
 
-            editor.on_key_pressed(key, down);
-        }
-        void on_key_input (str symbol) override
-        {
-            editor.on_key_input(symbol);
-        }
-        void on_focus (bool on) override
-        {
-            editor.on_focus(on);
+            editor.on_key(key, down, input);
         }
     };
 }

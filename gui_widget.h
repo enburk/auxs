@@ -41,12 +41,20 @@ namespace gui::base
         /// else updates += r;
         }
 
-        void change (void* what) {
+        void change (void* what)
+        {
             if (what == &coord && parent) parent->update(coord.was);
             if (what == &coord && parent) parent->update(coord.now);
             if (what == &alpha && parent) parent->update(coord.now);
-            if (what == &skin) for (auto child : children)
-                child->skin = skin.now;
+
+            if (what == &focus and focus_on.now) {
+            if (focus.was) focus.was->on_focus(false);
+            if (focus.now) focus.now->on_focus(true); }
+
+            if (what == &skin)
+                for (auto child : children)
+                    child->skin = skin.now;
+
             on_change(what);
         }
 
@@ -75,18 +83,61 @@ namespace gui::base
 
         ////////////////////////////////////////////////////////////////////////
 
+        unary_property<bool> focus_on = false;
+        unary_property<bool> focusable = false;
+        binary_property<widget*> focus = nullptr;
+
+        virtual bool focusable_now ()
+        {
+            if (alpha.now == 0)
+                return false;
+
+            if (focusable.now)
+                return true;
+
+            for (auto w : children)
+                if (w->focusable_now())
+                    return true;
+
+            return false;
+        }
+
+        virtual void on_focus (bool on)
+        {
+            focus_on = on;
+            if (focus.now and
+                focus.now != this)
+                focus.now->on_focus(on);
+
+            else if (on)
+            for (auto child: reverse(children))
+                if (child->focusable_now()) {
+                    focus = child;
+                    break; }
+        }
+
+        virtual void on_key (str key, bool down, bool input)
+        {
+            if (focus.now and
+                focus.now != this)
+                focus.now->on_key(
+                key, down, input);
+        }
+
+        ////////////////////////////////////////////////////////////////////////
+
         widget* mouse_press_child = nullptr;
         widget* mouse_hover_child = nullptr;
         double  mouse_wheel_speed = 1.0;
         unary_property<str> mouse_image;
 
         virtual bool mouse_sensible (XY p) { return false; }
-        virtual void on_mouse_press (XY, char button, bool down) {}
+        virtual void on_mouse_press (XY, str button, bool down) {}
         virtual bool on_mouse_wheel (XY, int) { return false; }
         virtual void on_mouse_hover (XY) {}
         virtual void on_mouse_leave () {}
 
-        virtual void on_mouse_press_child (XY, char, bool) {}
+        virtual void on_mouse_press_child (XY, str, bool) {}
         virtual void on_mouse_hover_child (XY) {}
 
         bool mouse_sense (XY p)
@@ -99,30 +150,34 @@ namespace gui::base
             return mouse_sensible(p);
         }
 
-        void mouse_press (XY p, char button, bool down)
+        void mouse_press (XY p, str button, bool down)
         {
             // button ?
-            if (down) {
+            if (down)
+            {
                 mouse_press_child = nullptr;
                 for (auto w : children)
                     if (w->mouse_sense (p - w->coord.now.origin))
                         mouse_press_child = w; // last sibling wins
 
+                if (mouse_press_child and
+                    mouse_press_child->focusable_now())
+                    focus = mouse_press_child;
+
                 if (mouse_press_child) {
                     mouse_press_child->mouse_press (p -
                     mouse_press_child->coord.now.origin, button, true);
                     on_mouse_press_child(p, button, down);
-                    return;
-                }
+                    return; }
             }
-            else { 
+            else
+            { 
                 if (mouse_press_child) {
                     mouse_press_child->mouse_press (p - 
                     mouse_press_child->coord.now.origin, button, false);
                     mouse_press_child = nullptr;
                     on_mouse_press_child(p, button, down);
-                    return;
-                }
+                    return; }
             }
             on_mouse_press(p, button, down);
             sys::mouse::image(mouse_image.now);
@@ -168,17 +223,13 @@ namespace gui::base
         {
             if (alpha.now == 0) return false;
             if (coord.now.local().excludes(p)) return false;
-            for (auto it = children.rbegin(); it != children.rend(); ++it)
-                if ((*it)->mouse_wheel(p - (*it)->coord.now.origin, delta))
+            for (auto child: reverse(children))
+                if (child->mouse_wheel(p - 
+                    child->coord.now.origin, delta))
                     return true;
-            return on_mouse_wheel(p, int(delta*mouse_wheel_speed));
+            return on_mouse_wheel(p, (int)
+                (delta*mouse_wheel_speed));
         }
-
-        ////////////////////////////////////////////////////////////////////////
-
-        virtual void on_focus (bool) {}
-        virtual void on_key_input (str) {}
-        virtual void on_key_pressed (str, bool) {}
 
         ////////////////////////////////////////////////////////////////////////
 

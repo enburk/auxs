@@ -18,7 +18,6 @@ namespace gui::text
 
         binary_property<bool> virtual_space = false;
         binary_property<bool> insert_mode = true;
-        binary_property<bool> focused = false;
 
         void fill(array<doc::view::line> data)
         {
@@ -63,7 +62,7 @@ namespace gui::text
             }
             if (what == &selections
             or  what == &insert_mode
-            or  what == &focused)
+            or  what == &focus_on)
             {
                 int n = 0;
                 for (auto range: selections.now)
@@ -74,14 +73,12 @@ namespace gui::text
 
                 for (auto& caret: carets) {
                     caret.insert_mode = insert_mode.now;
-                    caret.show(focused.now);
+                    caret.show(focus_on.now);
                 }
             }
 
             notify(what);
         }
-
-        void on_focus (bool on) override { focused = on; }
 
         str selected () const
         {

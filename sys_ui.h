@@ -19,6 +19,12 @@ namespace sys
         inline bool alt = false;
         inline bool ctrl = false;
         inline bool shift = false;
+        struct event
+        {
+            str  key;
+            bool down = false;
+            bool input = false;
+        };
     }
     namespace mouse
     {
@@ -59,7 +65,7 @@ namespace sys
         virtual void keyboard_on_focus (bool on) = 0;
         virtual void keyboard_on_press (str key, bool down) = 0;
         virtual void keyboard_on_input (str symbol) = 0;
-        virtual void mouse_on_press (XY p, char button, bool down) = 0;
+        virtual void mouse_on_press (XY p, str button, bool down) = 0;
         virtual void mouse_on_wheel (XY p, int delta) = 0;
         virtual void mouse_on_move  (XY p) = 0;
         virtual void mouse_on_leave () = 0;
@@ -100,14 +106,14 @@ namespace sys
              on_timing();
         }
         void keyboard_on_press(str key, bool down) override {
-             widget.on_key_pressed(key, down);
+             widget.on_key(key, down, false);
              on_timing();
         }
         void keyboard_on_input(str symbol) override { if (symbol != "")
-             widget.on_key_input(symbol);
+             widget.on_key(symbol, true, true);
              on_timing();
         }
-        void mouse_on_press(XY p, char button, bool down) override {
+        void mouse_on_press(XY p, str button, bool down) override {
              widget.mouse_press(p, button, down);
              on_timing();
         }

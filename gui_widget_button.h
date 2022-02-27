@@ -10,7 +10,6 @@ namespace gui
     {
         binary_property<bool> on = false;
         binary_property<bool> enabled = true;
-        binary_property<bool> focused = false;
         binary_property<bool> mouse_hover = false;
         binary_property<bool> mouse_pressed = false;
         binary_property<bool> enter_pressed = false;
@@ -34,16 +33,15 @@ namespace gui
             const auto & style = skins[skin.now];
 
             frame.color = style.focused.first;
-            frame.alpha.go (focused ? 255 : 0);
+            frame.alpha.go (focus_on ? 255 : 0);
 
-            auto colors = style.normal;
-
-            // order important
-            if (!enabled     .now) colors = style.disabled; else
-            if (mouse_pressed.now) colors = style.touched; else
-            if (enter_pressed.now) colors = style.touched; else
-            if (on           .now) colors = style.active; else
-            if (mouse_hover  .now) colors = style.hovered;
+            auto colors = // order important
+            not enabled  .now? style.disabled:
+            mouse_pressed.now? style.touched:
+            enter_pressed.now? style.touched:
+            on           .now? style.active:
+            mouse_hover  .now? style.hovered:
+                               style.normal;
 
             canvas.color.go(colors.first);
             icon.color.go(colors.second);
@@ -62,7 +60,7 @@ namespace gui
             if (what == &enter_pressed
             or  what == &mouse_pressed
             or  what == &mouse_hover
-            or  what == &focused
+            or  what == &focus_on
             or  what == &enabled
             or  what == &coord
             or  what == &skin
@@ -87,9 +85,9 @@ namespace gui
         bool mouse_sensible (XY) override { return enabled.now; }
         void on_mouse_hover (XY) override { mouse_hover = true; }
         void on_mouse_leave (  ) override { mouse_hover = false;}
-        void on_mouse_press (XY, char button, bool down) override
+        void on_mouse_press (XY, str button, bool down) override
         {
-            if (button != 'L') return;
+            if (button != "left") return;
             
             mouse_pressed = down;
             
@@ -111,9 +109,12 @@ namespace gui
             }
         }
 
-        void on_focus (bool on) override { focused = on; }
+        bool focusable_now () override {
+            return alpha.now > 0
+                and focusable.now
+                and enabled.now; }
 
-        void on_key_pressed (str key, bool down) override
+        void on_key (str key, bool down, bool input) override
         {
             if (key == "enter") enter_pressed = down;
         }
