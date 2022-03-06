@@ -6,8 +6,8 @@
 using namespace pix;
 using gui::widget;
 
-struct TestAux00:
-widget<TestAux00>
+struct TestAux:
+widget<TestAux>
 {
     bool ok = true;
     bool done = false;
@@ -61,8 +61,8 @@ widget<TestAux00>
 };
 
 // coroutines
-struct TestAux01:
-widget<TestAux01>
+struct TestAuxCoro:
+widget<TestAuxCoro>
 {
     bool ok = true;
     bool done = false;
@@ -125,8 +125,8 @@ widget<TestAux01>
 };
 
 // haskell
-struct TestAux02:
-widget<TestAux02>
+struct TestAuxHask:
+widget<TestAuxHask>
 {
     bool ok = true;
     bool done = false;

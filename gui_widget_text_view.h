@@ -113,6 +113,8 @@ namespace gui::text
                 update_layout.now = false;
 
                 format format;
+                format.lwrap = lwrap.now;
+                format.rwrap = rwrap.now;
                 format.alignment = alignment.now;
                 format.lpadding = lpadding.now;
                 format.rpadding = rpadding.now;

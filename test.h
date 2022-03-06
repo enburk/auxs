@@ -10,34 +10,36 @@ widget<Test>
     gui::canvas canvas;
     gui::radio::group buttons;
     array<std::pair<gui::base::widget*, str>> tests;
-    TestAux00 test_aux_00;
-    TestAux01 test_aux_01;
-    TestAux02 test_aux_02;
-    TestDoc00 test_doc_00;
-    TestPix00 test_pix_00;
-    TestPix01 test_pix_01;
-    TestGui00 test_gui_00;
-    TestGui01 test_gui_01;
-    TestGui02 test_gui_02;
-    TestGui03 test_gui_03;
+    TestAux        aux;
+    TestAuxCoro    aux_coro;
+    TestAuxHask    aux_hask;
+    TestDoc        doc;
+    TestPix        pix;
+    TestPixFonts   pix_fonts;
+    TestGui        gui;
+    TestGuiColors  gui_colors;
+    TestGuiFormat  gui_format;
+    TestGuiConsole gui_console;
+    TestGuiEditor  gui_editor;
 
     Test ()
     {
         skin = "gray";
 
-        tests += {&test_aux_00, "aux"};
-        tests += {&test_aux_01, "coroutines"};
-        tests += {&test_aux_02, "haskell"};
+        tests += {&aux,         "aux"};
+        tests += {&aux_coro,    "coroutines"};
+        tests += {&aux_hask,    "haskell"};
 
-        tests += {&test_doc_00, "doc"};
+        tests += {&doc,         "doc"};
 
-        tests += {&test_pix_00, "pix"};
-        tests += {&test_pix_01, "fonts"};
+        tests += {&pix,         "pix"};
+        tests += {&pix_fonts,   "fonts"};
 
-        tests += {&test_gui_00, "gui"};
-        tests += {&test_gui_01, "colors"};
-        tests += {&test_gui_02, "console"};
-        tests += {&test_gui_03, "editors"};
+        tests += {&gui,         "gui"};
+        tests += {&gui_colors,  "colors"};
+        tests += {&gui_format,  "format"};
+        tests += {&gui_console, "console"};
+        tests += {&gui_editor,  "editor"};
 
         for (auto [ptr, title] : tests)
             buttons.emplace_back()

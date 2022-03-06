@@ -13,6 +13,7 @@ namespace gui::base
         property<XYWH> coord;
         property<uint8_t> alpha = 255;
         unary_property<str> skin;
+        unary_property<str> name;
 
         void hide    (bool off, time t=time()) { alpha.go(off? 0 : 255, t); }
         void show    (bool on , time t=time()) { alpha.go(on ? 255 : 0, t); }

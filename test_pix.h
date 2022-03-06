@@ -3,14 +3,14 @@
 using namespace pix;
 using gui::widget;
 
-struct TestPix00:
-widget<TestPix00>
+struct TestPix:
+widget<TestPix>
 {
 };
 
 // fonts
-struct TestPix01:
-widget<TestPix01>
+struct TestPixFonts:
+widget<TestPixFonts>
 {
     gui::image gui_image;
     pix::image<RGBA> image;

@@ -23,8 +23,8 @@ str Lorem = "<b>Lorem ipsum</b><br>"
 "proident, sunt in culpa qui officia deserunt mollit anim id est "
 "<b><font color=#008000>laborum.</font></b><br><br>";
 
-struct TestGui00:
-widget<TestGui00>
+struct TestGui:
+widget<TestGui>
 {
     bool ok = true;
     bool done = false;
@@ -82,8 +82,8 @@ widget<TestGui00>
 };
 
 // colors
-struct TestGui01:
-widget<TestGui01>
+struct TestGuiColors:
+widget<TestGuiColors>
 {
     struct sample:
     widget<sample>
@@ -144,7 +144,7 @@ widget<TestGui01>
                 page.coord = XYXY(0,h+q+h+h, W, H);
                 page.object.html = Lorem;
                 page.object.alignment = XY{pix::left, pix::top};
-                page.object.view.canvas.color = schema.ultralight.first;
+                page.object.canvas.color = schema.ultralight.first;
                 page.object.style = pix::text::style{
                     sys::font{"Segoe UI", h*4/7},
                     schema.dark.first};
@@ -198,9 +198,94 @@ widget<TestGui01>
     }
 };
 
+// format
+struct TestGuiFormat:
+widget<TestGuiFormat>
+{
+    gui::widgetarium<gui::area<gui::text::page>> pages;
+    gui::widgetarium<gui::canvas> wraps;
+
+    void on_change (void* what) override
+    {
+        const int n = 3;
+
+        if (what == &alpha
+        and alpha.now == 255
+        and pages.empty())
+        {
+            for (int i=0; i<2; i++)
+            for (int j=0; j<n; j++) {
+            pages.emplace_back().object.alignment = XY{pix::left,         pix::top};
+            pages.emplace_back().object.alignment = XY{pix::center,       pix::top};
+            pages.emplace_back().object.alignment = XY{pix::justify_left, pix::top};
+            pages.emplace_back().object.alignment = XY{pix::right,        pix::top};
+            }
+            auto schema = gui::skins[skin];
+
+            for (auto& page : pages)
+            {
+                page.object.html = Lorem;
+                page.object.canvas.color = schema.ultralight.first;
+                page.object.style = pix::text::style{
+                    sys::font{"Segoe UI",
+                    gui::metrics::text::height},
+                    schema.dark.first};
+            }
+            what = &coord;
+        }
+        if (what == &coord and not pages.empty())
+        {
+            int W = coord.now.w; if (W <= 0) return;
+            int H = coord.now.h; if (H <= 0) return;
+            int w = W / 4;
+            int h = H / 2 / n;
+
+            for (int j=0; j<n; j++) { int v = w/(j+1);
+            pages(1*4*n+j*4+0).object.lwrap = array<XY>{XY(0, h/2), XY(v/4, h/4)};
+            pages(1*4*n+j*4+1).object.lwrap = array<XY>{XY(0, h/2), XY(v/4, h/4)};
+            pages(1*4*n+j*4+2).object.lwrap = array<XY>{XY(0, h/2), XY(v/4, h/4)};
+            pages(1*4*n+j*4+3).object.lwrap = array<XY>{XY(0, h/2), XY(v/4, h/4)};
+            pages(1*4*n+j*4+0).object.rwrap = array<XY>{XY(v/4, h/4)};
+            pages(1*4*n+j*4+1).object.rwrap = array<XY>{XY(v/4, h/4)};
+            pages(1*4*n+j*4+2).object.rwrap = array<XY>{XY(v/4, h/4)};
+            pages(1*4*n+j*4+3).object.rwrap = array<XY>{XY(v/4, h/4)};
+            }
+            for (int i=0; i<2; i++)
+            for (int j=0; j<n; j++) { int v = w/(j+1);
+            pages(i*4*n+j*4+0).coord = XYWH(w*0, i*h*n+j*h, v, h);
+            pages(i*4*n+j*4+1).coord = XYWH(w*1, i*h*n+j*h, v, h);
+            pages(i*4*n+j*4+2).coord = XYWH(w*2, i*h*n+j*h, v, h);
+            pages(i*4*n+j*4+3).coord = XYWH(w*3, i*h*n+j*h, v, h);
+            }
+            pages.coord = XYWH(0,0,W,H);
+            wraps.coord = XYWH(0,0,W,H);
+            wraps.clear();
+
+            for (auto& page : pages)
+            {
+                int y = 0;
+                for (auto d : page.object.lwrap.now) {
+                wraps.emplace_back().color = RGBA(255, 0, 0, 128);
+                wraps.back().coord = XYWH(0, y, d.x, d.y) +
+                    page.object.coord.now.origin +
+                    page.coord.now.origin;
+                y += d.y; }
+                y = 0;
+                int v = page.object.view.coord.now.w;
+                for (auto d : page.object.rwrap.now) {
+                wraps.emplace_back().color = RGBA(0, 0, 255, 128);
+                wraps.back().coord = XYWH(v-d.x, y, d.x, d.y) +
+                    page.object.coord.now.origin +
+                    page.coord.now.origin;
+                y += d.y; }
+            }
+        }
+    }
+};
+
 // console
-struct TestGui02:
-widget<TestGui02>
+struct TestGuiConsole:
+widget<TestGuiConsole>
 {
     str text = Lorem;
     gui::button doubling;
@@ -210,7 +295,7 @@ widget<TestGui02>
     int x = 40'00;
     int xx = 80;
 
-    TestGui02 () { on_change(&doubling); }
+    TestGuiConsole () { on_change(&doubling); }
 
     void on_change (void* what) override
     {
@@ -252,9 +337,9 @@ widget<TestGui02>
     }
 };
 
-// editors
-struct TestGui03:
-widget<TestGui03>
+// editor
+struct TestGuiEditor:
+widget<TestGuiEditor>
 {
     gui::area<gui::text::editor> editor1; 
     gui::area<gui::text::editor> editor2; 

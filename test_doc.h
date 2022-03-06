@@ -5,8 +5,8 @@
 using namespace pix;
 using gui::widget;
 
-struct TestDoc00:
-widget<TestDoc00>
+struct TestDoc:
+widget<TestDoc>
 {
     bool ok = true;
     bool done = false;

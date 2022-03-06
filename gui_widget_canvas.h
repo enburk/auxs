@@ -95,8 +95,8 @@ namespace gui
                 frame3.coord = r; r.deflate(frame3.thickness.now);
                 object.coord = r;
             }
-            if (what == &object)
-                notify (&object);
+
+            notify(what);
         }
     };
 
