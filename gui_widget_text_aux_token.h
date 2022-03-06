@@ -63,7 +63,8 @@ namespace gui::text
 
         int size() const { return glyphs.size(); }
 
-        void on_render(sys::window& window, XYWH r, XY offset, uint8_t alpha) override
+        void on_render(sys::window& window,
+        XYWH r, XY offset, uint8_t alpha) override
         {
             for (auto& g : glyphs) {
                 XYWH child_global = g.coord() + r.origin - offset;

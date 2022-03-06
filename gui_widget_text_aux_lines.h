@@ -4,6 +4,18 @@ namespace gui::text
 {
     struct lines : widgetarium<line>
     {
+        static void skip (array<XY>& bars, int height)
+        {
+            while (not bars.empty()) {
+                auto& bar = bars.front();
+                bar.y -= height;
+                if (bar.y >= 0)
+                    break;
+                height = -bar.y;
+                bars.erase(0);
+            }
+        }
+
         void fill (array<doc::view::line> datae)
         {
             int n = 0;
@@ -47,10 +59,13 @@ namespace gui::text
                     }
                 };
 
-                if (refill())
-                    (*this)(n) = std::move(data);
+                if (refill()) {
+                    skip(data.format.lwrap, height);
+                    skip(data.format.rwrap, height);
+                    at(n) = std::move(data);
+                }
 
-                line & line = (*this)(n);
+                line & line = at(n);
                 line.move_to(XY(0, height));
                 width = max(width, line.coord.now.size.x);
                 height += line.coord.now.size.y;
