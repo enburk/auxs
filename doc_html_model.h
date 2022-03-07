@@ -28,7 +28,7 @@ namespace doc::html
         }
 
         void add_text (str text) override { set_html(source + encoded(text)); }
-        void add_html (str text) override { set_html(source + text); }
+        void add_html (str html) override { set_html(source + html); }
 
         void set (style s, format f) override
         {
@@ -73,7 +73,7 @@ namespace doc::html
 
             if (entity.kind == "text")
             {
-                if (lines.size() == 0 ||
+                if (lines.size() == 0 or
                     lines.back().format != format)
                     lines += line{format, style_index(style)};
 
@@ -222,7 +222,8 @@ namespace doc::html
             if (entity.name == "h4") {
                 if (lines.size() > 0 and
                     lines.back().tokens.size() > 0)
-                    lines += line{format, style_index(style)};
+                    lines += line{format,
+                    style_index(style)};
             }
         }
     };

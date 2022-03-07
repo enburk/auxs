@@ -14,6 +14,7 @@ widget<Test>
     TestAuxCoro    aux_coro;
     TestAuxHask    aux_hask;
     TestDoc        doc;
+    TestDocHtml    doc_html;
     TestPix        pix;
     TestPixFonts   pix_fonts;
     TestGui        gui;
@@ -31,6 +32,7 @@ widget<Test>
         tests += {&aux_hask,    "haskell"};
 
         tests += {&doc,         "doc"};
+        tests += {&doc_html,    "html"};
 
         tests += {&pix,         "pix"};
         tests += {&pix_fonts,   "fonts"};

@@ -140,11 +140,10 @@ namespace gui::text
                     row.length;
             }
 
-            pix::glyph space (" ", style);
-
-            if (rows.empty()) height =
-                space.ascent +
-                space.descent;
+            if (rows.empty()) {
+                pix::glyph space (" ", style);
+                height = space.ascent +
+                    space.descent; }
 
             resize(XY(width, height));
         }
@@ -186,7 +185,7 @@ namespace gui::text
                 // length was subtracted
                 // from 'from' and 'upto'
                 
-                sys::glyph space (" ", style);
+                sys::glyph space(" ", style);
 
                 XY  offset;
                 if (rows.size() > 0) offset = 
@@ -230,7 +229,7 @@ namespace gui::text
 
             if (virtual_space and not rows.empty())
             {
-                sys::glyph space (" ", style);
+                sys::glyph space(" ", style);
                 int dx = p.x - rows.back().width;
                 return length + dx/space.advance;
             }

@@ -17,7 +17,8 @@ namespace gui
     struct schema
     {
         pix::font font;
-        std::pair<RGBA,RGBA>
+        RGBA white, black;
+        std::pair<RGBA,RGBA> 
         ultralight, light, soft, normal, middle, heavy, dark,
         active, hovered, touched, focused, disabled,
         highlight, selection, error;
@@ -112,6 +113,9 @@ namespace gui
 
         for (auto [name, palette] : palettes) {
             auto & skin = skins[name];
+
+            skin.white      = palette[9].second;
+            skin.black      = palette[0].second;
 
             skin.ultralight = palette[0];
             skin.light      = palette[1];

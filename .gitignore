@@ -1,3 +1,7 @@
+.archive/
+.astudio/
+.vstudio/
+packages/
 *.obj
 *.exe
 enc_temp_folder/
