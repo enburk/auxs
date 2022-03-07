@@ -1,6 +1,7 @@
 #pragma once
 #include "gui_widget_console.h"
 #include "gui_widget_text_editor.h"
+using namespace std::literals::chrono_literals;
 using namespace pix;
 using gui::widget;
 
@@ -394,6 +395,54 @@ widget<TestGuiEditor>
         {
             x2 = 100'00 * splitt2.middle / coord.now.w;
             on_change(&coord);
+        }
+    }
+};
+
+struct TestGuiAnimat:
+widget<TestGuiAnimat>
+{
+    gui::button go; 
+    gui::text::view view;
+    gui::time lapse = 3s;
+    int turn = 0;
+
+    void on_change (void* what) override
+    {
+        if (what == &coord and
+            coord.was.size !=
+            coord.now.size)
+        {
+            int W = coord.now.w; if (W <= 0) return;
+            int H = coord.now.h; if (H <= 0) return;
+            int w = gui::metrics::text::height*10;
+            int h = gui::metrics::text::height*12/7;
+            int d = gui::metrics::line::width * 6;
+
+            go.text.text = "go!";
+            go.coord = XYWH(W-w, 0, w, h);
+        }
+        if (what == &go)
+        {
+            int W = coord.now.w; if (W <= 0) return;
+            int H = coord.now.h; if (H <= 0) return;
+            int w = gui::metrics::text::height*10;
+            int h = gui::metrics::text::height*12/7;
+            int d = gui::metrics::line::width * 6;
+
+            switch (turn) {
+            break; case 0:
+            view.text = "text";
+            view.color.go(RGBA::black, lapse);
+            view.canvas.color.go(RGBA::white, lapse);
+            view.coord.go(XYWH(0, 0, w, h), lapse);
+            break; default:
+            view.color.go(RGBA::white, lapse);
+            view.canvas.color.go(RGBA::black, lapse);
+            view.coord.go(XYWH(W-3*w, 0, 2*w, 2*h), lapse);
+            }
+
+            turn = (turn + 1) % 2;
         }
     }
 };

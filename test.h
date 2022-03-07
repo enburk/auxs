@@ -22,6 +22,7 @@ widget<Test>
     TestGuiFormat  gui_format;
     TestGuiConsole gui_console;
     TestGuiEditor  gui_editor;
+    TestGuiAnimat  gui_animat;
 
     Test ()
     {
@@ -40,6 +41,7 @@ widget<Test>
         tests += {&gui,         "gui"};
         tests += {&gui_colors,  "colors"};
         tests += {&gui_format,  "format"};
+        tests += {&gui_animat,  "animation"};
         tests += {&gui_console, "console"};
         tests += {&gui_editor,  "editor"};
 
