@@ -82,9 +82,57 @@ widget<TestGui>
     }
 };
 
-// colors
 struct TestGuiColors:
 widget<TestGuiColors>
+{
+    gui::canvas canvas;
+    gui::widgetarium<gui::text::view> samples;
+
+    void on_change (void* what) override
+    {
+        if (what == &coord)
+        {
+            int W = coord.now.w; if (W <= 0) return;
+            int H = coord.now.h; if (H <= 0) return;
+            int h = gui::metrics::text::height*24/7;
+
+            canvas.color = RGBA::black;
+            canvas.coord = coord.now.local();
+            samples.coord = coord.now.local();
+
+            if (samples.size() == 0)
+            {
+                int nn = gui::palettes_names.size()/2;
+                int nny = H / h / 10; if (nny == 0) nny = 1;
+                int nnx = nn / nny;
+                int w = W / nnx;
+                int n = 0;
+
+                for (str name: gui::palettes_names)
+                {
+                    if (name.ends_with("+")) continue;
+                    auto& palette = gui::palettes[name];
+                    int nx = n / nny;
+                    int ny = n % nny;
+
+                    for (int j = 0; j < 10; j++) {
+                        int i = n * 10 + j;
+                        samples(i).coord = XYWH(nx*w, ny*h*10 + j*h, w, h);
+                        samples(i).color = palette[j].first;
+                        samples(i).font = pix::font("Tahoma", h*7/12);
+                        samples(i).text = name + " " +
+                            std::to_string(j);
+                    }
+                    n++;
+                }
+            }
+
+        }
+    }
+};
+
+struct TestGuiColorsX:
+widget<TestGuiColorsX>
 {
     struct sample:
     widget<sample>
@@ -104,9 +152,9 @@ widget<TestGuiColors>
         {
             if (what == &coord)
             {
-                int h = gui::metrics::text::height*12/7;
                 int W = coord.now.w; if (W <= 0) return;
                 int H = coord.now.h; if (H <= 0) return;
+                int h = gui::metrics::text::height*12/7;
                 int q = W/10;
 
                 title.coord = XYWH(0,0, W,h);
@@ -199,7 +247,6 @@ widget<TestGuiColors>
     }
 };
 
-// format
 struct TestGuiFormat:
 widget<TestGuiFormat>
 {
@@ -338,7 +385,6 @@ widget<TestGuiConsole>
     }
 };
 
-// editor
 struct TestGuiEditor:
 widget<TestGuiEditor>
 {
@@ -402,9 +448,20 @@ widget<TestGuiEditor>
 struct TestGuiAnimat:
 widget<TestGuiAnimat>
 {
-    gui::button go; 
-    gui::text::view view;
-    gui::time lapse = 3s;
+    struct quad: gui::canvas
+    {
+        array<int> xs;
+        void on_change (void* what) override {
+        if (what == &coord) xs += coord.now.x;
+        gui::canvas::on_change(what); }
+    };
+
+    quad quad;
+    gui::text::view view, text;
+    gui::button go1, go2, go3, go4; 
+    gui::property<gui::time> timer;
+    gui::console log;
+    gui::time lapse;
     int turn = 0;
 
     void on_change (void* what) override
@@ -419,30 +476,89 @@ widget<TestGuiAnimat>
             int h = gui::metrics::text::height*12/7;
             int d = gui::metrics::line::width * 6;
 
-            go.text.text = "go!";
-            go.coord = XYWH(W-w, 0, w, h);
+            view.text = "text";
+            view.style = pix::text::style{
+                sys::font{"Segoe UI",
+                gui::metrics::text::height*2},
+                RGBA::black};
+
+            text.html = Lorem;
+            text.style = pix::text::style{
+                sys::font{"Segoe UI",
+                gui::metrics::text::height},
+                RGBA::black};
+
+            go1.text.text = "go!";
+            go2.text.text = "go!!";
+            go3.text.text = "go!!!";
+            go4.text.text = "go!!!!";
+            go1.coord = XYWH(W-w, h*0, w, h);
+            go2.coord = XYWH(W-w, h*1, w, h);
+            go3.coord = XYWH(W-w, h*2, w, h);
+            go4.coord = XYWH(W-w, h*3, w, h);
+            log.coord = XYWH(W-w, h*4, w, H-h*4);
+            on_change(&go2);
         }
-        if (what == &go)
+
+        bool go = false;
+
+        if (what == &go1) { go = true; lapse = 3s; }
+        if (what == &go2) { go = true; lapse = 1s; }
+        if (what == &go3) { go = true; lapse = 500ms; }
+        if (what == &go4) { go = true; lapse = 200ms; }
+
+        if (go)
         {
             int W = coord.now.w; if (W <= 0) return;
             int H = coord.now.h; if (H <= 0) return;
             int w = gui::metrics::text::height*10;
             int h = gui::metrics::text::height*12/7;
-            int d = gui::metrics::line::width * 6;
+
+            log.clear();
+            quad.xs.clear();
+            timer.go(lapse+200ms, lapse+200ms);
 
             switch (turn) {
             break; case 0:
-            view.text = "text";
-            view.color.go(RGBA::black, lapse);
-            view.canvas.color.go(RGBA::white, lapse);
-            view.coord.go(XYWH(0, 0, w, h), lapse);
+                quad.color.go(RGBA::black, lapse);
+                view.color.go(RGBA::black, lapse);
+                text.color.go(RGBA::green, lapse);
+                view.canvas.color.go(RGBA::white,  lapse);
+                text.canvas.color.go(RGBA::silver, lapse);
+                quad.coord.go(XYWH(0, 0*h, 1*w, 1*h), lapse);
+                view.coord.go(XYWH(0, 1*h, 2*w, 2*h), lapse);
+                text.coord.go(XYWH(0, 3*h, 3*w, 7*h), lapse);
             break; default:
-            view.color.go(RGBA::white, lapse);
-            view.canvas.color.go(RGBA::black, lapse);
-            view.coord.go(XYWH(W-3*w, 0, 2*w, 2*h), lapse);
+                quad.color.go(RGBA::olive,  lapse);
+                view.color.go(RGBA::white,  lapse);
+                text.color.go(RGBA::yellow, lapse);
+                view.canvas.color.go(RGBA::black, lapse);
+                text.canvas.color.go(RGBA::green, lapse);
+                quad.coord.go(XYWH(W-3*w, 0*h, 2*w, 2*h), lapse);
+                view.coord.go(XYWH(W-5*w, 2*h, 4*w, 4*h), lapse);
+                text.coord.go(XYWH(W-3*w, 6*h, 2*w,11*h), lapse);
             }
 
             turn = (turn + 1) % 2;
+        }
+
+        if (what == &timer and
+            timer.now == timer.to)
+        {
+            int n = quad.xs.size();
+            if (n <= 0) return;
+
+            int ms = int(lapse.ms);
+            double sec = ms/1000.0;
+            int fps = int(n/sec);
+
+            for (int x: quad.xs)
+            log << std::to_string(x);
+            log << "<br>";
+            log << std::to_string(n) + " times";
+            log << std::to_string(ms) + " ms";
+            log << std::to_string(sec) + " sec";
+            log << std::to_string(fps) + " fps";
         }
     }
 };

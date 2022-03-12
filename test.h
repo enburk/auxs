@@ -19,6 +19,7 @@ widget<Test>
     TestPixFonts   pix_fonts;
     TestGui        gui;
     TestGuiColors  gui_colors;
+    TestGuiColorsX gui_colorsx;
     TestGuiFormat  gui_format;
     TestGuiConsole gui_console;
     TestGuiEditor  gui_editor;
@@ -40,6 +41,7 @@ widget<Test>
 
         tests += {&gui,         "gui"};
         tests += {&gui_colors,  "colors"};
+        tests += {&gui_colorsx, "colors+"};
         tests += {&gui_format,  "format"};
         tests += {&gui_animat,  "animation"};
         tests += {&gui_console, "console"};
