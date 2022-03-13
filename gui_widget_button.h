@@ -39,8 +39,8 @@ namespace gui
             not enabled  .now? style.disabled:
             mouse_pressed.now? style.touched:
             enter_pressed.now? style.touched:
-            on           .now? style.active:
             mouse_hover  .now? style.hovered:
+            on           .now? style.active:
                                style.normal;
 
             canvas.color.go(colors.first);

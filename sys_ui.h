@@ -184,6 +184,9 @@ namespace sys
              active_properties_copy.for_each([](auto p){ p->tick(); });
              image.updates = widget.updates;
              widget.updates.clear();
+             if (not image.updates.empty())
+                 sys::mouse::position(
+                 sys::mouse::position());
              update();
         }
         void renderr () override {

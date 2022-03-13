@@ -179,6 +179,7 @@ namespace pix
         iterator begin () { return rectangles.begin(); }
         iterator end   () { return rectangles.end  (); }
         int      size  () { return rectangles.size (); }
+        bool     empty () { return rectangles.empty(); }
         void     clear () { rectangles.clear(); }
     };
 

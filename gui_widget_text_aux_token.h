@@ -59,6 +59,8 @@ namespace gui::text
             bearing = style.style().shift.x;
 
             resize(XY(width, ascent + descent));
+
+            update();
         }
 
         int size() const { return glyphs.size(); }
