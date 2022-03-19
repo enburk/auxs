@@ -60,7 +60,7 @@ namespace pix
     template<class T> struct frame;
     template<class T> struct image
     {
-        typedef T type; std::vector<type> data; XY size; rectifier updates;
+        typedef T type; std::vector<type> data; XY size; coord::rectifier<int> updates;
 
 	    explicit image (               ) : data (                  ), size (0, 0) { updates = XYXY(*this); }
 	    explicit image (XY size        ) : data (size.x * size.y   ), size (size) { updates = XYXY(*this); }

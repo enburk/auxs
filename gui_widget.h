@@ -31,7 +31,7 @@ namespace gui::base
         enum Opacity { transparent, semitransparent, opaque };
         virtual Opacity opacity () { return transparent; }
 
-        rectifier updates;
+        pix::coord::rectifier<int> updates;
         void update () { update (coord.now.local()); }
         void update (XYWH r) {
             if (alpha.now == 0) return; r &= coord.now.local();
