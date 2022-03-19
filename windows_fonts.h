@@ -1,3 +1,4 @@
+#pragma once
 #include "pix_text.h"
 #include "windows_aux.h"
 #include <tchar.h>

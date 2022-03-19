@@ -57,15 +57,6 @@
     <ClInclude Include="aux_unittest.h">
       <Filter>aux</Filter>
     </ClInclude>
-    <ClInclude Include="aux_unittest_array.h">
-      <Filter>aux</Filter>
-    </ClInclude>
-    <ClInclude Include="aux_unittest_coro.h">
-      <Filter>aux</Filter>
-    </ClInclude>
-    <ClInclude Include="aux_unittest_string.h">
-      <Filter>aux</Filter>
-    </ClInclude>
     <ClInclude Include="doc.h">
       <Filter>doc</Filter>
     </ClInclude>
@@ -220,6 +211,27 @@
       <Filter>gui</Filter>
     </ClInclude>
     <ClInclude Include="test.h">
+      <Filter>test</Filter>
+    </ClInclude>
+    <ClInclude Include="gui_widget_geometry.h">
+      <Filter>gui</Filter>
+    </ClInclude>
+    <ClInclude Include="windows_render.h">
+      <Filter>sys</Filter>
+    </ClInclude>
+    <ClInclude Include="test_aux_array.h">
+      <Filter>test</Filter>
+    </ClInclude>
+    <ClInclude Include="test_aux_coro.h">
+      <Filter>test</Filter>
+    </ClInclude>
+    <ClInclude Include="test_aux_hask.h">
+      <Filter>test</Filter>
+    </ClInclude>
+    <ClInclude Include="test_aux_math.h">
+      <Filter>test</Filter>
+    </ClInclude>
+    <ClInclude Include="test_aux_string.h">
       <Filter>test</Filter>
     </ClInclude>
   </ItemGroup>

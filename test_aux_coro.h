@@ -1,5 +1,5 @@
 #pragma once
-#include "aux_coro.h"
+#include "aux_abc.h"
 #include "aux_timing.h"
 #include "aux_unittest.h"
 namespace aux::unittest
@@ -60,7 +60,7 @@ namespace aux::unittest
         test("coro.enumerate.2");
         {
             string s;
-            vector<int> nn = {0, 1, 2};
+            array<int> nn = {0, 1, 2};
             for (auto [i, n] : enumerate(nn))
             s += std::to_string(i) + std::to_string(n) + ' ';
             oops(out(s)) { "00 11 22 " };
@@ -69,7 +69,7 @@ namespace aux::unittest
         test("coro.enumerate.3");
         {
             string s;
-            vector<string> lines = {"", "a", "bc"};
+            array<string> lines = {"", "a", "bc"};
             for (auto [i, line] : enumerate(lines))
                 for (auto [j, c] : enumerate(line))
                     s += std::to_string(i) + ":" +
@@ -81,7 +81,7 @@ namespace aux::unittest
         test("coro.enumerate.4");
         {
             string s;
-            vector<string> lines = {"", "a", "bc"};
+            array<string> lines = {"", "a", "bc"};
             for (auto [i, line] : enumerate(lines, "d"))
                 for (auto [j, c] : enumerate(line, '-'))
                     s += std::to_string(i) + ":" +

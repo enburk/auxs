@@ -2,7 +2,6 @@
 #include "aux_abc.h"
 namespace aux::unittest
 {
-    using std::vector;
     using std::string;
 
     auto green (string s) { return "<font color=#008000>" + s + "</font>"; }
@@ -10,7 +9,7 @@ namespace aux::unittest
     auto red   (string s) { return "<font color=#B00020>" + s + "</font>"; }
 
     string results, failure;
-    vector<string> log;
+    std::vector<string> log;
     bool all_ok = true;
 
     using std::to_string;
@@ -91,7 +90,7 @@ namespace aux::unittest
         return text;
     }
 
-    bool check (string title, vector<string> true_log)
+    bool check (string title, std::vector<string> true_log)
     {
         bool ok = log == true_log;
         
@@ -113,7 +112,7 @@ namespace aux::unittest
     struct assertion_failed {};
     struct assertion {
         string title; bool throws;
-        void operator == (vector<string> true_log) {
+        void operator == (std::vector<string> true_log) {
             if (! check(title, std::move(true_log))
                 && throws) { out("<br>" +
                 red ("ASSERTION FAILED"));
@@ -124,8 +123,8 @@ namespace aux::unittest
     auto expect_(string title) { return assertion{title, false}; }
     auto assert_(string title) { return assertion{title, true }; }
 
-#define oops(...) { __VA_ARGS__; }; expect_(#__VA_ARGS__) == vector<string>
-#define ouch(...) { __VA_ARGS__; }; assert_(#__VA_ARGS__) == vector<string>
+#define oops(...) { __VA_ARGS__; }; expect_(#__VA_ARGS__) == std::vector<string>
+#define ouch(...) { __VA_ARGS__; }; assert_(#__VA_ARGS__) == std::vector<string>
 
     struct element
     {

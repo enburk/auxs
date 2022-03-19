@@ -1,3 +1,4 @@
+#pragma once
 #include "sys_aux.h"
 #include "windows_aux.h"
 #include <ocidl.h>

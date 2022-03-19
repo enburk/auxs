@@ -1,5 +1,6 @@
 #pragma once
 #include "gui_widget_console.h"
+#include "gui_widget_geometry.h"
 #include "gui_widget_text_editor.h"
 using namespace std::literals::chrono_literals;
 using namespace pix;
@@ -458,6 +459,7 @@ widget<TestGuiAnimat>
 
     quad quad;
     gui::text::view view, text;
+    gui::line line;
     gui::button go1, go2, go3, go4; 
     gui::property<gui::time> timer;
     gui::console log;
@@ -528,6 +530,12 @@ widget<TestGuiAnimat>
                 quad.coord.go(XYWH(0, 0*h, 1*w, 1*h), lapse);
                 view.coord.go(XYWH(0, 1*h, 2*w, 2*h), lapse);
                 text.coord.go(XYWH(0, 3*h, 3*w, 7*h), lapse);
+                line.color.go(RGBA::black, lapse);
+                line.width.go(1.0, lapse);
+                line.x1.go( 0*w, lapse);
+                line.y1.go(11*h, lapse);
+                line.x2.go( 2*w, lapse);
+                line.y2.go(15*h, lapse);
             break; default:
                 quad.color.go(RGBA::olive,  lapse);
                 view.color.go(RGBA::white,  lapse);
@@ -537,6 +545,12 @@ widget<TestGuiAnimat>
                 quad.coord.go(XYWH(W-3*w, 0*h, 2*w, 2*h), lapse);
                 view.coord.go(XYWH(W-5*w, 2*h, 4*w, 4*h), lapse);
                 text.coord.go(XYWH(W-3*w, 6*h, 2*w,11*h), lapse);
+                line.color.go(RGBA::white, lapse);
+                line.width.go(5.0, lapse);
+                line.x1.go(W-0*w, lapse);
+                line.y1.go( 11*h, lapse);
+                line.x2.go(W-2*w, lapse);
+                line.y2.go( 17*h, lapse);
             }
 
             turn = (turn + 1) % 2;

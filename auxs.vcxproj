@@ -31,9 +31,6 @@
     <ClInclude Include="aux_timing.h" />
     <ClInclude Include="aux_unicode.h" />
     <ClInclude Include="aux_unittest.h" />
-    <ClInclude Include="aux_unittest_array.h" />
-    <ClInclude Include="aux_unittest_coro.h" />
-    <ClInclude Include="aux_unittest_string.h" />
     <ClInclude Include="doc.h" />
     <ClInclude Include="doc_html.h" />
     <ClInclude Include="doc_html_lexica.h" />
@@ -54,6 +51,7 @@
     <ClInclude Include="gui_widget_button.h" />
     <ClInclude Include="gui_widget_canvas.h" />
     <ClInclude Include="gui_widget_console.h" />
+    <ClInclude Include="gui_widget_geometry.h" />
     <ClInclude Include="gui_widget_image.h" />
     <ClInclude Include="gui_widget_player.h" />
     <ClInclude Include="gui_widget_scroller.h" />
@@ -78,12 +76,18 @@
     <ClInclude Include="sys_ui.h" />
     <ClInclude Include="test.h" />
     <ClInclude Include="test_aux.h" />
+    <ClInclude Include="test_aux_array.h" />
+    <ClInclude Include="test_aux_coro.h" />
+    <ClInclude Include="test_aux_hask.h" />
+    <ClInclude Include="test_aux_math.h" />
+    <ClInclude Include="test_aux_string.h" />
     <ClInclude Include="test_doc.h" />
     <ClInclude Include="test_gui.h" />
     <ClInclude Include="test_pix.h" />
     <ClInclude Include="windows_aux.h" />
     <ClInclude Include="windows_fonts.h" />
     <ClInclude Include="windows_images.h" />
+    <ClInclude Include="windows_render.h" />
     <ClInclude Include="windows_system.h" />
     <ClInclude Include="windows_windows.h" />
   </ItemGroup>

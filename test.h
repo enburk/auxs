@@ -11,6 +11,7 @@ widget<Test>
     gui::radio::group buttons;
     array<std::pair<gui::base::widget*, str>> tests;
     TestAux        aux;
+    TestAuxMath    aux_math;
     TestAuxCoro    aux_coro;
     TestAuxHask    aux_hask;
     TestDoc        doc;
@@ -30,6 +31,7 @@ widget<Test>
         skin = "gray";
 
         tests += {&aux,         "aux"};
+        tests += {&aux_math,    "math"};
         tests += {&aux_coro,    "coroutines"};
         tests += {&aux_hask,    "haskell"};
 

@@ -72,6 +72,7 @@ namespace sys
         virtual void render (XYWH, uint8_t alpha, RGBA);
         virtual void render (XYWH, uint8_t alpha, frame<RGBA>);
         virtual void render (XYWH, uint8_t alpha, glyph, XY, int);
+        virtual void render (XYWH, uint8_t alpha, RGBA, pix::geo, double*, int);
         virtual void renderr () {}
 
         std::thread timer;

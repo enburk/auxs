@@ -190,4 +190,15 @@ namespace pix
     justify_left =-2, left =-1, center = 0, right = 1, justify_right = 2,
                                 bottom = 1;
     ///////////////////////////////////////////////////////////////////////
+
+    enum class geo
+    {
+        points,
+        lines,
+        line_strip,
+        line_loop,
+        triangles,
+        triangle_strip,
+        triangle_fan,
+    };
 }
