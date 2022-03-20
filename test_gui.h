@@ -38,9 +38,9 @@ widget<TestGui>
             coord.was.size !=
             coord.now.size)
         {
-            int h = gui::metrics::text::height * 12 / 7;
-            int W = coord.now.w; if (W <= 0) return; int w = W / 3;
-            int H = coord.now.h; if (H <= 0) return;
+            int h = int(gui::metrics::text::height) * 12 / 7;
+            int W {coord.now.w}; if (W <= 0) return; int w = W / 3;
+            int H {coord.now.h}; if (H <= 0) return;
             console.coord = XYWH(w * 0, 0, w, H);
 
             if (done) return; done = true;
@@ -63,12 +63,12 @@ widget<TestGui>
                     oops(out(sizeof glyph1)) { "440" };
                     oops(out(sizeof token1)) { "520" };
                     oops(out(sizeof token2)) { "520" };
-                    oops(out(gui::metrics::text::height)) { "24" };
-                    oops(out(gui::metrics::line::width)) { "1" };
-                    oops(out(token2.coord.now.w/10)) { "13" };
-                    oops(out(token2.coord.now.h)) { "32" };
-                    oops(out(coord.now.w)) { "3594" };
-                    oops(out(coord.now.h)) { "1972" };
+                    oops(out(int(gui::metrics::text::height))) { "24" };
+                    oops(out(int(gui::metrics::line::width))) { "1" };
+                    oops(out(int(token2.coord.now.w/10))) { "13" };
+                    oops(out(int(token2.coord.now.h))) { "32" };
+                    oops(out(int(coord.now.w))) { "3594" };
+                    oops(out(int(coord.now.h))) { "1972" };
                 }
             }
             catch (assertion_failed) {}
@@ -93,9 +93,9 @@ widget<TestGuiColors>
     {
         if (what == &coord)
         {
-            int W = coord.now.w; if (W <= 0) return;
-            int H = coord.now.h; if (H <= 0) return;
-            int h = gui::metrics::text::height*24/7;
+            int W {coord.now.w}; if (W <= 0) return;
+            int H {coord.now.h}; if (H <= 0) return;
+            int h = int(gui::metrics::text::height)*24/7;
 
             canvas.color = RGBA::black;
             canvas.coord = coord.now.local();
@@ -153,9 +153,9 @@ widget<TestGuiColorsX>
         {
             if (what == &coord)
             {
-                int W = coord.now.w; if (W <= 0) return;
-                int H = coord.now.h; if (H <= 0) return;
-                int h = gui::metrics::text::height*12/7;
+                int W {coord.now.w}; if (W <= 0) return;
+                int H {coord.now.h}; if (H <= 0) return;
+                int h = int(gui::metrics::text::height)*12/7;
                 int q = W/10;
 
                 title.coord = XYWH(0,0, W,h);
@@ -208,8 +208,8 @@ widget<TestGuiColorsX>
     {
         if (what == &coord)
         {
-            int W = coord.now.w; if (W <= 0) return;
-            int H = coord.now.h; if (H <= 0) return;
+            int W {coord.now.w}; if (W <= 0) return;
+            int H {coord.now.h}; if (H <= 0) return;
 
             samples.coord = coord.now.local();
 
@@ -284,8 +284,8 @@ widget<TestGuiFormat>
         }
         if (what == &coord and not pages.empty())
         {
-            int W = coord.now.w; if (W <= 0) return;
-            int H = coord.now.h; if (H <= 0) return;
+            int W {coord.now.w}; if (W <= 0) return;
+            int H {coord.now.h}; if (H <= 0) return;
             int w = W / 4;
             int h = H / 2 / n;
 
@@ -312,7 +312,7 @@ widget<TestGuiFormat>
 
             for (auto& page : pages)
             {
-                int y = 0;
+                real y = 0;
                 for (auto d : page.object.lwrap.now) {
                 wraps.emplace_back().color = RGBA(255, 0, 0, 128);
                 wraps.back().coord = XYWH(0, y, d.x, d.y) +
@@ -320,7 +320,7 @@ widget<TestGuiFormat>
                     page.coord.now.origin;
                 y += d.y; }
                 y = 0;
-                int v = page.object.view.coord.now.w;
+                real v = page.object.view.coord.now.w;
                 for (auto d : page.object.rwrap.now) {
                 wraps.emplace_back().color = RGBA(0, 0, 255, 128);
                 wraps.back().coord = XYWH(v-d.x, y, d.x, d.y) +
@@ -341,7 +341,7 @@ widget<TestGuiConsole>
     gui::area<gui::console> console1;
     gui::area<gui::console> console2;
     gui::splitter splitter;
-    int x = 40'00;
+    real x = 40'00;
     int xx = 80;
 
     TestGuiConsole () { on_change(&doubling); }
@@ -357,12 +357,12 @@ widget<TestGuiConsole>
             coord.was.size !=
             coord.now.size)
         {
-            int W = coord.now.w; if (W <= 0) return;
-            int H = coord.now.h; if (H <= 0) return;
-            int w = gui::metrics::text::height*xx;
-            int h = gui::metrics::text::height*12/7;
-            int d = gui::metrics::line::width * 6;
-            int m = w * x / 100'00;
+            int W {coord.now.w}; if (W <= 0) return;
+            int H {coord.now.h}; if (H <= 0) return;
+            int w = int(gui::metrics::text::height)*xx;
+            int h = int(gui::metrics::text::height)*12/7;
+            int d = int(gui::metrics::line::width)*6;
+            real m = w * x / 100'00;
             doubling.coord = XYWH(w-0, 0, w/9, h);
             console1.coord = XYXY(0-0, 0, m+0, H);
             console2.coord = XYXY(m-0, 0, w+0, H);
@@ -379,7 +379,7 @@ widget<TestGuiConsole>
         }
         if (what == &splitter)
         {
-            int w = gui::metrics::text::height*xx;
+            int w = int(gui::metrics::text::height)*xx;
             x = 100'00 * splitter.middle / w;
             on_change(&coord);
         }
@@ -394,8 +394,8 @@ widget<TestGuiEditor>
     gui::area<gui::text::editor> editor3; 
     gui::splitter splitt1;
     gui::splitter splitt2;
-    int x1 = 33'00;
-    int x2 = 66'00;
+    real x1 = 33'00;
+    real x2 = 66'00;
 
     void on_change (void* what) override
     {
@@ -418,11 +418,11 @@ widget<TestGuiEditor>
             coord.was.size !=
             coord.now.size)
         {
-            int W = coord.now.w; if (W <= 0) return;
-            int H = coord.now.h; if (H <= 0) return;
-            int d = gui::metrics::line::width * 6;
-            int l = W * x1 / 100'00;
-            int r = W * x2 / 100'00;
+            int W {coord.now.w}; if (W <= 0) return;
+            int H {coord.now.h}; if (H <= 0) return;
+            int d = int(gui::metrics::line::width) * 6;
+            real l = W * x1 / 100'00;
+            real r = W * x2 / 100'00;
             editor1.coord = XYXY(0-0, 0, l+0, H);
             editor2.coord = XYXY(l-0, 0, r+0, H);
             editor3.coord = XYXY(r-0, 0, W+0, H);
@@ -451,7 +451,7 @@ widget<TestGuiAnimat>
 {
     struct quad: gui::canvas
     {
-        array<int> xs;
+        array<real> xs;
         void on_change (void* what) override {
         if (what == &coord) xs += coord.now.x;
         gui::canvas::on_change(what); }
@@ -472,11 +472,11 @@ widget<TestGuiAnimat>
             coord.was.size !=
             coord.now.size)
         {
-            int W = coord.now.w; if (W <= 0) return;
-            int H = coord.now.h; if (H <= 0) return;
-            int w = gui::metrics::text::height*10;
-            int h = gui::metrics::text::height*12/7;
-            int d = gui::metrics::line::width * 6;
+            int W {coord.now.w}; if (W <= 0) return;
+            int H {coord.now.h}; if (H <= 0) return;
+            int w = int(gui::metrics::text::height)*10;
+            int h = int(gui::metrics::text::height)*12/7;
+            int d = int(gui::metrics::line::width)*6;
 
             view.text = "text";
             view.style = pix::text::style{
@@ -511,10 +511,10 @@ widget<TestGuiAnimat>
 
         if (go)
         {
-            int W = coord.now.w; if (W <= 0) return;
-            int H = coord.now.h; if (H <= 0) return;
-            int w = gui::metrics::text::height*10;
-            int h = gui::metrics::text::height*12/7;
+            int W {coord.now.w}; if (W <= 0) return;
+            int H {coord.now.h}; if (H <= 0) return;
+            int w = int(gui::metrics::text::height)*10;
+            int h = int(gui::metrics::text::height)*12/7;
 
             log.clear();
             quad.xs.clear();
@@ -566,8 +566,8 @@ widget<TestGuiAnimat>
             double sec = ms/1000.0;
             int fps = int(n/sec);
 
-            for (int x: quad.xs)
-            log << std::to_string(x);
+            for (real x: quad.xs)
+            log << std::to_string(float(x));
             log << "<br>";
             log << std::to_string(n) + " times";
             log << std::to_string(ms) + " ms";

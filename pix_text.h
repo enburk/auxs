@@ -7,21 +7,21 @@ namespace pix
 
     struct font
     {
-        str face; int size = 0; bool bold = false; bool italic = false;
+        str face; real size = 0; bool bold = false; bool italic = false;
 
         bool operator == (font const&) const = default;
         bool operator != (font const&) const = default;
 
         struct metrics
         {
-             int height  = 0; // ascent + descent
-             int ascent  = 0; // units above the base line
-             int descent = 0; // units below the base line (positive value)
-             int linegap = 0; // baseline-to-baseline distance = ascent + descent + linegap
-             int chargap = 0; // extra space between characters
-             int average_char_width = 0; // usually the width of 'x'
-             int maximum_char_width = 0;
-             int minimum_char_width = 0;
+             real height  = 0; // ascent + descent
+             real ascent  = 0; // units above the base line
+             real descent = 0; // units below the base line (positive value)
+             real linegap = 0; // baseline-to-baseline distance = ascent + descent + linegap
+             real chargap = 0; // extra space between characters
+             real average_char_width = 0; // usually the width of 'x'
+             real maximum_char_width = 0;
+             real minimum_char_width = 0;
         };
     };
 
@@ -67,15 +67,15 @@ namespace pix
 
         struct metrics
         {
-            int ascent   = 0; // pixels above the base line (font based)
-            int ascent_  = 0; // pixels above the base line (actual)
-            int descent  = 0; // pixels below the base line (font based)
-            int descent_ = 0; // pixels below the base line (actual)
-            int bearing  = 0; // horizontal displacement
-            int advance  = 0; // pen position increment
-            int lpadding = 0; // from begin to first pixel
-            int rpadding = 0; // from last pixel to advance (negative for italic)
-            int width    = 0; // max(advance, advance - rpadding)
+            real ascent   = 0; // pixels above the base line (font based)
+            real ascent_  = 0; // pixels above the base line (actual)
+            real descent  = 0; // pixels below the base line (font based)
+            real descent_ = 0; // pixels below the base line (actual)
+            real bearing  = 0; // horizontal displacement
+            real advance  = 0; // pen position increment
+            real lpadding = 0; // from begin to first pixel
+            real rpadding = 0; // from last pixel to advance (negative for italic)
+            real width    = 0; // max(advance, advance - rpadding)
 
             bool operator == (metrics const&) const = default;
             bool operator != (metrics const&) const = default;

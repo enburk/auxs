@@ -16,7 +16,7 @@ static Image* MakeImage (frame<RGBA>);
 
 using aux::error;
 
-expected<XY> pix::size (array<sys::byte>::range_type r)
+expected<xy> pix::size (array<sys::byte>::range_type r)
 {
     auto result = unpack(r);
     if (!result.ok()) return result.error();
@@ -221,7 +221,7 @@ expected<image<RGBA>> FromImage (Image* gdimage)
 
     Graphics graphics (dc); graphics.DrawImage(gdimage, 0, 0, w, h);
 
-    image<RGBA> result(XY(w, h));
+    image<RGBA> result(xy(w, h));
    
     ::memcpy(result.data.data(), bits, w*h*4);
 

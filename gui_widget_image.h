@@ -20,10 +20,10 @@ namespace gui
         void on_render (sys::window& window, XYWH r, XY offset, uint8_t alpha) override
         {
             auto frame = resized_frame
-                .crop(XYWH(
+                .crop(xywh(XYWH(
                 offset.x + shift.x,
                 offset.y + shift.y,
-                r.size.x, r.size.y));
+                r.size.x, r.size.y)));
 
             if (frame.size.x > 0
             &&  frame.size.y > 0)
@@ -36,43 +36,43 @@ namespace gui
             ||  what == &source
             ||  what == &fit)
             {
+                xy size {coord.now.size};
+
                 if (source.now.size.x == 0
                 ||  source.now.size.y == 0
-                ||  source.now.size == coord.now.size
+                ||  source.now.size == size
                 ||  fit.now == none || (fit.now == scale_down
-                &&  source.now.size.x <= coord.now.size.x
-                &&  source.now.size.y <= coord.now.size.y))
+                &&  source.now.size.x <= size.x
+                &&  source.now.size.y <= size.y))
                 {
-                    resized_image.resize(XY());
+                    resized_image.resize(xy{});
                     resized_frame = source.now;
                 }
                 else if (fit.now == fill)
                 {
-                    resized_image = pix::resized(source.now, coord.now.size);
+                    resized_image = pix::resized(source.now, size);
                     resized_frame = resized_image.crop();
                 }
                 else if (fit.now == cover)
                 {
-                    XY size = coord.now.size;
-                    XY maxsize = source.now.size;
+                    xy maxsize = size;
                     size = size.x/maxsize.x > size.y/maxsize.y ?
-                    XY(maxsize.x * size.y / maxsize.y, size.y) :
-                    XY(size.x, maxsize.y * size.x / maxsize.x);
+                    xy(maxsize.x * size.y / maxsize.y, size.y) :
+                    xy(size.x, maxsize.y * size.x / maxsize.x);
                     resized_image = pix::resized(source.now, size);
                     resized_frame = resized_image.crop();
                 }
                 else // (fit.now == contain) // or scale_down and less
                 {
-                    XY size = coord.now.size;
-                    XY maxsize = source.now.size;
+                    xy maxsize = source.now.size;
                     size = size.x/maxsize.x < size.y/maxsize.y ?
-                    XY(maxsize.x * size.y / maxsize.y, size.y) :
-                    XY(size.x, maxsize.y * size.x / maxsize.x);
+                    xy(maxsize.x * size.y / maxsize.y, size.y) :
+                    xy(size.x, maxsize.y * size.x / maxsize.x);
                     resized_image = pix::resized(source.now, size);
                     resized_frame = resized_image.crop();
                 }
 
-                shift = coord.now.size/2 - resized_frame.size/2;
+                shift = coord.now.size/2 - XY(resized_frame.size/2);
 
                 update();
             }
@@ -135,7 +135,7 @@ namespace gui
                 }
             }
 
-            tinted.updates += XYWH(0,0,
+            tinted.updates += xywh(0,0,
             tinted.size.x, tinted.size.y);
 
             image.source = pix::frame<RGBA>{};

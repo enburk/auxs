@@ -16,8 +16,9 @@ struct GDI_FONT
         if (font.face == "") font.face = "Segoe UI";
         if (font.size ==  0) font.size = gui::metrics::text::height;
 
-        LONG height = font.size >= 0 ? -font.size :
-            MulDiv (font.size, ::GetDeviceCaps(dc,LOGPIXELSY), 72);
+        int size {font.size};
+        LONG height = size >= 0 ? -size :
+            MulDiv (size, ::GetDeviceCaps(dc,LOGPIXELSY), 72);
 
         str face = font.face;
         if (face == "monospace")
@@ -142,7 +143,7 @@ pix::glyph::glyph (str text, text::style_index i) : text(text), style_index(i)
         
         width = 2*advance; // italics are wider
         static pix::image<RGBA> image;
-        image.resize(XY(width, ascent+descent));
+        image.resize(xy(XY(width, ascent+descent)));
         image.fill(RGBA::white);
 
         text::style simple_style;
@@ -167,7 +168,7 @@ pix::glyph::glyph (str text, text::style_index i) : text(text), style_index(i)
 
         for (bool stop = false; !stop && width > 0; width--)
             for (int y = 0; y < image.size.y; y++)
-                if (image(width-1, y) != RGBA::white)
+                if (image(int(width)-1, y) != RGBA::white)
                 { stop = true; break; }
 
         ascent_  = ascent;
@@ -254,7 +255,7 @@ void sys::glyph::render (pix::frame<RGBA> frame, XY offset, uint8_t alpha, int x
         if (it != cache_glyphs.end())
         {
             frame.blend_from(it->second.crop()
-                .from(offset.x, offset.y), alpha);
+                .from(int(offset.x), int(offset.y)), alpha);
             return;
         }
     }
@@ -264,8 +265,8 @@ void sys::glyph::render (pix::frame<RGBA> frame, XY offset, uint8_t alpha, int x
         return;
     }
 
-    int w = 2*advance; // italics are wider
-    int h = ascent + descent;
+    int w = 2*int(advance); // italics are wider
+    int h = int(ascent + descent);
     if (w <= 0 or h <= 0) return;
 
     GDI_CONTEXT context(font);
@@ -292,10 +293,10 @@ void sys::glyph::render (pix::frame<RGBA> frame, XY offset, uint8_t alpha, int x
     ::SetBkColor   (context.dc, RGB(back.r, back.g, back.b));
     ::SetTextColor (context.dc, RGB(fore.r, fore.g, fore.b));
 
-    pix::view<RGBA> view ((RGBA*)bits, XY(w,h), w);
+    pix::view<RGBA> view ((RGBA*)bits, xy(w,h), w);
 
-    if (!solid_color_background) frame.copy_to(view.from(offset.x, offset.y));
-    if (!solid_color_background) view.from(offset.x, offset.y).blend(back, alpha);
+    if (!solid_color_background) frame.copy_to(view.from(int(offset.x), int(offset.y)));
+    if (!solid_color_background) view.from(int(offset.x), int(offset.y)).blend(back, alpha);
 
     for (int y=0; y<h; y++)
     for (int x=0; x<w; x++) view(x,y).a = 255;
@@ -311,11 +312,11 @@ void sys::glyph::render (pix::frame<RGBA> frame, XY offset, uint8_t alpha, int x
     // optimal Y position is the goden ratio point between the baseline and the descender line
 
     frame.blend(back, alpha);
-    frame.blend_from(view.from(offset.x, offset.y), alpha);
+    frame.blend_from(view.from(int(offset.x), int(offset.y)), alpha);
     
     if (cacheable)
     {
-        pix::image<RGBA> image (XY(w,h));
+        pix::image<RGBA> image (xy(w,h));
         image.crop().copy_from(view);
         cache_glyphs.emplace(
             cache_glyphs_key{text, font, fore, back},

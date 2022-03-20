@@ -7,10 +7,14 @@ namespace pix::coord
     template<class T> struct XYXY;
     template<class T> struct XY
     {
-        int x, y;
+        T x, y;
 
         XY (        ) : x(0), y(0) {}
         XY (T x, T y) : x(x), y(y) {}
+        template<class U> explicit
+        XY (XY<U> p) :
+            x(clamp<T>(p.x)),
+            y(clamp<T>(p.y)) {}
 
         void operator *= (T n) { x *= n; y *= n; };
         void operator /= (T n) { x /= n; y /= n; };
@@ -43,6 +47,12 @@ namespace pix::coord
 
         XYXY (                  ) : l(0), t(0), r(0), b(0) {}
         XYXY (T l, T t, T r, T b) : l(l), t(t), r(r), b(b) {}
+        template<class U> explicit
+        XYXY (XYXY<U> q) :
+            l(clamp<T>(q.l)),
+            t(clamp<T>(q.t)),
+            r(clamp<T>(q.r)),
+            b(clamp<T>(q.b)) {}
         XYXY (XYWH<T>);
 
         explicit operator bool () { return l < r and t < b; }
@@ -102,6 +112,12 @@ namespace pix::coord
 
         XYWH (                  ) : x(0), y(0), w(0), h(0) {}
         XYWH (T x, T y, T w, T h) : x(x), y(y), w(w), h(h) {}
+        template<class U> explicit
+        XYWH (XYWH<U> q) :
+            x(clamp<T>(q.x)),
+            y(clamp<T>(q.y)),
+            w(clamp<T>(q.w)),
+            h(clamp<T>(q.h)) {}
         XYWH (XYXY<T>);
 
         explicit operator bool () { return w > 0 and h > 0; }
@@ -203,9 +219,13 @@ namespace pix::coord
 namespace pix
 {
     using real = aux::fixed<32,32>;
-    using XYXY = coord::XYXY<int>;
-    using XYWH = coord::XYWH<int>;
-    using XY   = coord::XY  <int>;
+    using XYXY = coord::XYXY<real>;
+    using XYWH = coord::XYWH<real>;
+    using XY   = coord::XY  <real>;
+
+    using xyxy = coord::XYXY<int>;
+    using xywh = coord::XYWH<int>;
+    using xy   = coord::XY  <int>;
 
     ///////////////////////////////////////////////////////////////////////
                                 const  int

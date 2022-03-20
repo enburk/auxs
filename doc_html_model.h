@@ -58,11 +58,11 @@ namespace doc::html
                 }
             }
 
-            int height = sys::metrics(style.font).height;
+            real height = sys::metrics(style.font).height;
 
             auto heights = [height](str val)
             {
-                double h = 0;
+                real h = 0;
                 if (val.ends_with("em")) h = height; else
                 if (val.ends_with("ex")) h = height * 0.39; else
                 return int(h);
@@ -154,7 +154,7 @@ namespace doc::html
                         if (value.ends_with("%")) {
                             value.truncate();
                             int x = std::atoi(value.c_str());
-                            int size = gui::metrics::text::height;
+                            real size = gui::metrics::text::height;
                             style.font.size = size * x/100;
                         }
                     }
@@ -191,7 +191,7 @@ namespace doc::html
                         if (val.ends_with("%")) {
                             val.truncate();
                             int x = std::atoi(val.c_str());
-                            int size = gui::metrics::text::height;
+                            real size = gui::metrics::text::height;
                             style.font.size = size * x/100;
                         }
                     }

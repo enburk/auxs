@@ -4,7 +4,7 @@ namespace gui::text
 {
     struct lines : widgetarium<line>
     {
-        static void skip (array<XY>& bars, int height)
+        static void skip (array<XY>& bars, real height)
         {
             while (not bars.empty()) {
                 auto& bar = bars.front();
@@ -19,8 +19,8 @@ namespace gui::text
         void fill (array<doc::view::line> datae)
         {
             int n = 0;
-            int width = 0;
-            int height = 0;
+            real width = 0;
+            real height = 0;
 
             reserve(datae.size());
 

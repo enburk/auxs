@@ -23,8 +23,8 @@ widget<TestAux>
             coord.was.size !=
             coord.now.size)
         {
-            int W = coord.now.w; if (W <= 0) return; int w = W/3;
-            int H = coord.now.h; if (H <= 0) return;
+            int W {coord.now.w}; if (W <= 0) return; int w = W/3;
+            int H {coord.now.h}; if (H <= 0) return;
             console1.coord = XYWH(w*0, 0, w, H);
             console2.coord = XYWH(w*1, 0, w, H);
             console3.coord = XYWH(w*2, 0, w, H);
@@ -77,8 +77,8 @@ widget<TestAuxMath>
             coord.was.size !=
             coord.now.size)
         {
-            int W = coord.now.w; if (W <= 0) return; int w = W/3;
-            int H = coord.now.h; if (H <= 0) return;
+            int W {coord.now.w}; if (W <= 0) return; int w = W/3;
+            int H {coord.now.h}; if (H <= 0) return;
             console1.coord = XYWH(w*0, 0, w, H);
             console2.coord = XYWH(w*1, 0, w, H);
             console3.coord = XYWH(w*2, 0, w, H);
@@ -133,9 +133,9 @@ widget<TestAuxCoro>
             coord.was.size !=
             coord.now.size)
         {
-            int h = gui::metrics::text::height*12/7;
-            int W = coord.now.w; if (W <= 0) return; int w = (W-5*h)/3;
-            int H = coord.now.h; if (H <= 0) return;
+            int h = int(gui::metrics::text::height)*12/7;
+            int W {coord.now.w}; if (W <= 0) return; int w = (W-5*h)/3;
+            int H {coord.now.h}; if (H <= 0) return;
             console1.coord = XYWH(w*0, 0, w, H);
             console2.coord = XYWH(w*1, 0, w, H);
             console3.coord = XYWH(w*2, 0, w, H);
@@ -196,9 +196,9 @@ widget<TestAuxHask>
             coord.was.size !=
             coord.now.size)
         {
-            int h = gui::metrics::text::height*12/7;
-            int W = coord.now.w; if (W <= 0) return; int w = W/3;
-            int H = coord.now.h; if (H <= 0) return;
+            int h = int(gui::metrics::text::height)*12/7;
+            int W {coord.now.w}; if (W <= 0) return; int w = W/3;
+            int H {coord.now.h}; if (H <= 0) return;
             console1.coord = XYWH(w*0, 0, w, H);
             console2.coord = XYWH(w*1, 0, w, H);
             console3.coord = XYWH(w*2, 0, w, H);

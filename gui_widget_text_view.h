@@ -131,8 +131,8 @@ namespace gui::text
             or  what == &update_layout
             or  what == &shift)
             {
-                int H = coord.now.size.y;
-                int h = cell.coord.now.size.y;
+                real H = coord.now.size.y;
+                real h = cell.coord.now.size.y;
 
                 cell.move_to(XY(0, H > h and
                     alignment.now.y == center ? H/2 - h/2 :

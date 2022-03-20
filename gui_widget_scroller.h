@@ -35,11 +35,11 @@ namespace gui
         canvas canvas;
         runner runner;
         button up, down, page_up, page_down;
-        property<double> ratio = 1;
-        property<int> span = 0, top = 0, step = 1;
+        property<real> ratio = real(1);
+        property<real> span, top, step = real(1);
         bool touch = false;
-        int  touch_point;
-        int  touch_top;
+        real touch_point;
+        real touch_top;
 
         scroller ()
         {
@@ -58,9 +58,9 @@ namespace gui
             if (what == &coord or
                 what == &ratio)
             {
-                int w = coord.now.w;
-                int h = coord.now.h;
-                int d = clamp<int>(std::round(w/ratio.now));
+                real w = coord.now.w;
+                real h = coord.now.h;
+                real d = w/ratio.now;
                 up.coord = XYWH(0,0,w,d);
                 down.coord = XYWH(0,h-d,w,d);
                 canvas.coord = XYWH(0,0,w,h);
@@ -77,13 +77,13 @@ namespace gui
                 if (span.now < 0) throw std::out_of_range
                     ("scroller: negative span");
 
-                int y = max (0, min (top.now, span.now - coord.now.h));
+                real y = max(real(0), min(top.now, span.now - coord.now.h));
                 if (top.now != y) top = y;
                 else refresh();
             }
             if (what == &top)
             {
-                top.now = max (0, min (top.now, span.now - coord.now.h));
+                top.now = max(real(0), min(top.now, span.now - coord.now.h));
                 if (top.now != top.was) {
                     refresh();
                     notify();
@@ -101,13 +101,13 @@ namespace gui
             assert(span.now >= 0);
             assert(top.now <= span.now);
 
-            int real_page = coord.now.h; if (real_page <= 0) return;
-            int fake_span = coord.now.h - 2*up.coord.now.h;
-            int fake_page = fake_span * real_page / max(1, span.now);
-            int fake_top  = fake_span * top.now   / max(1, span.now);
+            real real_page = coord.now.h; if (real_page <= 0) return;
+            real fake_span = coord.now.h - 2*up.coord.now.h;
+            real fake_page = fake_span * real_page / max(real(1), span.now);
+            real fake_top  = fake_span * top.now   / max(real(1), span.now);
             fake_page = min(fake_span, max(fake_page, up.coord.now.h/4));
-            int w = up.coord.now.w;
-            int d = up.coord.now.h;
+            real w = up.coord.now.w;
+            real d = up.coord.now.h;
 
             runner.coord = XYWH(0, d+fake_top, w, fake_page);
             page_up.coord = XYXY(0, d, w, runner.coord.now.y);
@@ -128,9 +128,9 @@ namespace gui
         void on_mouse_hover (XY p) override
         {
             if (!touch) return;
-            int real_page = coord.now.h; if (real_page <= 0) return;
-            int fake_span = coord.now.h - 2*up.coord.now.h;
-            int fake_page = fake_span * real_page / max(1, span.now);
+            real real_page = coord.now.h; if (real_page <= 0) return;
+            real fake_span = coord.now.h - 2*up.coord.now.h;
+            real fake_page = fake_span * real_page / max(real(1), span.now);
             fake_page = min(fake_span, fake_page); if (fake_page <= 0) return;
             top = touch_top + (p.y - touch_point) * real_page/fake_page;
         }
@@ -143,11 +143,11 @@ namespace gui
         canvas canvas;
         runner runner;
         button left, right, page_left, page_right;
-        property<double> ratio = 1;
-        property<int> span = 0, top = 0, step = 1;
+        property<real> ratio = real(1);
+        property<real> span, top, step = real(1);
         bool touch = false;
-        int  touch_point;
-        int  touch_top;
+        real touch_point;
+        real touch_top;
 
         scroller ()
         {
@@ -166,9 +166,9 @@ namespace gui
             if (what == &coord or
                 what == &ratio)
             {
-                int w = coord.now.w;
-                int h = coord.now.h;
-                int d = clamp<int>(std::round(h/ratio.now));
+                real w = coord.now.w;
+                real h = coord.now.h;
+                real d = h/ratio.now;
                 left.coord = XYWH(0,0,d,h);
                 right.coord = XYWH(w-d,0,d,h);
                 canvas.coord = XYWH(0,0,w,h);
@@ -185,13 +185,13 @@ namespace gui
                 if (span.now < 0) throw std::out_of_range
                     ("scroller: negative span");
 
-                int x = max (0, min (top.now, span.now - coord.now.w));
+                real x = max(real(0), min(top.now, span.now - coord.now.w));
                 if (top.now != x) top = x;
                 else refresh();
             }
             if (what == &top)
             {
-                top.now = max (0, min (top.now, span.now - coord.now.w));
+                top.now = max(real(0), min(top.now, span.now - coord.now.w));
                 if (top.now != top.was) {
                     refresh();
                     notify();
@@ -209,13 +209,13 @@ namespace gui
             assert(span.now >= 0);
             assert(top.now <= span.now);
 
-            int real_page = coord.now.w; if (real_page <= 0) return;
-            int fake_span = coord.now.w - 2*left.coord.now.w;
-            int fake_page = fake_span * real_page / max(1, span.now);
-            int fake_top  = fake_span * top.now   / max(1, span.now);
+            real real_page = coord.now.w; if (real_page <= 0) return;
+            real fake_span = coord.now.w - 2*left.coord.now.w;
+            real fake_page = fake_span * real_page / max(real(1), span.now);
+            real fake_top  = fake_span * top.now   / max(real(1), span.now);
             fake_page = min(fake_span, max(fake_page, left.coord.now.h/4));
-            int h = left.coord.now.h;
-            int d = left.coord.now.w;
+            real h = left.coord.now.h;
+            real d = left.coord.now.w;
 
             runner.coord = XYWH(d+fake_top, 0, fake_page, h);
             page_left.coord = XYXY(d, 0, runner.coord.now.y, h);
@@ -236,9 +236,9 @@ namespace gui
         void on_mouse_hover (XY p) override
         {
             if (!touch) return;
-            int real_page = coord.now.w; if (real_page <= 0) return;
-            int fake_span = coord.now.w - 2*left.coord.now.w;
-            int fake_page = fake_span * real_page / max(1, span.now);
+            real real_page = coord.now.w; if (real_page <= 0) return;
+            real fake_span = coord.now.w - 2*left.coord.now.w;
+            real fake_page = fake_span * real_page / max(real(1), span.now);
             fake_page = min(fake_span, fake_page); if (fake_page <= 0) return;
             top = (touch_top * fake_page + (p.x - touch_point) * real_page)/fake_page;
         }

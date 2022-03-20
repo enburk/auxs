@@ -25,11 +25,11 @@ namespace gui
             //p2.y = rr.y2 + y2.now - coord.now.y - coord.now.h;
 
 
-            std::array<double, 4> points;
-            points[0] = rr.x1 + x1.now - coord.now.x;
-            points[1] = rr.y1 + y1.now - coord.now.y;
-            points[2] = rr.x2 + x2.now - coord.now.x - coord.now.w;
-            points[3] = rr.y2 + y2.now - coord.now.y - coord.now.h;
+            std::array<float, 4> points;
+            points[0] = float(rr.x1 + x1.now - coord.now.x);
+            points[1] = float(rr.y1 + y1.now - coord.now.y);
+            points[2] = float(rr.x2 + x2.now - coord.now.x - coord.now.w);
+            points[3] = float(rr.y2 + y2.now - coord.now.y - coord.now.h);
 
             window.render(r, alpha, color.now,
                 pix::geo::lines,

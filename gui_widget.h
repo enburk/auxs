@@ -38,7 +38,7 @@ namespace gui::base
             if (parent) parent->update (r +  coord.now.origin);
         /// prevent multiple redraw with OpenGL
         /// (saving rectangles union time also):
-            else updates += coord.now.local();
+            else updates += xywh(coord.now.local());
         /// else updates += r;
         }
 

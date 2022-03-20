@@ -71,8 +71,8 @@ namespace sys
         virtual void mouse_on_leave () = 0;
         virtual void render (XYWH, uint8_t alpha, RGBA);
         virtual void render (XYWH, uint8_t alpha, frame<RGBA>);
-        virtual void render (XYWH, uint8_t alpha, glyph, XY, int);
-        virtual void render (XYWH, uint8_t alpha, RGBA, pix::geo, double*, int);
+        virtual void render (XYWH, uint8_t alpha, glyph, XY, real);
+        virtual void render (XYWH, uint8_t alpha, RGBA, pix::geo, float*, int);
         virtual void renderr () {}
 
         std::thread timer;

@@ -20,8 +20,8 @@ widget<TestDoc>
             coord.was.size !=
             coord.now.size)
         {
-            int W = coord.now.w; if (W <= 0) return; int w = W/3;
-            int H = coord.now.h; if (H <= 0) return;
+            int W {coord.now.w}; if (W <= 0) return; int w = W/3;
+            int H {coord.now.h}; if (H <= 0) return;
             console1.coord = XYWH(w*0, 0, w, H);
             console2.coord = XYWH(w*1, 0, w, H);
             console3.coord = XYWH(w*2, 0, w, H);
@@ -108,10 +108,10 @@ widget<TestDocHtml>
         }
         if (what == &coord and not buttons.empty())
         {
-            int W = coord.now.w; if (W <= 0) return;
-            int H = coord.now.h; if (H <= 0) return;
-            int bw = gui::metrics::text::height*10;
-            int bh = gui::metrics::text::height*12/7;
+            int W {coord.now.w}; if (W <= 0) return;
+            int H {coord.now.h}; if (H <= 0) return;
+            int bw = int(gui::metrics::text::height)*10;
+            int bh = int(gui::metrics::text::height)*12/7;
             int w = W / 4;
             int h = (H-bh) / n;
 
@@ -179,19 +179,19 @@ widget<TestDocHtml>
                 for (auto& line: lines) {
                     ll += "line " +
                         std::to_string(l) + "(" +
-                        std::to_string(line.coord.now.x) + "," +
-                        std::to_string(line.coord.now.y) + ")-[" +
-                        std::to_string(line.coord.now.w) + "," +
-                        std::to_string(line.coord.now.h) + "]:";
+                        std::to_string((int)line.coord.now.x) + "," +
+                        std::to_string((int)line.coord.now.y) + ")-[" +
+                        std::to_string((int)line.coord.now.w) + "," +
+                        std::to_string((int)line.coord.now.h) + "]:";
                     l++;
                     int r = 0;
                     for (auto& row: line.rows) {
                         ll += "  row " +
                             std::to_string(r) + "(" +
-                            std::to_string(row.offset.x) + "," +
-                            std::to_string(row.offset.y) + ")-[" +
-                            std::to_string(row.width) + "," +
-                            std::to_string(row.ascent + row.descent) + "]: ";
+                            std::to_string(int(row.offset.x)) + "," +
+                            std::to_string(int(row.offset.y)) + ")-[" +
+                            std::to_string(int(row.width)) + "," +
+                            std::to_string(int(row.ascent + row.descent)) + "]: ";
                         r++;
                         for (auto& solid: row.solids)
                             for (auto& token: solid.tokens)

@@ -64,11 +64,11 @@ namespace gui::text
                     scroll.y.mode == scroll::mode::automatic and
                         view.cell.coord.now.size.y > size.y );
             
-                int d = gui::metrics::text::height +
-                    2 * gui::metrics::line::width;
+                real d = gui::metrics::text::height +
+                     2 * gui::metrics::line::width;
 
-                int x = scroll_y ? size.x - d : size.x;
-                int y = scroll_x ? size.y - d : size.y;
+                real x = scroll_y ? size.x - d : size.x;
+                real y = scroll_x ? size.y - d : size.y;
 
                 scroll.x.show(scroll_x);
                 scroll.y.show(scroll_y);
@@ -92,9 +92,9 @@ namespace gui::text
                 XYXY r = view.cell.carets.back().coord.now +
                          view.shift.now;
 
-                int d = gui::metrics::text::height;
-                int w = coord.now.size.x, dx = 0;
-                int h = coord.now.size.y, dy = 0;
+                real d = gui::metrics::text::height;
+                real w = coord.now.size.x, dx = 0;
+                real h = coord.now.size.y, dy = 0;
 
                 if (r.xl-d < 0) dx = r.xl-d; else if (r.xh+d > w) dx = r.xh+d-w;
                 if (r.yl-d < 0) dy = r.yl-d; else if (r.yh+d > h) dy = r.yh+d-h;
@@ -106,21 +106,21 @@ namespace gui::text
             {
                 if (select_notch < time::now) {
                     select_notch = time::now + select_lapse;
-                    int d = gui::metrics::text::height/2;
-                    int x = select_point.x, w = coord.now.size.x, dx = 0;
-                    int y = select_point.y, h = coord.now.size.y, dy = 0;
+                    real d = gui::metrics::text::height/2;
+                    real x = select_point.x, w = coord.now.size.x, dx = 0;
+                    real y = select_point.y, h = coord.now.size.y, dy = 0;
                     if (x < 0) dx = x; else if (x > w) dx = x-w;
                     if (y < 0) dy = y; else if (y > h) dy = y-h;
-                    dx = dx/d*(int)(log(abs(dx)));
-                    dy = dy/d*(int)(log(abs(dy)));
+                    dx = dx/d*real(log(abs((float)dx)));
+                    dy = dy/d*real(log(abs((float)dy)));
                     if (dx != 0) scroll.x.top = scroll.x.top.now + dx;
                     if (dy != 0) scroll.y.top = scroll.y.top.now + dy;
                     on_mouse_hover(select_point);
                 }
             }
 
-            if (what == &scroll.x) view.shift = XY(-scroll.x.top, view.shift.now.y);
-            if (what == &scroll.y) view.shift = XY(view.shift.now.x, -scroll.y.top);
+            if (what == &scroll.x) view.shift = XY(-scroll.x.top.now, view.shift.now.y);
+            if (what == &scroll.y) view.shift = XY(view.shift.now.x, -scroll.y.top.now);
 
             if (what == &focus_on)
             {
@@ -164,8 +164,8 @@ namespace gui::text
             upto = view.lines2rows(upto);
 
             int rows_on_page =
-                view.coord.now.h /
-                sys::metrics(font.now).height;
+            int(view.coord.now.h /
+            sys::metrics(font.now).height);
 
             switch(where){
             case THERE: selective = false; break;
@@ -237,7 +237,7 @@ namespace gui::text
 
         void see (int where)
         {
-            int h = sys::metrics(font.now).height;
+            real h = sys::metrics(font.now).height;
 
             switch(where){
             case-GLYPH:
@@ -280,12 +280,12 @@ namespace gui::text
         bool on_mouse_wheel (XY p, int delta) override
         {
             delta /= 20;
-            delta *= gui::metrics::text::height;
+            delta *= (int)gui::metrics::text::height;
             int sign = delta < 0 ? -1 : 1;
-            if (sys::keyboard::shift) delta = sign * coord.now.h;
+            if (sys::keyboard::shift) delta = sign * (int)coord.now.h;
             if (sys::keyboard::ctrl) delta *= 5;
-            int d = view.coord.now.h - view.cell.coord.now.h; // could be negative
-            int y = view.shift.now.y + delta;
+            real d = view.coord.now.h - view.cell.coord.now.h; // could be negative
+            real y = view.shift.now.y + delta;
             if (y < d) y = d;
             if (y > 0) y = 0;
             scroll.y.top =-y;

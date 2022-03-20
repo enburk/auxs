@@ -30,15 +30,15 @@ namespace gui
     widget<frame>
     {
         property<RGBA> color;
-        property<int> thickness = gui::metrics::line::width;
+        property<real> thickness = gui::metrics::line::width;
 
         canvas l, t, r, b; // left, top, right, bottom
 
         void on_change () override
         {
-            int w = coord.now.w;
-            int h = coord.now.h;
-            int d = thickness.now;
+            auto w = coord.now.w;
+            auto h = coord.now.h;
+            auto d = thickness.now;
             t.coord = XYWH(0, 0,   w, d);
             b.coord = XYWH(0, h-d, w, d);
             l.coord = XYWH(0,   d, d, h-d-d);
@@ -102,11 +102,11 @@ namespace gui
     struct splitter:
     widget<splitter>
     {
-        property<int> lower;
-        property<int> upper;
+        property<real> lower;
+        property<real> upper;
         bool touched = false;
         XY touch_point;
-        int middle = 0;
+        real middle;
 
         void on_change (void* what) override
         {
@@ -129,17 +129,17 @@ namespace gui
 
             if (coord.now.size.x > coord.now.size.y)
             {
-                int y = coord.now.origin.y + p.y - touch_point.y;
-                y = max (y, lower.now);
-                y = min (y, upper.now);
+                real y = coord.now.origin.y + p.y - touch_point.y;
+                y = max(y, lower.now);
+                y = min(y, upper.now);
                 middle = y + coord.now.h/2;
                 notify();
             }
             else
             {
-                int x = coord.now.origin.x + p.x - touch_point.x;
-                x = max (x, lower.now);
-                x = min (x, upper.now);
+                real x = coord.now.origin.x + p.x - touch_point.x;
+                x = max(x, lower.now);
+                x = min(x, upper.now);
                 middle = x + coord.now.w/2;
                 notify();
             }
