@@ -89,5 +89,5 @@ namespace pix
     expected<array<byte>> pack   (frame<RGBA>, str format, int quality = -1);
     expected<image<RGBA>> unpack (byte* buffer, int size);
     expected<image<RGBA>> unpack (array<byte>::range_type);
-    expected<xy>          size   (array<byte>::range_type);
+    expected<XY>          size   (array<byte>::range_type);
 }

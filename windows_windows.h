@@ -60,7 +60,7 @@ auto sys::mouse::position() -> XY
 }
 void sys::mouse::position(XY p)
 {
-    ::SetCursorPos(int(p.x), int(p.y));
+    ::SetCursorPos(p.x, p.y);
 }
 
 // https://blog.keyman.com/2008/06/robust-key-mess/
@@ -364,7 +364,7 @@ void sys::window::create (str title)
 void sys::window::update()
 {
     auto hwnd = (HWND)(native_handle1);
-    for (xyxy r : image.updates)
+    for (XYXY r : image.updates)
     {
         RECT rect;
         rect.left   = r.l;

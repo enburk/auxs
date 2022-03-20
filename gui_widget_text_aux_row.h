@@ -12,9 +12,9 @@ namespace gui::text
         int length = 0;
         int indent = -1;
 
-        real lpadding (real height)
+        int lpadding (int height)
         {
-            real d = 0;
+            int d = 0;
             for (auto bar: format.lwrap) {
                 d = aux::max(d, bar.x);
                 height -= bar.y;
@@ -24,9 +24,9 @@ namespace gui::text
             return d +
             format.lpadding;
         }
-        real rpadding (real height)
+        int rpadding (int height)
         {
-            real d = 0;
+            int d = 0;
             for (auto bar: format.rwrap) {
                 d = aux::max(d, bar.x);
                 height -= bar.y;
@@ -39,11 +39,11 @@ namespace gui::text
 
         bool add (solid solid)
         {
-            real height =
+            int height =
                 max(ascent,  solid.ascent) +
                 max(descent, solid.descent);
 
-            real max_width =
+            int max_width =
                 format.width -
                 lpadding(height) -
                 rpadding(height);
@@ -74,7 +74,7 @@ namespace gui::text
 
         void ellipt()
         {
-            real max_width =
+            int max_width =
                 format.width -
                 lpadding(ascent+descent) -
                 rpadding(ascent+descent);
@@ -112,8 +112,8 @@ namespace gui::text
                 solid.offset.y = ascent -
                 solid.ascent;
 
-            auto align = format.alignment.x;
-            real Width =
+            int align = format.alignment.x;
+            int Width =
                 format.width -
                 lpadding(ascent+descent) -
                 rpadding(ascent+descent);
@@ -138,8 +138,8 @@ namespace gui::text
             if (n <= 0) return;
             if (n <= 1) return; //  t o k e n
 
-            int d = int(Width - width) / (n-1);
-            int e = int(Width - width) % (n-1);
+            int d = (Width - width) / (n-1);
+            int e = (Width - width) % (n-1);
 
             for (int i=0; i<n; i++)
                 solids[i].offset.x +=
@@ -182,7 +182,7 @@ namespace gui::text
             return bars;
         }
 
-        int point (real x)
+        int point (int x)
         {
             int i = 0;
             for (auto& solid: solids)

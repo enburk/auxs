@@ -25,8 +25,8 @@ namespace gui::text
 
             for (auto& token: tokens)
             {
-                real y = ascent - token.ascent;
-                real x = advance + token.bearing - bearing;
+                int y = ascent - token.ascent;
+                int x = advance + token.bearing - bearing;
                 advance += token.bearing + token.advance;
                 length += token.size();
                 token.offset = XY(x, y);
@@ -43,7 +43,7 @@ namespace gui::text
             bearing = 0;
         }
 
-        void ellipt(real max_width, token& token)
+        void ellipt(int max_width, token& token)
         {
             advance -= token.advance;
 
@@ -66,7 +66,7 @@ namespace gui::text
             advance += token.advance;
         }
 
-        void ellipt(real max_width)
+        void ellipt(int max_width)
         {
             while (tokens.size() > 0)
             {
@@ -116,7 +116,7 @@ namespace gui::text
             return bars;
         }
 
-        int point (real x)
+        int point (int x)
         {
             int i = 0;
             for (auto& token: tokens)

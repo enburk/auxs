@@ -69,22 +69,22 @@ namespace gui
     }
     template<> RGBA inline transit<RGBA>
         (RGBA from, RGBA to, int64_t mul, int64_t div) { return RGBA(
-            transit(from.r, to.r, mul, div),
-            transit(from.g, to.g, mul, div),
-            transit(from.b, to.b, mul, div),
-            transit(from.a, to.a, mul, div));
+            transit<uint8_t>(from.r, to.r, mul, div),
+            transit<uint8_t>(from.g, to.g, mul, div),
+            transit<uint8_t>(from.b, to.b, mul, div),
+            transit<uint8_t>(from.a, to.a, mul, div));
     }
     template<> XYWH inline transit<XYWH>
         (XYWH from, XYWH to, int64_t mul, int64_t div) { return XYWH(
-            transit(from.x, to.x, mul, div),
-            transit(from.y, to.y, mul, div),
-            transit(from.w, to.w, mul, div),
-            transit(from.h, to.h, mul, div));
+            transit<int>(from.x, to.x, mul, div),
+            transit<int>(from.y, to.y, mul, div),
+            transit<int>(from.w, to.w, mul, div),
+            transit<int>(from.h, to.h, mul, div));
     }
     template<> XY   inline transit<XY>
         (XY from, XY to, int64_t mul, int64_t div) { return XY(
-            transit(from.x, to.x, mul, div),
-            transit(from.y, to.y, mul, div));
+            transit<int>(from.x, to.x, mul, div),
+            transit<int>(from.y, to.y, mul, div));
     }
 
     struct base_property : polymorphic { virtual void tick () = 0; };

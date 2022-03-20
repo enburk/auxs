@@ -18,11 +18,11 @@ widget<TestPixFonts>
     void on_change (void* what) override
     {
         if (what != &alpha or alpha.to == 0 or
-            coord.now.size == XY(image.size) or
+            coord.now.size == image.size or
             coord.now.size == XY())
             return;
 
-        image.resize(xy(coord.now.size)); image.fill(RGBA::red);
+        image.resize(coord.now.size); image.fill(RGBA::red);
         gui_image.coord = coord.now.local();
         gui_image.source = image.crop();
 
@@ -41,9 +41,9 @@ widget<TestPixFonts>
 
         for (auto font : fonts)
         for (int r=0; r<4; r++, x = gap, y += gap +
-            int(sys::metrics(font).ascent ) +
-            int(sys::metrics(font).descent) +
-            int(sys::metrics(font).linegap))
+            sys::metrics(font).ascent  +
+            sys::metrics(font).descent +
+            sys::metrics(font).linegap)
         {
             pix::text::style style;
             style.color = RGBA::black;
@@ -56,10 +56,10 @@ widget<TestPixFonts>
                 auto glyph = sys::glyph(str(c), style);
                 auto w = glyph.width;
                 auto h = glyph.ascent + glyph.descent;
-                auto frame = image.crop(xywh(XYWH(x, y, w, h)));
+                auto frame = image.crop(XYWH(x, y, w, h));
                 frame.blend(RGBA::white, 200);
                 glyph.render(frame, XY(), 200, x);
-                x += int(glyph.advance + gap);
+                x += glyph.advance + gap;
             }
         }
     }

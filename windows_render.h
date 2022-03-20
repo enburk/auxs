@@ -24,7 +24,7 @@ inline void glcheck (str what)
 
 void sys::window::render (
     XYWH r, uint8_t alpha, RGBA c,
-    pix::geo geo, float* points, int n)
+    pix::geo geo, double* points, int n)
 {
     glEnable(GL_LINE_SMOOTH);
     glEnable(GL_POLYGON_SMOOTH);
@@ -45,15 +45,15 @@ void sys::window::render (
     break; default: kind = GL_POINTS;
     }
 
-    glScissor(int(r.x), int(r.y), int(r.w), int(r.h));
+    glScissor(r.x, r.y, r.w, r.h);
     glEnable(GL_SCISSOR_TEST);
 
     glBegin(kind);
     glColor4d(c.r/255.0, c.g/255.0, c.b/255.0, c.a*alpha/255.0/255.0);
     for (int i=0; i<n/2; i++) {
-    float x = points[i*2+0];
-    float y = points[i*2+1];
-    glVertex3f(x,y,0); }
+    double x = points[i*2+0];
+    double y = points[i*2+1];
+    glVertex3d(x,y,0); }
     glEnd();
 
     glDisable(GL_SCISSOR_TEST);
@@ -128,15 +128,15 @@ void sys::window::render (XYWH r, uint8_t alpha, frame<RGBA> frame)
 
     glBegin(GL_QUADS);
     glColor4d(1.0, 1.0, 1.0, alpha/255.0);
-    glTexCoord2d(tx1, ty1); glVertex2f(float(r.x),     float(r.y));
-    glTexCoord2d(tx2, ty1); glVertex2f(float(r.x+r.w), float(r.y));
-    glTexCoord2d(tx2, ty2); glVertex2f(float(r.x+r.w), float(r.y+r.h));
-    glTexCoord2d(tx1, ty2); glVertex2f(float(r.x),     float(r.y+r.h));
+    glTexCoord2d(tx1, ty1); glVertex2d(r.x,     r.y);
+    glTexCoord2d(tx2, ty1); glVertex2d(r.x+r.w, r.y);
+    glTexCoord2d(tx2, ty2); glVertex2d(r.x+r.w, r.y+r.h);
+    glTexCoord2d(tx1, ty2); glVertex2d(r.x,     r.y+r.h);
     glEnd(); //glcheck("end texture");
     glDisable(GL_TEXTURE_2D);
 }
 
-void sys::window::render (XYWH r, uint8_t alpha, glyph g, XY offset, real x)
+void sys::window::render (XYWH r, uint8_t alpha, glyph g, XY offset, int x)
 {
     const auto & style = g.style();
     if (alpha == 0) return;
@@ -146,8 +146,8 @@ void sys::window::render (XYWH r, uint8_t alpha, glyph g, XY offset, real x)
     &&  style.strikeout.color.a == 0)
         return;
 
-    int w {g.width};
-    int h {g.ascent + g.descent};
+    int w = g.width;
+    int h = g.ascent + g.descent;
     if (w <= 0 || h <= 0) return;
 
     RGBA fore = style.color;
@@ -158,8 +158,8 @@ void sys::window::render (XYWH r, uint8_t alpha, glyph g, XY offset, real x)
     auto it = cache.find(key);
     if (it == cache.end())
     {
-        pix::image<RGBA> color (xy(3*w,h), fore);
-        pix::image<RGBA> alpha (xy(w,h), RGBA::black);
+        pix::image<RGBA> color (XY(3*w,h), fore);
+        pix::image<RGBA> alpha (XY(w,h), RGBA::black);
 
         text::style simple_style;
         simple_style.font = style.font;
@@ -181,7 +181,7 @@ void sys::window::render (XYWH r, uint8_t alpha, glyph g, XY offset, real x)
             std::move(color)).first;
     }
 
-    render(r, alpha, it->second.crop(xywh(
-        int(3*offset.x), int(offset.y),
-        int(3*r.w), int(r.h))));
+    render(r, alpha, it->second.crop(XYWH(
+        3*offset.x, offset.y,
+        3*r.w, r.h)));
 }

@@ -9,7 +9,7 @@ namespace gui::text
         struct glyph: pix::glyph
         {
             XY offset;
-            auto coord() const {
+            XYWH coord() const {
                 return XYWH(
                     offset.x,
                     offset.y,
@@ -93,7 +93,7 @@ namespace gui::text
                 r2.x2, r2.y2);
         }
 
-        int point (real x)
+        int point (int x)
         {
             int i = 0;
             for (auto g : glyphs)

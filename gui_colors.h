@@ -10,8 +10,8 @@ namespace gui
 
     namespace metrics
     {
-        namespace text { inline real height; };
-        namespace line { inline real width;  };
+        namespace text { inline int height; };
+        namespace line { inline int width;  };
     };
 
     struct schema
@@ -75,7 +75,7 @@ namespace gui
     void init ()
     {
         metrics::text::height = pix::metrics(pix::font{}).height;
-        metrics::line::width = max(real(1), metrics::text::height/16);
+        metrics::line::width = max (1, metrics::text::height/16);
 
         str name;
         for (auto [index, s] : enumerate(palettes_data))

@@ -6,22 +6,21 @@
 namespace doc::view
 {
     using pix::XY;
-    using pix::real;
     using pix::text::style;
     using pix::text::style_index;
 
     struct format
     {
-        real width  = max<real>();
-        real height = max<real>();
+        int width = max<int>();
+        int height = max<int>();
 
         int columns = 1;
-        real gutter = 0;
+        int gutter = 0;
 
-        XY alignment {pix::center, pix::center};
+        XY alignment = XY{ pix::center, pix::center };
 
-        real lpadding = 0;
-        real rpadding = 0;
+        int lpadding = 0;
+        int rpadding = 0;
 
         array<XY> lwrap;
         array<XY> rwrap;

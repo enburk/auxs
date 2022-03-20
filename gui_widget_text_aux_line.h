@@ -43,7 +43,7 @@ namespace gui::text
                 }
             };
 
-            auto skip = [](array<XY>& bars, real height)
+            auto skip = [](array<XY>& bars, int height)
             {
                 while (not bars.empty()) {
                     auto& bar = bars.front();
@@ -55,7 +55,7 @@ namespace gui::text
                 }
             };
 
-            int total = 0; int accepted = 0; real height = 0;
+            int total = 0; int accepted = 0; int height = 0;
 
             auto fmt = format; // current row format 
 
@@ -71,7 +71,7 @@ namespace gui::text
                 {
                     if (not rows.empty()) // then finishing last row
                     {
-                        real h =                         
+                        int h =                         
                             rows.back().ascent +
                             rows.back().descent;
 
@@ -107,7 +107,7 @@ namespace gui::text
                 rows.back().ascent +
                 rows.back().descent;
 
-            real width = 0; length = 0;
+            int width = 0; length = 0;
 
             for (auto& row: rows)
             {
@@ -156,7 +156,7 @@ namespace gui::text
 
             for (auto& row : rows) {
                 XYWH r = row.bar(place);
-                if (r != XYWH{}) return r + XY(row.offset);
+                if (r != XYWH{}) return r + row.offset;
                 place -= row.length; }
 
             return XYWH{};
@@ -169,7 +169,7 @@ namespace gui::text
             for (auto& row : rows)
             {
                 array<XYWH> rr = row.bars(from, upto);
-                for (auto& r: rr) r += XY(row.offset);
+                for (auto& r: rr) r += row.offset;
                 from -= row.length;
                 upto -= row.length;
                 if (rr.empty()) continue;
@@ -187,7 +187,7 @@ namespace gui::text
                 
                 sys::glyph space(" ", style);
 
-                XY offset;
+                XY  offset;
                 if (rows.size() > 0) offset = 
                     rows.back().offset + XY(
                     rows.back().width +
@@ -200,7 +200,7 @@ namespace gui::text
                     space.advance * n,
                     space.ascent +
                     space.descent) +
-                    XY(offset);
+                    offset;
             }
             return bars;
         }
@@ -215,7 +215,7 @@ namespace gui::text
                     row.offset.y > p.y or
                     row.the_last_row)
                 {
-                    real x = p.x - row.offset.x;
+                    int x = p.x - row.offset.x;
                     if (x < row.width
                     or not virtual_space
                     or not row.the_last_row)
@@ -230,8 +230,8 @@ namespace gui::text
             if (virtual_space and not rows.empty())
             {
                 sys::glyph space(" ", style);
-                real dx = p.x - rows.back().width;
-                return length + int(dx/space.advance);
+                int dx = p.x - rows.back().width;
+                return length + dx/space.advance;
             }
 
             return length-1;

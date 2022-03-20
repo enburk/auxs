@@ -1,5 +1,6 @@
 #pragma once
 #include <array>
+#include <cmath>
 #include <random>
 #include <numeric>
 #include <algorithm>
@@ -558,10 +559,6 @@ public:
 
 public:
 	base_type data_ = 0;
-
-	explicit operator int () { return to_int(); }
-	explicit operator float () { return to_float(); }
-	explicit operator double () { return to_double(); }
 };
 
 // if we have the same fractional portion, but differing integer portions, we trivially upgrade the smaller type
@@ -666,21 +663,6 @@ template <size_t I, size_t F, class Number, class = typename std::enable_if<std:
 
 
 }
-
-namespace std
-{
-    template <size_t I, size_t F> struct hash<aux::fixed<I,F>>
-    {
-        std::size_t operator()(const aux::fixed<I,F> & x) const
-        {
-            using std::size_t;
-            using std::hash;
-            using std::string;
-            return hash<aux::fixed<I,F>::base_type>()(x.data_);
-        }
-    };
-}
-
 
 #define not !  // anti-intellisense
 #define and && // anti-intellisense
