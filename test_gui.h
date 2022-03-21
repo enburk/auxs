@@ -459,8 +459,8 @@ widget<TestGuiAnimat>
 
     quad quad;
     gui::text::view view, text;
-    gui::line line;
-    gui::button go1, go2, go3, go4; 
+    gui::line line, lin1;
+    gui::button go1, go2, go3, go4, go5, go6; 
     gui::property<gui::time> timer;
     gui::console log;
     gui::time lapse;
@@ -494,20 +494,26 @@ widget<TestGuiAnimat>
             go2.text.text = "go!!";
             go3.text.text = "go!!!";
             go4.text.text = "go!!!!";
+            go5.text.text = "go!!!!!";
+            go6.text.text = "go!!!!!!";
             go1.coord = XYWH(W-w, h*0, w, h);
             go2.coord = XYWH(W-w, h*1, w, h);
             go3.coord = XYWH(W-w, h*2, w, h);
             go4.coord = XYWH(W-w, h*3, w, h);
-            log.coord = XYWH(W-w, h*4, w, H-h*4);
+            go5.coord = XYWH(W-w, h*4, w, h);
+            go6.coord = XYWH(W-w, h*5, w, h);
+            log.coord = XYWH(W-w, h*6, w, H-h*6);
             on_change(&go2);
         }
 
         bool go = false;
 
-        if (what == &go1) { go = true; lapse = 3s; }
-        if (what == &go2) { go = true; lapse = 1s; }
-        if (what == &go3) { go = true; lapse = 500ms; }
-        if (what == &go4) { go = true; lapse = 200ms; }
+        if (what == &go1) { go = true; lapse =18s; }
+        if (what == &go2) { go = true; lapse = 6s; }
+        if (what == &go3) { go = true; lapse = 3s; }
+        if (what == &go4) { go = true; lapse = 1s; }
+        if (what == &go5) { go = true; lapse = 500ms; }
+        if (what == &go6) { go = true; lapse = 200ms; }
 
         if (go)
         {
@@ -531,11 +537,16 @@ widget<TestGuiAnimat>
                 view.coord.go(XYWH(0, 1*h, 2*w, 2*h), lapse);
                 text.coord.go(XYWH(0, 3*h, 3*w, 7*h), lapse);
                 line.color.go(RGBA::black, lapse);
+                lin1.color.go(RGBA::black, lapse);
                 line.width.go(1.0, lapse);
                 line.x1.go( 0*w, lapse);
-                line.y1.go(11*h, lapse);
-                line.x2.go( 2*w, lapse);
-                line.y2.go(15*h, lapse);
+                lin1.x2.go( 0*w, lapse);
+                line.y1.go( 3*h, lapse);
+                lin1.y1.go( 3*h, lapse);
+                line.x2.go( 3*w, lapse);
+                lin1.x1.go( 3*w, lapse);
+                line.y2.go(10*h, lapse);
+                lin1.y2.go(10*h, lapse);
             break; default:
                 quad.color.go(RGBA::olive,  lapse);
                 view.color.go(RGBA::white,  lapse);
@@ -546,11 +557,16 @@ widget<TestGuiAnimat>
                 view.coord.go(XYWH(W-5*w, 2*h, 4*w, 4*h), lapse);
                 text.coord.go(XYWH(W-3*w, 6*h, 2*w,11*h), lapse);
                 line.color.go(RGBA::white, lapse);
+                lin1.color.go(RGBA::white, lapse);
                 line.width.go(5.0, lapse);
-                line.x1.go(W-0*w, lapse);
-                line.y1.go( 11*h, lapse);
-                line.x2.go(W-2*w, lapse);
+                line.x1.go(W-3*w, lapse);
+                lin1.x2.go(W-3*w, lapse);
+                line.y1.go(  6*h, lapse);
+                lin1.y1.go(  6*h, lapse);
+                line.x2.go(W-1*w, lapse);
+                lin1.x1.go(W-1*w, lapse);
                 line.y2.go( 17*h, lapse);
+                lin1.y2.go( 17*h, lapse);
             }
 
             turn = (turn + 1) % 2;

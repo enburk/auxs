@@ -217,6 +217,7 @@ namespace pix
 
     enum class geo
     {
+        none,
         points,
         lines,
         line_strip,

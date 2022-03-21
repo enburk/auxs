@@ -24,8 +24,12 @@ inline void glcheck (str what)
 
 void sys::window::render (
     XYWH r, uint8_t alpha, RGBA c,
-    pix::geo geo, double* points, int n)
+    XY offset, pix::geo geo,
+    double* points, int n)
 {
+    if (geo == pix::geo::none)
+        return;
+
     glEnable(GL_LINE_SMOOTH);
     glEnable(GL_POLYGON_SMOOTH);
     glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
@@ -45,14 +49,23 @@ void sys::window::render (
     break; default: kind = GL_POINTS;
     }
 
-    glScissor(r.x, r.y, r.w, r.h);
+    GLint xywh[4];
+    glGetIntegerv(GL_VIEWPORT, xywh);
+    int H = xywh[3];
+
+    auto x = r.x;
+    auto y = r.y; y = H - y - r.h;
+    auto w = r.w;
+    auto h = r.h;
+
+    glScissor(x, y, w, h);
     glEnable(GL_SCISSOR_TEST);
 
     glBegin(kind);
     glColor4d(c.r/255.0, c.g/255.0, c.b/255.0, c.a*alpha/255.0/255.0);
     for (int i=0; i<n/2; i++) {
-    double x = points[i*2+0];
-    double y = points[i*2+1];
+    double x = 0 + (r.x + offset.x + points[i*2+0]);
+    double y = H - (r.y + offset.y + points[i*2+1]);
     glVertex3d(x,y,0); }
     glEnd();
 
