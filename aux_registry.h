@@ -1,7 +1,7 @@
 #pragma once
 #include <vector>
 #include <optional>
-namespace data
+namespace aux
 {
     // Sean Parent, CppCon 2019
     // Russian coat check algorithm

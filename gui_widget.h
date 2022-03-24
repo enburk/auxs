@@ -1,7 +1,6 @@
 #pragma once
 #include <set>
 #include "sys_ui.h"
-#include "pix_image.h"
 #include "gui_effect.h"
 namespace gui::base
 {

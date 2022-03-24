@@ -1,5 +1,5 @@
 #pragma once
-#include "pix_text.h"
+#include "pix_abc.h"
 #include "windows_aux.h"
 #include <tchar.h>
 
@@ -149,7 +149,7 @@ pix::glyph::glyph (str text, text::style_index i) : text(text), style_index(i)
         simple_style.font = font;
         simple_style.color = RGBA::black;
 
-        sys::glyph simple_glyph = *this;
+        pix::glyph simple_glyph = *this;
         simple_glyph.style_index = text::style_index(simple_style);
         simple_glyph.render(image);
 
@@ -205,7 +205,7 @@ MAKE_HASHABLE(cache_glyphs_key, t.text, t.font, t.fore, t.back);
 
 static std::unordered_map<cache_glyphs_key, pix::image<RGBA>> cache_glyphs;
 
-void sys::glyph::render (pix::frame<RGBA> frame, XY offset, uint8_t alpha, int x)
+void pix::glyph::render (pix::frame<RGBA> frame, XY offset, uint8_t alpha, int x)
 {
     const auto & style = this->style();
     if (alpha == 0) return;

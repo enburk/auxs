@@ -25,13 +25,13 @@ namespace gui::text
         html_type html{*this};
 
         property<RGBA> color;
-        binary_property<font> font;
+        binary_property<pix::font> font;
         binary_property<style> style;
         binary_property<int> lpadding;
         binary_property<int> rpadding;
         binary_property<array<XY>> lwrap;
         binary_property<array<XY>> rwrap;
-        binary_property<XY> alignment = XY{center, center};
+        binary_property<XY> alignment = XY{pix::center, pix::center};
         binary_property<XY> shift;
         binary_property<bool> wordwrap = true;
         binary_property<bool> ellipsis = false;
@@ -135,8 +135,8 @@ namespace gui::text
                 int h = cell.coord.now.size.y;
 
                 cell.move_to(XY(0, H > h and
-                    alignment.now.y == center ? H/2 - h/2 :
-                    alignment.now.y == bottom ? H   - h   :
+                    alignment.now.y == pix::center ? H/2 - h/2 :
+                    alignment.now.y == pix::bottom ? H   - h   :
                     0) + shift.now);
             }
             if (what == &update_text)

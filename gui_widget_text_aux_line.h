@@ -18,7 +18,7 @@ namespace gui::text
             if (format.height <= 0) { resize(XY()); return; }
             if (format.width  <= 0) { resize(XY()); return; }
             if (format.width  == max<int>() and
-                format.alignment.x != left) throw
+                format.alignment.x != pix::left) throw
                 std::out_of_range("text::line: "
                     "impossible format");
 
@@ -185,7 +185,7 @@ namespace gui::text
                 // length was subtracted
                 // from 'from' and 'upto'
                 
-                sys::glyph space(" ", style);
+                pix::glyph space(" ", style);
 
                 XY  offset;
                 if (rows.size() > 0) offset = 
@@ -229,7 +229,7 @@ namespace gui::text
 
             if (virtual_space and not rows.empty())
             {
-                sys::glyph space(" ", style);
+                pix::glyph space(" ", style);
                 int dx = p.x - rows.back().width;
                 return length + dx/space.advance;
             }

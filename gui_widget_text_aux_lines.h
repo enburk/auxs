@@ -99,7 +99,7 @@ namespace gui::text
             if (not virtual_space)
                 place.offset = 0;
 
-            sys::glyph space (" ", line.style);
+            pix::glyph space (" ", line.style);
 
             XYWH r = line.coord.now;
             r.x = r.x + r.w + place.offset * space.advance;

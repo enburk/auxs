@@ -79,4 +79,93 @@ namespace gui
         }
     };
 
+    struct oval:
+    widget<oval>
+    {
+        property<RGBA> color;
+        property<double> x = 0.0;
+        property<double> y = 0.0;
+        property<double> rx = 0.0;
+        property<double> ry = 0.0;
+        property<double> rx2 = 0.0;
+        property<double> ry2 = 0.0;
+        pix::geo geo = pix::geo::none;
+        array<double> points;
+
+        void on_render (sys::window& window, XYWH r, XY offset, uint8_t alpha) override
+        {
+            window.render(r, alpha, color.now, offset, geo,
+                points.data(),(int)
+                points.size());
+        }
+
+        void on_change (void* what) override
+        {
+            if (what == &color)
+                if (color.was.a != 0 or
+                    color.now.a != 0 )
+                    update();
+
+            if (what == &x or what == &rx or what == &rx2 or
+                what == &y or what == &ry or what == &ry2)
+            {
+                aux::vector<2> r1 {rx.now, ry.now};
+                aux::vector<2> r2 {rx2.now, ry2.now};
+                if (r1.x > r2.x) std::swap(r1.x, r2.x); 
+                if (r1.y > r2.y) std::swap(r1.y, r2.y);
+                double delta = pi/360;
+
+                XYXY r (
+                int(std::floor(x.now - r2.x)),
+                int(std::floor(y.now - r2.y)),
+                int(std::ceil (x.now + r2.x)),
+                int(std::ceil (y.now + r2.y)));
+                coord = r;
+
+                if (r1.x < 0.5 or r1.y < 0.5)
+                {
+                    geo = pix::geo::triangle_fan;
+                    points.clear();
+                    points.reserve(int(2*2*pi/delta + 2 + 2));
+                    points += x.now - r.l;
+                    points += y.now - r.t;
+                    for (double a = 0.0;
+                        a < 2*pi + delta/2;
+                        a += delta) {
+                        points += x.now - r.l + r2.x*cos(a);
+                        points += y.now - r.t + r2.y*sin(a);
+                    }
+                }
+                else
+                if (aux::distance(r1, r2) < 1.1)
+                {
+                    geo = pix::geo::lines;
+                    points.clear();
+                    points.reserve(int(2*2*pi/delta + 2));
+                    for (double a = 0.0;
+                        a < 2*pi + delta/2;
+                        a += delta) {
+                        points += x.now - r.l + r2.x*cos(a);
+                        points += y.now - r.t + r2.y*sin(a);
+                    }
+                }
+                else
+                {
+                    geo = pix::geo::triangle_strip;
+                    points.clear();
+                    points.reserve(int(4*2*pi/delta + 4));
+                    for (double a = 0.0;
+                        a < 2*pi + delta/2;
+                        a += delta) {
+                        points += x.now - r.l + r1.x*cos(a);
+                        points += y.now - r.t + r1.y*sin(a);
+                        points += x.now - r.l + r2.x*cos(a);
+                        points += y.now - r.t + r2.y*sin(a);
+                    }
+                }
+                update();
+
+            }
+        }
+    };
 }

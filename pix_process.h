@@ -1,6 +1,6 @@
 #pragma once
 #include "pix_color.h"
-#include "pix_image.h"
+#include "pix_frame.h"
 #include "pix_sampling.h"
 namespace pix
 {

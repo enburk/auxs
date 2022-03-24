@@ -29,7 +29,7 @@ widget<TestDoc>
             if (done) return; done = true;
 
             auto style = pix::text::style{
-            sys::font{"Consolas"}, RGBA::black};
+            pix::font{"Consolas"}, RGBA::black};
             console1.object.page.style = style;
             console2.object.page.style = style;
             console3.object.page.style = style;
@@ -78,7 +78,7 @@ widget<TestDocHtml>
         {
             auto schema = gui::skins[skin];
             auto style = pix::text::style{
-                sys::font{"Consolas",
+                pix::font{"Consolas",
                 gui::metrics::text::height},
                 schema.dark.first};
 

@@ -7,8 +7,6 @@
 #include "pix_image.h"
 namespace sys
 {
-    using namespace data;
-    using namespace pix;
     using byte = uint8_t;
 
     namespace clipboard

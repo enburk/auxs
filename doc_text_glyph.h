@@ -2,8 +2,6 @@
 #include "aux_abc.h"
 namespace doc::text
 {
-    using namespace data;
-
     struct glyph
     {
         char cc[4] = {};

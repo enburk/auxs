@@ -4,12 +4,9 @@
 #include <chrono>
 #include <cassert>
 #include <algorithm>
-#include "aux_registry.h"
-#include "pix_color.h"
-#include "pix_coord.h"
+#include "pix_abc.h"
 namespace gui
 {
-    using namespace pix;
     using namespace std::literals::chrono_literals;
 
     struct time
@@ -88,7 +85,7 @@ namespace gui
     }
 
     struct base_property : polymorphic { virtual void tick () = 0; };
-    inline data::registry<base_property*> active_properties;
+    inline aux::registry<base_property*> active_properties;
 
     namespace base { struct widget; }
     extern std::set<base::widget*> widgets;

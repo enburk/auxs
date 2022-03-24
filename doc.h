@@ -1,5 +1,4 @@
 #pragma once
-#include "pix_text.h"
 namespace doc
 {
     struct place

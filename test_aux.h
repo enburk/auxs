@@ -32,7 +32,7 @@ widget<TestAux>
             if (done) return; done = true;
 
             auto style = pix::text::style{
-            sys::font{"Consolas"}, RGBA::black};
+            pix::font{"Consolas"}, RGBA::black};
             console1.object.page.style = style;
             console2.object.page.style = style;
             console3.object.page.style = style;
@@ -86,7 +86,7 @@ widget<TestAuxMath>
             if (done) return; done = true;
 
             auto style = pix::text::style{
-            sys::font{"Consolas"}, RGBA::black};
+            pix::font{"Consolas"}, RGBA::black};
             console1.object.page.style = style;
             console2.object.page.style = style;
             console3.object.page.style = style;
@@ -145,7 +145,7 @@ widget<TestAuxCoro>
             if (done) return; done = true;
 
             auto style = pix::text::style{
-            sys::font{"Consolas"}, RGBA::black};
+            pix::font{"Consolas"}, RGBA::black};
             console1.object.page.style = style;
             console2.object.page.style = style;
             console3.object.page.style = style;
@@ -206,7 +206,7 @@ widget<TestAuxHask>
             if (done) return; done = true;
 
             auto style = pix::text::style{
-            sys::font{"Consolas"}, RGBA::black};
+            pix::font{"Consolas"}, RGBA::black};
             console1.object.page.style = style;
             console2.object.page.style = style;
             console3.object.page.style = style;

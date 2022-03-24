@@ -58,7 +58,7 @@ namespace doc::html
                 }
             }
 
-            int height = sys::metrics(style.font).height;
+            int height = pix::metrics(style.font).height;
 
             auto heights = [height](str val)
             {

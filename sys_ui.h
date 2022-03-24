@@ -1,15 +1,10 @@
 #pragma once
 #include <thread>
 #include <atomic>
-#include "pix_color.h"
-#include "pix_image.h"
 #include "gui_colors.h"
 #include "gui_effect.h"
 namespace sys
 {
-    using namespace data;
-    using namespace pix;
-
     namespace screen
     {
         inline XY size;
@@ -70,8 +65,8 @@ namespace sys
         virtual void mouse_on_move  (XY p) = 0;
         virtual void mouse_on_leave () = 0;
         virtual void render (XYWH, uint8_t alpha, RGBA);
-        virtual void render (XYWH, uint8_t alpha, frame<RGBA>);
-        virtual void render (XYWH, uint8_t alpha, glyph, XY, int);
+        virtual void render (XYWH, uint8_t alpha, pix::frame<RGBA>);
+        virtual void render (XYWH, uint8_t alpha, pix::glyph, XY, int);
         virtual void render (XYWH, uint8_t alpha, RGBA, XY, pix::geo, double*, int);
         virtual void renderr () {}
 
@@ -154,11 +149,11 @@ namespace sys
         {
             image.crop(r).blend(color, alpha);
         }
-        void render (XYWH r, uint8_t alpha, frame<RGBA> frame) override
+        void render (XYWH r, uint8_t alpha, pix::frame<RGBA> frame) override
         {
             image.crop(r).blend_from(frame, alpha);
         }
-        void render (XYWH r, uint8_t alpha, glyph g, XY offset, int x) override
+        void render (XYWH r, uint8_t alpha, pix::glyph g, XY offset, int x) override
         {
             g.render(image.crop(r), offset, alpha, x);
         }

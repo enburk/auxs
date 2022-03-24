@@ -1,11 +1,9 @@
 #pragma once
 #include <map>
 #include "doc.h"
-#include "aux_abc.h"
-#include "pix_text.h"
+#include "pix_abc.h"
 namespace doc::view
 {
-    using pix::XY;
     using pix::text::style;
     using pix::text::style_index;
 

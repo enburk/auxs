@@ -22,9 +22,10 @@ widget<Test>
     TestGuiColors  gui_colors;
     TestGuiColorsX gui_colorsx;
     TestGuiFormat  gui_format;
+    TestGuiAnimat  gui_animat;
     TestGuiConsole gui_console;
     TestGuiEditor  gui_editor;
-    TestGuiAnimat  gui_animat;
+    TestGuiGraph   gui_graph;
 
     Test ()
     {
@@ -48,6 +49,7 @@ widget<Test>
         tests += {&gui_animat,  "animation"};
         tests += {&gui_console, "console"};
         tests += {&gui_editor,  "editor"};
+        tests += {&gui_graph,   "graph"};
 
         for (auto [ptr, title] : tests)
             buttons.emplace_back()

@@ -1,7 +1,6 @@
 #pragma once
+#include "gui_widget_graph.h"
 #include "gui_widget_console.h"
-#include "gui_widget_geometry.h"
-#include "gui_widget_text_editor.h"
 using namespace std::literals::chrono_literals;
 using namespace pix;
 using gui::widget;
@@ -46,7 +45,7 @@ widget<TestGui>
             if (done) return; done = true;
 
             auto style = pix::text::style{
-            sys::font{"Consolas"}, RGBA::black };
+            pix::font{"Consolas"}, RGBA::black };
             console.object.page.style = style;
 
             using namespace aux::unittest;
@@ -196,7 +195,7 @@ widget<TestGuiColorsX>
                 page.object.alignment = XY{pix::left, pix::top};
                 page.object.canvas.color = schema.ultralight.first;
                 page.object.style = pix::text::style{
-                    sys::font{"Segoe UI", h*4/7},
+                    pix::font{"Segoe UI", h*4/7},
                     schema.dark.first};
             }
         }
@@ -276,7 +275,7 @@ widget<TestGuiFormat>
                 page.object.html = Lorem;
                 page.object.canvas.color = schema.ultralight.first;
                 page.object.style = pix::text::style{
-                    sys::font{"Segoe UI",
+                    pix::font{"Segoe UI",
                     gui::metrics::text::height},
                     schema.dark.first};
             }
@@ -332,7 +331,6 @@ widget<TestGuiFormat>
     }
 };
 
-// console
 struct TestGuiConsole:
 widget<TestGuiConsole>
 {
@@ -460,6 +458,8 @@ widget<TestGuiAnimat>
     quad quad;
     gui::text::view view, text;
     gui::line line, lin1;
+    gui::oval oval;
+    gui::node node;
     gui::button go1, go2, go3, go4, go5, go6; 
     gui::property<gui::time> timer;
     gui::console log;
@@ -480,13 +480,13 @@ widget<TestGuiAnimat>
 
             view.text = "text";
             view.style = pix::text::style{
-                sys::font{"Segoe UI",
+                pix::font{"Segoe UI",
                 gui::metrics::text::height*2},
                 RGBA::black};
 
             text.html = Lorem;
             text.style = pix::text::style{
-                sys::font{"Segoe UI",
+                pix::font{"Segoe UI",
                 gui::metrics::text::height},
                 RGBA::black};
 
@@ -547,6 +547,18 @@ widget<TestGuiAnimat>
                 lin1.x1.go( 3*w, lapse);
                 line.y2.go(10*h, lapse);
                 lin1.y2.go(10*h, lapse);
+                oval.color.go(RGBA::black, lapse);
+                oval.x.go( 3*h, lapse);
+                oval.y.go( 2*h + 10*h, lapse);
+                oval.rx.go( 2*h, lapse);
+                oval.ry.go( 1*h, lapse);
+                oval.rx2.go( 3*h, lapse);
+                oval.ry2.go( 2*h, lapse);
+                node.text.text = "5";
+                node.text.color.go(RGBA::yellow, lapse);
+                node.outer.color.go(RGBA::white, lapse);
+                node.inner.color.go(RGBA::black, lapse);
+                node.coord.go(XYWH(0, 15*h, 1*h, 1*h), lapse);
             break; default:
                 quad.color.go(RGBA::olive,  lapse);
                 view.color.go(RGBA::white,  lapse);
@@ -567,6 +579,17 @@ widget<TestGuiAnimat>
                 lin1.x1.go(W-1*w, lapse);
                 line.y2.go( 17*h, lapse);
                 lin1.y2.go( 17*h, lapse);
+                oval.color.go(RGBA::white, lapse);
+                oval.x.go(W-w-2*h, lapse);
+                oval.y.go(3*h + 17*h, lapse);
+                oval.rx.go(1*h, lapse);
+                oval.ry.go(2*h, lapse);
+                oval.rx2.go(2*h, lapse);
+                oval.ry2.go(3*h, lapse);
+                node.text.color.go(RGBA::green, lapse);
+                node.outer.color.go(RGBA::black, lapse);
+                node.inner.color.go(RGBA::white, lapse);
+                node.coord.go(XYWH(W-w-3*h, 24*h, 3*h, 2*h), lapse);
             }
 
             turn = (turn + 1) % 2;
@@ -593,3 +616,41 @@ widget<TestGuiAnimat>
     }
 };
 
+struct TestGuiGraph:
+widget<TestGuiGraph>
+{
+    gui::canvas canvas;
+    gui::radio::group buttons;
+    gui::BST tree;
+
+    void on_change (void* what) override
+    {
+        if (what == &coord and
+            coord.was.size !=
+            coord.now.size)
+        {
+            int W = coord.now.w; if (W <= 0) return;
+            int H = coord.now.h; if (H <= 0) return;
+            int w = gui::metrics::text::height*10;
+            int h = gui::metrics::text::height*12/7;
+
+            if (buttons.empty())
+            {
+                buttons.emplace_back().text.text = "tree";
+                buttons.front().on = true;
+                canvas.color =
+                RGBA::black;
+
+                for (int i=0; i<500; i++)
+                tree.add(aux::random(0,99));
+            }
+
+            int y = 0; for (auto& button: buttons) {
+            button.coord = XYWH(0,y,w,h); y += h; }
+            buttons.coord = XYWH(W-w,0,w,H);
+            canvas.coord = XYWH(0,0,W,H);
+
+            tree.coord = XYWH(0,0,W-w,H);
+        }
+    }
+};

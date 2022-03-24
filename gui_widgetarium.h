@@ -88,8 +88,11 @@ namespace gui
             }
         }
 
-        int rotate (int f, int m, int l) {
-            assert(children.size() == indices.size());
+        int rotate (int f, int m, int l)
+        {
+            assert(
+            children.size() ==
+            indices.size());
             std::rotate(
             children.begin() + f,
             children.begin() + m,

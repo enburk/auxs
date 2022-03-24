@@ -8,7 +8,6 @@ widget<TestPix>
 {
 };
 
-// fonts
 struct TestPixFonts:
 widget<TestPixFonts>
 {
@@ -31,19 +30,19 @@ widget<TestPixFonts>
         str latin = "abcdefghijklmnopqrstuvwxyz";
         str alnum = Latin + latin + digit;
         array<
-        sys::font> fonts = {
-        sys::font{"Consolas", gui::metrics::text::height*5/2},
-        sys::font{"Arial",    gui::metrics::text::height*5/2},
-        sys::font{"Segoe UI", gui::metrics::text::height*5/2},
-        sys::font{"Tahoma",   gui::metrics::text::height*5/2}};
+        pix::font> fonts = {
+        pix::font{"Consolas", gui::metrics::text::height*5/2},
+        pix::font{"Arial",    gui::metrics::text::height*5/2},
+        pix::font{"Segoe UI", gui::metrics::text::height*5/2},
+        pix::font{"Tahoma",   gui::metrics::text::height*5/2}};
 
         int gap = 1; int x = gap; int y = gap;
 
         for (auto font : fonts)
         for (int r=0; r<4; r++, x = gap, y += gap +
-            sys::metrics(font).ascent  +
-            sys::metrics(font).descent +
-            sys::metrics(font).linegap)
+            pix::metrics(font).ascent  +
+            pix::metrics(font).descent +
+            pix::metrics(font).linegap)
         {
             pix::text::style style;
             style.color = RGBA::black;
@@ -53,7 +52,7 @@ widget<TestPixFonts>
             style.font.italic = r == 1 || r == 3;
 
             for (char c : alnum) {
-                auto glyph = sys::glyph(str(c), style);
+                auto glyph = pix::glyph(str(c), style);
                 auto w = glyph.width;
                 auto h = glyph.ascent + glyph.descent;
                 auto frame = image.crop(XYWH(x, y, w, h));
@@ -62,6 +61,27 @@ widget<TestPixFonts>
                 x += glyph.advance + gap;
             }
         }
+    }
+};
+
+struct TestPixDraw:
+widget<TestPixDraw>
+{
+    gui::image Image;
+    pix::image<RGBA> image;
+
+    void on_change (void* what) override
+    {
+        if (what != &alpha or alpha.to == 0 or
+            coord.now.size == image.size or
+            coord.now.size == XY())
+            return;
+
+        image.resize(coord.now.size);
+        Image.coord = coord.now.local();
+        Image.source = image.crop();
+        image.fill(RGBA::black);
+
     }
 };
 

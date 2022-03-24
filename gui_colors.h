@@ -1,13 +1,9 @@
 #pragma once
 #include <map>
 #include <variant>
-#include "pix_color.h"
-#include "pix_text.h"
+#include "pix_abc.h"
 namespace gui
 {
-    using namespace data;
-    using namespace pix;
-
     namespace metrics
     {
         namespace text { inline int height; };

@@ -1,10 +1,8 @@
 #pragma once
 #include "pix_color.h"
-#include "pix_image.h"
+#include "pix_frame.h"
 namespace pix
 {
-    using namespace data;
-
     struct font
     {
         str face; int size = 0; bool bold = false; bool italic = false;

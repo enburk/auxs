@@ -14,7 +14,7 @@ namespace gui::text
         view::text_type& text = page.text;
         view::html_type& html = page.html;
         property<RGBA>& color = page.color;
-        binary_property<font>& font = page.font;
+        binary_property<pix::font>& font = page.font;
         binary_property<style>& style = page.style;
         binary_property<XY>& alignment = page.alignment;
         binary_property<int>& lpadding = page.lpadding;
@@ -38,7 +38,7 @@ namespace gui::text
         editor ()
         {
             model = &model_;
-            alignment.now = XY{left, top};
+            alignment.now = XY{pix::left, pix::top};
             focusable.now = true;
         }
 

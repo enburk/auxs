@@ -178,7 +178,7 @@ void sys::window::render (XYWH r, uint8_t alpha, glyph g, XY offset, int x)
         simple_style.font = style.font;
         simple_style.color = RGBA::white;
 
-        sys::glyph simple_glyph = g;
+        pix::glyph simple_glyph = g;
         simple_glyph.style_index = text::style_index(simple_style);
         simple_glyph.render(alpha);
 

@@ -52,6 +52,7 @@
     <ClInclude Include="gui_widget_canvas.h" />
     <ClInclude Include="gui_widget_console.h" />
     <ClInclude Include="gui_widget_geometry.h" />
+    <ClInclude Include="gui_widget_graph.h" />
     <ClInclude Include="gui_widget_image.h" />
     <ClInclude Include="gui_widget_player.h" />
     <ClInclude Include="gui_widget_scroller.h" />
@@ -66,8 +67,12 @@
     <ClInclude Include="gui_widget_text_editor.h" />
     <ClInclude Include="gui_widget_text_page.h" />
     <ClInclude Include="gui_widget_text_view.h" />
+    <ClInclude Include="pix_abc.h" />
     <ClInclude Include="pix_color.h" />
     <ClInclude Include="pix_coord.h" />
+    <ClInclude Include="pix_draw.h" />
+    <ClInclude Include="pix_draw_line.h" />
+    <ClInclude Include="pix_frame.h" />
     <ClInclude Include="pix_image.h" />
     <ClInclude Include="pix_process.h" />
     <ClInclude Include="pix_sampling.h" />

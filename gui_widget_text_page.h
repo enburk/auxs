@@ -22,7 +22,7 @@ namespace gui::text
         view::text_type& text = view.text;
         view::html_type& html = view.html;
         property<RGBA>& color = view.color;
-        binary_property<font>& font = view.font;
+        binary_property<pix::font>& font = view.font;
         binary_property<style>& style = view.style;
         binary_property<XY>& alignment = view.alignment;
         binary_property<int>& lpadding = view.lpadding;
@@ -165,7 +165,7 @@ namespace gui::text
 
             int rows_on_page =
                 view.coord.now.h /
-                sys::metrics(font.now).height;
+                pix::metrics(font.now).height;
 
             switch(where){
             case THERE: selective = false; break;
@@ -228,7 +228,7 @@ namespace gui::text
         void go (place place)
         {
             scroll.y.top = place.line *
-                sys::metrics(font.now).height -
+                pix::metrics(font.now).height -
                     view.coord.now.h / 2;
 
             selections = array<range>{
@@ -237,7 +237,7 @@ namespace gui::text
 
         void see (int where)
         {
-            int h = sys::metrics(font.now).height;
+            int h = pix::metrics(font.now).height;
 
             switch(where){
             case-GLYPH:
