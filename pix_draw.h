@@ -22,24 +22,24 @@ template< typename color_ >  struct  PLANE : public FRAME < color_ >
 
     using FRAME<color>::at; using FRAME<color>::rect;
 
-    XYXY    clip;   // clip rectangle
-    XYXY    dirty;  // updated rectangle
+    xyxy    clip;   // clip rectangle
+    xyxy    dirty;  // updated rectangle
     alpha   global; // global alpha
 
     PLANE   (                  ) {}
-    PLANE   ( FRAME<color>   f ) : FRAME<color> (f), clip (f.rect()), dirty (XYXY(0,0,0,0)), global (traits::alpha::solid()) {}
-    PLANE   ( IMAGE<color> & f ) : FRAME<color> (f.frame ()), clip (f.rect()), dirty (XYXY(0,0,0,0)), global (traits::alpha::solid()) {}
+    PLANE   ( FRAME<color>   f ) : FRAME<color> (f), clip (f.rect()), dirty (xyxy(0,0,0,0)), global (traits::alpha::solid()) {}
+    PLANE   ( IMAGE<color> & f ) : FRAME<color> (f.frame ()), clip (f.rect()), dirty (xyxy(0,0,0,0)), global (traits::alpha::solid()) {}
 
 #   define  TOOL                template< int op > void
 
     // pixels
 
-    TOOL    pixel               ( XY,       color );
+    TOOL    pixel               ( xy,       color );
     TOOL    pixel               ( int,int,  color );
     TOOL    pixel_clip          ( int,int,  color );
     TOOL    pixel_clip_dirty    ( int,int,  color );
 
-    TOOL    pixel               ( XY,       color, alpha );
+    TOOL    pixel               ( xy,       color, alpha );
     TOOL    pixel               ( int,int,  color, alpha );
     TOOL    pixel_clip          ( int,int,  color, alpha );
     TOOL    pixel_clip_dirty    ( int,int,  color, alpha );
@@ -47,31 +47,31 @@ template< typename color_ >  struct  PLANE : public FRAME < color_ >
     // blit
 
     TOOL    blit                (           FRAME<color> );
-    TOOL    blit                ( XY,       FRAME<color> );
+    TOOL    blit                ( xy,       FRAME<color> );
     TOOL    blit                ( int,int,  FRAME<color> );
 
     void    copy                (           FRAME<color> );
-    void    copy                ( XY,       FRAME<color> );
+    void    copy                ( xy,       FRAME<color> );
     void    copy                ( int,int,  FRAME<color> );
 
-    XYWH    blit_rect_src       ( int,int,  FRAME<color> );
-    XYWH    blit_rect_dst       ( int,int,  FRAME<color> );
+    xywh    blit_rect_src       ( int,int,  FRAME<color> );
+    xywh    blit_rect_dst       ( int,int,  FRAME<color> );
 
     void    fill                (           FRAME<color> pattern );
-    void    fill                ( XYXY,     FRAME<color> pattern );
+    void    fill                ( xyxy,     FRAME<color> pattern );
 
     // rectangles
 
     TOOL    fill                (           color );
-    TOOL    fill                ( XYXY,     color );
-    TOOL    rect                ( XYXY,     color );
+    TOOL    fill                ( xyxy,     color );
+    TOOL    rect                ( xyxy,     color );
 
     // lines ( jaggy )
 
-    TOOL    line                ( XYXY,     color );
-    TOOL    line                ( XY, XY,   color );
-    TOOL    line_h              ( XY, int,  color );
-    TOOL    line_v              ( XY, int,  color );
+    TOOL    line                ( xyxy,     color );
+    TOOL    line                ( xy, xy,   color );
+    TOOL    line_h              ( xy, int,  color );
+    TOOL    line_v              ( xy, int,  color );
 
     // lines ( antialiased )
 
@@ -97,20 +97,20 @@ template< typename color_ >  struct  PLANE : public FRAME < color_ >
 #   undef   TOOL
 };
 //============================================================================================================================//
-template< class color > inline XYWH PLANE<color>::blit_rect_dst ( int x, int y, FRAME<color> frame )
+template< class color > inline xywh PLANE<color>::blit_rect_dst ( int x, int y, FRAME<color> frame )
 //============================================================================================================================//
 {
-    return rect () & XYWH ( x, y, frame.size.x, frame.size.y );
+    return rect () & xywh ( x, y, frame.size.x, frame.size.y );
 }
 //============================================================================================================================//
-template< class color > inline XYWH PLANE<color>::blit_rect_src ( int x, int y, FRAME<color> frame )
+template< class color > inline xywh PLANE<color>::blit_rect_src ( int x, int y, FRAME<color> frame )
 //============================================================================================================================//
 {
-    XYWH dst = blit_rect_dst ( x, y, frame );  return XYWH ( dst.x - x, dst.y - y, dst.w, dst.h );
+    xywh dst = blit_rect_dst ( x, y, frame );  return xywh ( dst.x - x, dst.y - y, dst.w, dst.h );
 }
 //============================================================================================================================//
 template< class color > inline void PLANE<color>::copy (               FRAME<color> frame ){ blit<colorop::copy>( frame ); }
-template< class color > inline void PLANE<color>::copy ( XY pt,        FRAME<color> frame ){ blit<colorop::copy>( pt, frame ); }
+template< class color > inline void PLANE<color>::copy ( xy pt,        FRAME<color> frame ){ blit<colorop::copy>( pt, frame ); }
 template< class color > inline void PLANE<color>::copy ( int x, int y, FRAME<color> frame ){ blit<colorop::copy>( x, y, frame ); }
 //============================================================================================================================//
 #   define  TOOL    template< class color > template< int op > inline void PLANE<color>::
@@ -127,24 +127,24 @@ template< class color > inline void PLANE<color>::copy ( int x, int y, FRAME<col
 //                                                                 Copyright (c) Evgeny Burkov (levitz@inbox.ru, ICQ 8759747) //
 //============================================================================================================================//
 
-TOOL    pixel_clip_dirty    ( int x,int y,  color c          ){ if( clip & XY(x,y) ) colorop::opp<op>::op ( at (   x,   y ), c    ), dirty |= XYWH (x,y,1,1); }
-TOOL    pixel_clip          ( int x,int y,  color c          ){ if( clip & XY(x,y) ) colorop::opp<op>::op ( at (   x,   y ), c    ); }
+TOOL    pixel_clip_dirty    ( int x,int y,  color c          ){ if( clip & xy(x,y) ) colorop::opp<op>::op ( at (   x,   y ), c    ), dirty |= xywh (x,y,1,1); }
+TOOL    pixel_clip          ( int x,int y,  color c          ){ if( clip & xy(x,y) ) colorop::opp<op>::op ( at (   x,   y ), c    ); }
 TOOL    pixel               ( int x,int y,  color c          ){                      colorop::opp<op>::op ( at (   x,   y ), c    ); }
-TOOL    pixel               ( XY p,         color c          ){                      colorop::opp<op>::op ( at ( p.x, p.y ), c    ); }
+TOOL    pixel               ( xy p,         color c          ){                      colorop::opp<op>::op ( at ( p.x, p.y ), c    ); }
 
-TOOL    pixel_clip_dirty    ( int x,int y,  color c, alpha a ){ if( clip & XY(x,y) ) colorop::opp<op>::op ( at (   x,   y ), c, a ), dirty |= XYWH (x,y,1,1); }
-TOOL    pixel_clip          ( int x,int y,  color c, alpha a ){ if( clip & XY(x,y) ) colorop::opp<op>::op ( at (   x,   y ), c, a ); }
+TOOL    pixel_clip_dirty    ( int x,int y,  color c, alpha a ){ if( clip & xy(x,y) ) colorop::opp<op>::op ( at (   x,   y ), c, a ), dirty |= xywh (x,y,1,1); }
+TOOL    pixel_clip          ( int x,int y,  color c, alpha a ){ if( clip & xy(x,y) ) colorop::opp<op>::op ( at (   x,   y ), c, a ); }
 TOOL    pixel               ( int x,int y,  color c, alpha a ){                      colorop::opp<op>::op ( at (   x,   y ), c, a ); }
-TOOL    pixel               ( XY p,         color c, alpha a ){                      colorop::opp<op>::op ( at ( p.x, p.y ), c, a ); }
+TOOL    pixel               ( xy p,         color c, alpha a ){                      colorop::opp<op>::op ( at ( p.x, p.y ), c, a ); }
 
 //============================================================================================================================//
-TOOL    blit                (               FRAME<color> frame ){ blit <op> ( XY(0,0), frame ); }
-TOOL    blit                ( int x,int y,  FRAME<color> frame ){ blit <op> ( XY(x,y), frame ); }
-TOOL    blit                ( XY p,         FRAME<color> frame )
+TOOL    blit                (               FRAME<color> frame ){ blit <op> ( xy(0,0), frame ); }
+TOOL    blit                ( int x,int y,  FRAME<color> frame ){ blit <op> ( xy(x,y), frame ); }
+TOOL    blit                ( xy p,         FRAME<color> frame )
 //============================================================================================================================//
 {
-    XYWH dst = blit_rect_dst ( p.x, p.y, frame );
-    XYWH src = blit_rect_src ( p.x, p.y, frame );
+    xywh dst = blit_rect_dst ( p.x, p.y, frame );
+    xywh src = blit_rect_src ( p.x, p.y, frame );
 
     dst &= clip; dirty |= dst;
 
@@ -156,7 +156,7 @@ TOOL    blit                ( XY p,         FRAME<color> frame )
 }
 //============================================================================================================================//
 TOOL    fill                (               color c ){ fill <op> ( rect (), c ); }
-TOOL    fill                ( XYXY r,       color c )
+TOOL    fill                ( xyxy r,       color c )
 //============================================================================================================================//
 {
     r &= clip; dirty |= r;
@@ -168,17 +168,17 @@ TOOL    fill                ( XYXY r,       color c )
     }
 }
 //============================================================================================================================//
-TOOL    rect                ( XYXY r,       color c )
+TOOL    rect                ( xyxy r,       color c )
 //============================================================================================================================//
 {
-    line_h <op> ( XY ( r.xl, r.yl ), r.size ().x, c );    line_h <op> ( XY ( r.xh-1, r.yh-1 ), - r.size ().x, c );
-    line_v <op> ( XY ( r.xl, r.yl ), r.size ().y, c );    line_v <op> ( XY ( r.xh-1, r.yh-1 ), - r.size ().y, c );
+    line_h <op> ( xy ( r.xl, r.yl ), r.size ().x, c );    line_h <op> ( xy ( r.xh-1, r.yh-1 ), - r.size ().x, c );
+    line_v <op> ( xy ( r.xl, r.yl ), r.size ().y, c );    line_v <op> ( xy ( r.xh-1, r.yh-1 ), - r.size ().y, c );
 }
 //============================================================================================================================//
-TOOL    line                ( XYXY r,       color c ){ jaggy_line <color,op> ::draw ( *this, r.xl, r.yl, r.xh, r.yh, c ); }
-TOOL    line                ( XY p1, XY p2, color c ){ jaggy_line <color,op> ::draw ( *this, p1.x, p1.y, p2.x, p2.y, c ); }
-TOOL    line_h              ( XY p, int d,  color c ){ if( d == 0 ) return;  d = d < 0 ? d+1 : d-1;  line <op> ( p, p + XY (d,0), c ); }
-TOOL    line_v              ( XY p, int d,  color c ){ if( d == 0 ) return;  d = d < 0 ? d+1 : d-1;  line <op> ( p, p + XY (0,d), c ); }
+TOOL    line                ( xyxy r,       color c ){ jaggy_line <color,op> ::draw ( *this, r.xl, r.yl, r.xh, r.yh, c ); }
+TOOL    line                ( xy p1, xy p2, color c ){ jaggy_line <color,op> ::draw ( *this, p1.x, p1.y, p2.x, p2.y, c ); }
+TOOL    line_h              ( xy p, int d,  color c ){ if( d == 0 ) return;  d = d < 0 ? d+1 : d-1;  line <op> ( p, p + xy (d,0), c ); }
+TOOL    line_v              ( xy p, int d,  color c ){ if( d == 0 ) return;  d = d < 0 ? d+1 : d-1;  line <op> ( p, p + xy (0,d), c ); }
 //============================================================================================================================//
 TOOL    line                ( geo::vector<2> p1,    geo::vector<2> p2,    color c            ){ line <op> ( p1.x, p1.y, p2.x, p2.y, c,  c  ); }
 TOOL    line                ( geo::vector<2> p1,    geo::vector<2> p2,    color c1, color c2 ){ line <op> ( p1.x, p1.y, p2.x, p2.y, c1, c2 ); }

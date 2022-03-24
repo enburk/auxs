@@ -30,17 +30,17 @@ namespace pix
         struct style
         {
             struct line {
-            str style; int width = 0; RGBA color;
+            str style; int width = 0; rgba color;
             bool operator == (line const&) const = default;
             bool operator != (line const&) const = default;
             };
 
             font font;
-            RGBA color;
+            rgba color;
             line underline;  // "solid", "double", "dahsed", "dotted", "wavy"
             line strikeout;
             line outline;
-            XY   shift;
+            xy   shift;
 
             bool operator == (style const&) const = default;
             bool operator != (style const&) const = default;
@@ -94,6 +94,6 @@ namespace pix
         bool operator == (glyph const&) const = default;
         bool operator != (glyph const&) const = default;
 
-        void render (pix::frame<RGBA>, XY offset=XY(), uint8_t alpha=255, int x=0);
+        void render (pix::frame<rgba>, xy offset=xy(), uint8_t alpha=255, int x=0);
     };
 }

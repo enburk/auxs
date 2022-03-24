@@ -54,11 +54,11 @@ void sys::mouse::image(str image)
     ));
 }
 
-auto sys::mouse::position() -> XY
+auto sys::mouse::position() -> xy
 {
-    POINT p; ::GetCursorPos(&p); return XY{p.x, p.y};
+    POINT p; ::GetCursorPos(&p); return xy{p.x, p.y};
 }
-void sys::mouse::position(XY p)
+void sys::mouse::position(xy p)
 {
     ::SetCursorPos(p.x, p.y);
 }
@@ -125,19 +125,19 @@ LRESULT CALLBACK WindowProc (HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
     const str M = "middle";
     const str R = "right";
 
-    POINT p{0,0}; ClientToScreen(hwnd, &p); XY o {p.x, p.y};
+    POINT p{0,0}; ClientToScreen(hwnd, &p); xy o {p.x, p.y};
 
     switch (msg) {
     case WM_COMMAND: if (wparam == 11111) win->on_timing(); break;
 
-    case WM_MOUSEMOVE     : win->mouse_on_move  (XY(LX,LY)); break;
-    case WM_MOUSEWHEEL    : win->mouse_on_wheel (XY(LX,LY) - o, (short)HIWORD(wparam)); break;
-    case WM_LBUTTONDOWN   : win->mouse_on_press (XY(LX,LY), L, true ); SetCapture(hwnd); break;
-    case WM_LBUTTONUP     : win->mouse_on_press (XY(LX,LY), L, false); ReleaseCapture(); break;
-    case WM_MBUTTONDOWN   : win->mouse_on_press (XY(LX,LY), M, true ); break;
-    case WM_MBUTTONUP     : win->mouse_on_press (XY(LX,LY), M, false); break;
-    case WM_RBUTTONDOWN   : win->mouse_on_press (XY(LX,LY), R, true ); break;
-    case WM_RBUTTONUP     : win->mouse_on_press (XY(LX,LY), R, false); break;
+    case WM_MOUSEMOVE     : win->mouse_on_move  (xy(LX,LY)); break;
+    case WM_MOUSEWHEEL    : win->mouse_on_wheel (xy(LX,LY) - o, (short)HIWORD(wparam)); break;
+    case WM_LBUTTONDOWN   : win->mouse_on_press (xy(LX,LY), L, true ); SetCapture(hwnd); break;
+    case WM_LBUTTONUP     : win->mouse_on_press (xy(LX,LY), L, false); ReleaseCapture(); break;
+    case WM_MBUTTONDOWN   : win->mouse_on_press (xy(LX,LY), M, true ); break;
+    case WM_MBUTTONUP     : win->mouse_on_press (xy(LX,LY), M, false); break;
+    case WM_RBUTTONDOWN   : win->mouse_on_press (xy(LX,LY), R, true ); break;
+    case WM_RBUTTONUP     : win->mouse_on_press (xy(LX,LY), R, false); break;
     case WM_CAPTURECHANGED: win->mouse_on_leave (); break;
     case WM_MOUSELEAVE    : win->mouse_on_leave (); break;
 
@@ -154,7 +154,7 @@ LRESULT CALLBACK WindowProc (HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
         static bool minimized = false;
         if(wparam == SIZE_MINIMIZED) { if (!minimized) win->on_pause (); minimized = true; break; }
         if(wparam != SIZE_MINIMIZED) { if (!minimized) win->on_resume(); minimized = false; }
-        win->on_resize(XY(LOWORD(lparam), HIWORD(lparam)));
+        win->on_resize(xy(LOWORD(lparam), HIWORD(lparam)));
         break;
     }
     case WM_CREATE :
@@ -235,7 +235,7 @@ LRESULT CALLBACK GpuWindowProc (HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
             PFD_DRAW_TO_WINDOW |    // support window
             PFD_SUPPORT_OPENGL |    // support OpenGL
             PFD_DOUBLEBUFFER,       // double buffered
-            PFD_TYPE_RGBA,          // RGBA type
+            PFD_TYPE_RGBA,          // rgba type
             24,                     // 24-bit color depth
             0, 0, 0, 0, 0, 0,       // color bits ignored
             0,                      // no alpha buffer
@@ -285,7 +285,7 @@ LRESULT CALLBACK GpuWindowProc (HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
         glMatrixMode(GL_MODELVIEW);
         glLoadIdentity();
         glViewport(0, 0, w, h);
-        win->on_resize(XY(w,h));
+        win->on_resize(xy(w,h));
         break;
     }
     case WM_PAINT:
@@ -364,7 +364,7 @@ void sys::window::create (str title)
 void sys::window::update()
 {
     auto hwnd = (HWND)(native_handle1);
-    for (XYXY r : image.updates)
+    for (xyxy r : image.updates)
     {
         RECT rect;
         rect.left   = r.l;

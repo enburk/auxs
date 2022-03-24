@@ -92,7 +92,7 @@ namespace pix::sampling
 namespace pix
 {
     template<class color> inline
-    image<color> resized (frame<color> src, XY size)
+    image<color> resized (frame<color> src, xy size)
     {
         using aux::vector;
 
@@ -101,7 +101,7 @@ namespace pix
 
         if (size.x < src.size.x/2)
         {
-            image<color> dst(XY(src.size.x/2, src.size.y));
+            image<color> dst(xy(src.size.x/2, src.size.y));
 
             for( int y=0; y<dst.size.y; y++ )
             for( int x=0; x<dst.size.x; x++ )
@@ -115,7 +115,7 @@ namespace pix
 
         if (size.y < src.size.y/2)
         {
-            image<color> dst(XY(src.size.x, src.size.y/2));
+            image<color> dst(xy(src.size.x, src.size.y/2));
 
             for( int y=0; y<dst.size.y; y++ )
             for( int x=0; x<dst.size.x; x++ )
@@ -144,7 +144,7 @@ namespace pix
     }
 
     template<class color> inline
-    void resize (image<color> & img, XY size)
+    void resize (image<color> & img, xy size)
     {
         if (img.size != size)
             img = resized(img.crop(), size);

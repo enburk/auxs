@@ -13,15 +13,15 @@ namespace gui
     struct schema
     {
         pix::font font;
-        RGBA white, black;
-        std::pair<RGBA,RGBA> 
+        rgba white, black;
+        std::pair<rgba,rgba> 
         ultralight, light, soft, normal, middle, heavy, dark,
         active, hovered, touched, focused, disabled,
         highlight, selection, error;
     };
     inline std::map<str, schema> skins;
 
-    inline std::map<str, std::pair<RGBA, RGBA>[10]> palettes;
+    inline std::map<str, std::pair<rgba, rgba>[10]> palettes;
 
     inline array<str> palettes_names;
 
@@ -77,7 +77,7 @@ namespace gui
         for (auto [index, s] : enumerate(palettes_data))
         {
             int i = index % 21;
-            RGBA* color = nullptr;
+            rgba* color = nullptr;
             if (i == 0) name = s; else
             if (i < 11) color = &palettes[name][i- 1].first; else
             if (i < 21) color = &palettes[name][i-11].second;
@@ -87,7 +87,7 @@ namespace gui
         for (auto [index, s] : enumerate(palettes_data))
         {
             int i = index % 21;
-            RGBA* color = nullptr;
+            rgba* color = nullptr;
             if (i == 0) name = s + str("+"); else
             if (i < 11) color = &palettes[name][9 - (i- 1)].first; else
             if (i < 21) color = &palettes[name][9 - (i-11)].second;
@@ -105,7 +105,7 @@ namespace gui
 
         // for (int i=0; i<10; i++)
         //     palettes[""][i] = std::pair{
-        //         RGBA::random(), RGBA::random()};
+        //         rgba::random(), rgba::random()};
 
         for (auto [name, palette] : palettes) {
             auto & skin = skins[name];
@@ -124,12 +124,12 @@ namespace gui
             skin.hovered    = palette[6];
             skin.active     = palette[7];
             skin.touched    = palette[8];
-            skin.focused    = std::pair{RGBA::amber, RGBA::black};
+            skin.focused    = std::pair{rgba::amber, rgba::black};
             skin.disabled   = std::pair{palette[3].first, palette[5].first};
 
             skin.highlight  = palette[3];
             skin.selection  = palette[4];
-            skin.error      = std::pair{RGBA::error, RGBA::white};
+            skin.error      = std::pair{rgba::error, rgba::white};
         }
 
         skins[""] = skins["gray"];

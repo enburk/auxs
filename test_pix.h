@@ -12,16 +12,16 @@ struct TestPixFonts:
 widget<TestPixFonts>
 {
     gui::image gui_image;
-    pix::image<RGBA> image;
+    pix::image<rgba> image;
 
     void on_change (void* what) override
     {
         if (what != &alpha or alpha.to == 0 or
             coord.now.size == image.size or
-            coord.now.size == XY())
+            coord.now.size == xy())
             return;
 
-        image.resize(coord.now.size); image.fill(RGBA::red);
+        image.resize(coord.now.size); image.fill(rgba::red);
         gui_image.coord = coord.now.local();
         gui_image.source = image.crop();
 
@@ -45,7 +45,7 @@ widget<TestPixFonts>
             pix::metrics(font).linegap)
         {
             pix::text::style style;
-            style.color = RGBA::black;
+            style.color = rgba::black;
             style.color.a = 230;
             style.font = font;
             style.font.bold   = r == 2 || r == 3;
@@ -55,9 +55,9 @@ widget<TestPixFonts>
                 auto glyph = pix::glyph(str(c), style);
                 auto w = glyph.width;
                 auto h = glyph.ascent + glyph.descent;
-                auto frame = image.crop(XYWH(x, y, w, h));
-                frame.blend(RGBA::white, 200);
-                glyph.render(frame, XY(), 200, x);
+                auto frame = image.crop(xywh(x, y, w, h));
+                frame.blend(rgba::white, 200);
+                glyph.render(frame, xy(), 200, x);
                 x += glyph.advance + gap;
             }
         }
@@ -68,19 +68,19 @@ struct TestPixDraw:
 widget<TestPixDraw>
 {
     gui::image Image;
-    pix::image<RGBA> image;
+    pix::image<rgba> image;
 
     void on_change (void* what) override
     {
         if (what != &alpha or alpha.to == 0 or
             coord.now.size == image.size or
-            coord.now.size == XY())
+            coord.now.size == xy())
             return;
 
         image.resize(coord.now.size);
         Image.coord = coord.now.local();
         Image.source = image.crop();
-        image.fill(RGBA::black);
+        image.fill(rgba::black);
 
     }
 };

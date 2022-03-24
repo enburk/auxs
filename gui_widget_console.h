@@ -44,7 +44,7 @@ namespace gui
             if (what == &skin)
             {
                 page.view.canvas.color = skins[skin].ultralight.first;
-                page.alignment = XY{pix::left, pix::top};
+                page.alignment = xy{pix::left, pix::top};
             }
             if (what == &timer)
             {
@@ -67,7 +67,7 @@ namespace gui
             }
         }
 
-        void on_mouse_press (XY p, str button, bool down) override
+        void on_mouse_press (xy p, str button, bool down) override
         {
             if (parent)
                 parent->on_mouse_press (

@@ -6,7 +6,7 @@ namespace gui::text
 
     struct solid : metrics
     {
-        XY offset;
+        xy offset;
         int length = 0;
         token_range tokens;
         solid(token_range tokens) : tokens(tokens)
@@ -29,7 +29,7 @@ namespace gui::text
                 int x = advance + token.bearing - bearing;
                 advance += token.bearing + token.advance;
                 length += token.size();
-                token.offset = XY(x, y);
+                token.offset = xy(x, y);
 
                 // do not increase width if
                 // there is space-like symbol at the very end
@@ -81,27 +81,27 @@ namespace gui::text
             }
         }
 
-        XYWH bar (int place)
+        xywh bar (int place)
         {
             if (place < 0 or
                 place >= length)
-                return XYWH{};
+                return xywh{};
 
             for (auto& token : tokens) {
-                XYWH r = token.bar(place, place+1);
-                if (r != XYWH{}) return r + token.offset;
+                xywh r = token.bar(place, place+1);
+                if (r != xywh{}) return r + token.offset;
                 place -= token.size(); }
 
-            return XYWH{};
+            return xywh{};
         }
 
-        array<XYWH> bars (int from, int upto)
+        array<xywh> bars (int from, int upto)
         {
-            array<XYWH> bars;
+            array<xywh> bars;
             from = max(0, from);
             for (auto& token : tokens)
             {
-                XYWH r = token.bar(from, upto) + token.offset;
+                xywh r = token.bar(from, upto) + token.offset;
                 from -= token.size();
                 upto -= token.size();
                 if (r.w == 0 or

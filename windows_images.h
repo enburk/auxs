@@ -11,26 +11,26 @@ using namespace Gdiplus;
                       GdiplusStartup(&gdiplusToken, &gdiplusStartupInput, NULL);
 
 static int GetEncoderClsid (const WCHAR* format, CLSID* pClsid);
-static expected<image<RGBA>> FromImage (Image*);
-static Image* MakeImage (frame<RGBA>);
+static expected<image<rgba>> FromImage (Image*);
+static Image* MakeImage (frame<rgba>);
 
 using aux::error;
 
-expected<XY> pix::size (array<sys::byte>::range_type r)
+expected<xy> pix::size (array<sys::byte>::range_type r)
 {
     auto result = unpack(r);
     if (!result.ok()) return result.error();
     return result.value().size;
 }
 
-expected<image<RGBA>> pix::unpack (array<sys::byte>::range_type r)
+expected<image<rgba>> pix::unpack (array<sys::byte>::range_type r)
 {
     return unpack (r.host.data() + r.offset(), r.size());
 }
 
-expected<image<RGBA>> pix::unpack (sys::byte* buffer, int size) try
+expected<image<rgba>> pix::unpack (sys::byte* buffer, int size) try
 {
-    if (size <= 0) return image<RGBA>();
+    if (size <= 0) return image<rgba>();
 
     GDI_PLUS_INIT;
     HGLOBAL hmem = ::GlobalAlloc(GMEM_MOVEABLE, size); if (!hmem) return error("pix::unpack failed");
@@ -53,7 +53,7 @@ catch(std::exception & e) { return error("pix::unpack: " + str(e.what())); }
 catch(...){ return error("pix::unpack: EXCEPTION"); }
 
 
-expected<pix::image<RGBA>> pix::read (std::filesystem::path path) try
+expected<pix::image<rgba>> pix::read (std::filesystem::path path) try
 {
     if (!std::filesystem::exists(path))
         return error("pix::read: not exists: " + path.string());
@@ -70,7 +70,7 @@ catch(std::exception & e) { return error("pix::read: " + str(e.what())); }
 catch(...){ return error("pix::read: EXCEPTION " + path.string()); }
 
 
-expected<nothing> pix::write (frame<RGBA> frame, std::filesystem::path path, int quality) try
+expected<nothing> pix::write (frame<rgba> frame, std::filesystem::path path, int quality) try
 {
     auto dir = path.parent_path();
     if (dir != std::filesystem::path())
@@ -110,7 +110,7 @@ catch(std::exception & e) { return error("pix::write: " + str(e.what())); }
 catch(...){ return error("pix::write: EXCEPTION " + path.string()); }
 
 
-expected<array<sys::byte>> pix::pack (frame<RGBA> frame, str format, int quality) try
+expected<array<sys::byte>> pix::pack (frame<rgba> frame, str format, int quality) try
 {
     if( quality == -1 ) quality = 95;
     EncoderParameters encoderParameters;
@@ -198,10 +198,10 @@ int GetEncoderClsid (const WCHAR* format, CLSID* pClsid)
    return -1; // Failure
 }
 
-expected<image<RGBA>> FromImage (Image* gdimage)
+expected<image<rgba>> FromImage (Image* gdimage)
 {
-    int w = gdimage->GetWidth (); if (w <= 0) return image<RGBA>();
-    int h = gdimage->GetHeight(); if (h <= 0) return image<RGBA>();
+    int w = gdimage->GetWidth (); if (w <= 0) return image<rgba>();
+    int h = gdimage->GetHeight(); if (h <= 0) return image<rgba>();
 
     BITMAPINFO bi;
     ZeroMemory(&bi,               sizeof(bi));
@@ -221,7 +221,7 @@ expected<image<RGBA>> FromImage (Image* gdimage)
 
     Graphics graphics (dc); graphics.DrawImage(gdimage, 0, 0, w, h);
 
-    image<RGBA> result(XY(w, h));
+    image<rgba> result(xy(w, h));
    
     ::memcpy(result.data.data(), bits, w*h*4);
 
@@ -232,11 +232,11 @@ expected<image<RGBA>> FromImage (Image* gdimage)
     return result;
 }
 
-Image* MakeImage (frame<RGBA> frame)
+Image* MakeImage (frame<rgba> frame)
 {
-    image<RGBA> copy; if (frame.size.x != frame.image->size.x)
+    image<rgba> copy; if (frame.size.x != frame.image->size.x)
     {
-        copy = image<RGBA>(frame); frame = copy;
+        copy = image<rgba>(frame); frame = copy;
     }
 
     struct BITMAPINFO256
@@ -253,7 +253,7 @@ Image* MakeImage (frame<RGBA> frame)
     bi.bmiHeader.biCompression = BI_RGB;
     bi.bmiHeader.biSizeImage   = 4*frame.size.x*frame.size.y;
 
-    for (int n=0; n<256; n++){ RGBA c (n, n, n); ::memcpy (&bi.bmiColors[n], &c, 4); }
+    for (int n=0; n<256; n++){ rgba c (n, n, n); ::memcpy (&bi.bmiColors[n], &c, 4); }
 
     BITMAPFILEHEADER bm;
     bm.bfType      = MAKEWORD('B', 'M'); 

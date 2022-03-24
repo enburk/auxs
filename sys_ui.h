@@ -7,7 +7,7 @@ namespace sys
 {
     namespace screen
     {
-        inline XY size;
+        inline xy size;
     }
     namespace keyboard
     {
@@ -24,8 +24,8 @@ namespace sys
     namespace mouse
     {
         void image(str image);
-        auto position() -> XY;
-        void position(XY);
+        auto position() -> xy;
+        void position(xy);
     }
 
     enum class choice
@@ -42,7 +42,7 @@ namespace sys
 
     struct window : polymorphic
     {
-        pix::image<RGBA> image;
+        pix::image<rgba> image;
         void*native_handle1 = nullptr;
         void*native_handle2 = nullptr;
         bool gpu = false;
@@ -56,18 +56,18 @@ namespace sys
                 native_handle1); }
 
         virtual void on_timing () = 0;
-        virtual void on_resize (XY size) = 0;
+        virtual void on_resize (xy size) = 0;
         virtual void keyboard_on_focus (bool on) = 0;
         virtual void keyboard_on_press (str key, bool down) = 0;
         virtual void keyboard_on_input (str symbol) = 0;
-        virtual void mouse_on_press (XY p, str button, bool down) = 0;
-        virtual void mouse_on_wheel (XY p, int delta) = 0;
-        virtual void mouse_on_move  (XY p) = 0;
+        virtual void mouse_on_press (xy p, str button, bool down) = 0;
+        virtual void mouse_on_wheel (xy p, int delta) = 0;
+        virtual void mouse_on_move  (xy p) = 0;
         virtual void mouse_on_leave () = 0;
-        virtual void render (XYWH, uint8_t alpha, RGBA);
-        virtual void render (XYWH, uint8_t alpha, pix::frame<RGBA>);
-        virtual void render (XYWH, uint8_t alpha, pix::glyph, XY, int);
-        virtual void render (XYWH, uint8_t alpha, RGBA, XY, pix::geo, double*, int);
+        virtual void render (xywh, uint8_t alpha, rgba);
+        virtual void render (xywh, uint8_t alpha, pix::frame<rgba>);
+        virtual void render (xywh, uint8_t alpha, pix::glyph, xy, int);
+        virtual void render (xywh, uint8_t alpha, rgba, xy, pix::geo, double*, int);
         virtual void renderr () {}
 
         std::thread timer;
@@ -109,15 +109,15 @@ namespace sys
              widget.on_key(symbol, true, true);
              on_timing();
         }
-        void mouse_on_press(XY p, str button, bool down) override {
+        void mouse_on_press(xy p, str button, bool down) override {
              widget.mouse_press(p, button, down);
              on_timing();
         }
-        void mouse_on_wheel(XY p, int delta) override {
+        void mouse_on_wheel(xy p, int delta) override {
              widget.mouse_wheel(p, delta);
              on_timing();
         }
-        void mouse_on_move(XY p) override {
+        void mouse_on_move(xy p) override {
              widget.mouse_move(p);
              on_timing();
         }
@@ -132,7 +132,7 @@ namespace sys
         using the_window<Widget>::widget;
         using the_window<Widget>::image;
 
-        void on_resize (XY size) override {
+        void on_resize (xy size) override {
              image .resize(size);
              widget.resize(size);
              on_timing();
@@ -142,18 +142,18 @@ namespace sys
              gui::time::set();
              auto active_properties_copy = gui::active_properties;
              active_properties_copy.for_each([](auto p){ p->tick(); });
-             for (XYWH r : widget.updates) widget.render(*this, r, r.origin);
+             for (xywh r : widget.updates) widget.render(*this, r, r.origin);
              widget.updates.clear();
         }
-        void render (XYWH r, uint8_t alpha, RGBA color) override
+        void render (xywh r, uint8_t alpha, rgba color) override
         {
             image.crop(r).blend(color, alpha);
         }
-        void render (XYWH r, uint8_t alpha, pix::frame<RGBA> frame) override
+        void render (xywh r, uint8_t alpha, pix::frame<rgba> frame) override
         {
             image.crop(r).blend_from(frame, alpha);
         }
-        void render (XYWH r, uint8_t alpha, pix::glyph g, XY offset, int x) override
+        void render (xywh r, uint8_t alpha, pix::glyph g, xy offset, int x) override
         {
             g.render(image.crop(r), offset, alpha, x);
         }
@@ -168,7 +168,7 @@ namespace sys
 
         gpu_window() { gpu = true; }
 
-        void on_resize (XY size) override {
+        void on_resize (xy size) override {
              widget.resize(size);
              widget.update();
              on_timing();
@@ -187,7 +187,7 @@ namespace sys
         }
         void renderr () override {
             widget.render(*this,
-            widget.coord, XY{});
+            widget.coord, xy{});
         }
     };
 

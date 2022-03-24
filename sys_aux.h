@@ -12,9 +12,9 @@ namespace sys
     namespace clipboard
     {
         void set (str);
-        void set (pix::frame<RGBA>);
+        void set (pix::frame<rgba>);
         namespace get {
-            pix::image<RGBA> image ();
+            pix::image<rgba> image ();
             str string ();
         }
     }
@@ -82,10 +82,10 @@ namespace pix
 {
     using byte = sys::byte;
 
-    expected<image<RGBA>> read   (std::filesystem::path);
-    expected<nothing>     write  (frame<RGBA>, std::filesystem::path, int quality = -1);
-    expected<array<byte>> pack   (frame<RGBA>, str format, int quality = -1);
-    expected<image<RGBA>> unpack (byte* buffer, int size);
-    expected<image<RGBA>> unpack (array<byte>::range_type);
-    expected<XY>          size   (array<byte>::range_type);
+    expected<image<rgba>> read   (std::filesystem::path);
+    expected<nothing>     write  (frame<rgba>, std::filesystem::path, int quality = -1);
+    expected<array<byte>> pack   (frame<rgba>, str format, int quality = -1);
+    expected<image<rgba>> unpack (byte* buffer, int size);
+    expected<image<rgba>> unpack (array<byte>::range_type);
+    expected<xy>          size   (array<byte>::range_type);
 }

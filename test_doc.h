@@ -22,14 +22,14 @@ widget<TestDoc>
         {
             int W = coord.now.w; if (W <= 0) return; int w = W/3;
             int H = coord.now.h; if (H <= 0) return;
-            console1.coord = XYWH(w*0, 0, w, H);
-            console2.coord = XYWH(w*1, 0, w, H);
-            console3.coord = XYWH(w*2, 0, w, H);
+            console1.coord = xywh(w*0, 0, w, H);
+            console2.coord = xywh(w*1, 0, w, H);
+            console3.coord = xywh(w*2, 0, w, H);
 
             if (done) return; done = true;
 
             auto style = pix::text::style{
-            pix::font{"Consolas"}, RGBA::black};
+            pix::font{"Consolas"}, rgba::black};
             console1.object.page.style = style;
             console2.object.page.style = style;
             console3.object.page.style = style;
@@ -88,10 +88,10 @@ widget<TestDocHtml>
                 auto& pre = pretty[i].object;
                 auto& ent = entity[i].object;
                 auto& res = result[i].object;
-                src.alignment = XY{pix::left, pix::top};
-                pre.alignment = XY{pix::left, pix::top};
-                ent.alignment = XY{pix::left, pix::top};
-                res.alignment = XY{pix::left, pix::top};
+                src.alignment = xy{pix::left, pix::top};
+                pre.alignment = xy{pix::left, pix::top};
+                ent.alignment = xy{pix::left, pix::top};
+                res.alignment = xy{pix::left, pix::top};
                 src.canvas.color = schema.white;
                 pre.canvas.color = schema.ultralight.first;
                 ent.canvas.color = schema.ultralight.first;
@@ -115,23 +115,23 @@ widget<TestDocHtml>
             int w = W / 4;
             int h = (H-bh) / n;
 
-            source.coord = XYWH(0*w, bh, w, H);
-            pretty.coord = XYWH(1*w, bh, w, H);
-            entity.coord = XYWH(2*w, bh, w, H);
-            result.coord = XYWH(3*w, bh, w, H);
+            source.coord = xywh(0*w, bh, w, H);
+            pretty.coord = xywh(1*w, bh, w, H);
+            entity.coord = xywh(2*w, bh, w, H);
+            result.coord = xywh(3*w, bh, w, H);
 
             for (int i=0; i<n; i++) {
-            source[i].coord = XYWH(0, i*h, w, h);
-            pretty[i].coord = XYWH(0, i*h, w, h);
-            entity[i].coord = XYWH(0, i*h, w, h);
-            result[i].coord = XYWH(0, i*h, w, h);
+            source[i].coord = xywh(0, i*h, w, h);
+            pretty[i].coord = xywh(0, i*h, w, h);
+            entity[i].coord = xywh(0, i*h, w, h);
+            result[i].coord = xywh(0, i*h, w, h);
             }
             int x = 0;
             for (auto& button: buttons) {
-                button.coord = XYWH(x, 0, bw, bh);
+                button.coord = xywh(x, 0, bw, bh);
                 x += bw; }
 
-            buttons.coord = XYWH(0, 0, W, bh);
+            buttons.coord = xywh(0, 0, W, bh);
         }
         if (what == &buttons)
         {

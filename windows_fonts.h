@@ -141,33 +141,33 @@ pix::glyph::glyph (str text, text::style_index i) : text(text), style_index(i)
         descent = context.font.metrics.descent;
         
         width = 2*advance; // italics are wider
-        static pix::image<RGBA> image;
-        image.resize(XY(width, ascent+descent));
-        image.fill(RGBA::white);
+        static pix::image<rgba> image;
+        image.resize(xy(width, ascent+descent));
+        image.fill(rgba::white);
 
         text::style simple_style;
         simple_style.font = font;
-        simple_style.color = RGBA::black;
+        simple_style.color = rgba::black;
 
         pix::glyph simple_glyph = *this;
         simple_glyph.style_index = text::style_index(simple_style);
         simple_glyph.render(image);
 
-        XYXY r = XYWH(0, 0, image.size.x, image.size.y);
+        xyxy r = xywh(0, 0, image.size.x, image.size.y);
 
 //        for (bool stop = false; !stop && r.yh > 0; r.yh--)
 //            for (int x = 0; x < r.xh; x++)
-//                if (image(x, r.yh-1) != RGBA::white)
+//                if (image(x, r.yh-1) != rgba::white)
 //                { stop = true; break; }
 //
 //        for (bool stop = false; !stop && r.yl < r.yh; r.yl++)
 //            for (int x = 0; x < r.xh; x++)
-//                if (image(x, r.yl) != RGBA::white)
+//                if (image(x, r.yl) != rgba::white)
 //                { stop = true; break; }
 
         for (bool stop = false; !stop && width > 0; width--)
             for (int y = 0; y < image.size.y; y++)
-                if (image(width-1, y) != RGBA::white)
+                if (image(width-1, y) != rgba::white)
                 { stop = true; break; }
 
         ascent_  = ascent;
@@ -195,17 +195,17 @@ struct cache_glyphs_key
 {
     aux::str  text;
     pix::font font;
-    pix::RGBA fore;
-    pix::RGBA back;
+    pix::rgba fore;
+    pix::rgba back;
 
     bool operator == (const cache_glyphs_key & k) const = default;
 };
 
 MAKE_HASHABLE(cache_glyphs_key, t.text, t.font, t.fore, t.back);
 
-static std::unordered_map<cache_glyphs_key, pix::image<RGBA>> cache_glyphs;
+static std::unordered_map<cache_glyphs_key, pix::image<rgba>> cache_glyphs;
 
-void pix::glyph::render (pix::frame<RGBA> frame, XY offset, uint8_t alpha, int x)
+void pix::glyph::render (pix::frame<rgba> frame, xy offset, uint8_t alpha, int x)
 {
     const auto & style = this->style();
     if (alpha == 0) return;
@@ -226,14 +226,14 @@ void pix::glyph::render (pix::frame<RGBA> frame, XY offset, uint8_t alpha, int x
             font.size) * 85/100;
     }
 
-    RGBA fore = style.color;
-    RGBA back;
+    rgba fore = style.color;
+    rgba back;
 
     bool solid_color_background = back.a == 255;
     if (!solid_color_background)
     {
         bool ok = true;
-        RGBA c = frame(0,0);
+        rgba c = frame(0,0);
         for (int y=0; y<frame.size.y; y++)
         for (int x=0; x<frame.size.x; x++) if (frame(x,y) != c) ok = false;
         if (ok) { solid_color_background = true; c.blend(back, alpha); back = c; }
@@ -260,7 +260,7 @@ void pix::glyph::render (pix::frame<RGBA> frame, XY offset, uint8_t alpha, int x
     }
 
     if (false) { // test for rendering speed
-        frame.blend(RGBA::random(), alpha);
+        frame.blend(rgba::random(), alpha);
         return;
     }
 
@@ -292,7 +292,7 @@ void pix::glyph::render (pix::frame<RGBA> frame, XY offset, uint8_t alpha, int x
     ::SetBkColor   (context.dc, RGB(back.r, back.g, back.b));
     ::SetTextColor (context.dc, RGB(fore.r, fore.g, fore.b));
 
-    pix::view<RGBA> view ((RGBA*)bits, XY(w,h), w);
+    pix::view<rgba> view ((rgba*)bits, xy(w,h), w);
 
     if (!solid_color_background) frame.copy_to(view.from(offset.x, offset.y));
     if (!solid_color_background) view.from(offset.x, offset.y).blend(back, alpha);
@@ -315,7 +315,7 @@ void pix::glyph::render (pix::frame<RGBA> frame, XY offset, uint8_t alpha, int x
     
     if (cacheable)
     {
-        pix::image<RGBA> image (XY(w,h));
+        pix::image<rgba> image (xy(w,h));
         image.crop().copy_from(view);
         cache_glyphs.emplace(
             cache_glyphs_key{text, font, fore, back},

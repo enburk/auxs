@@ -64,22 +64,22 @@ namespace gui
         (bool from, bool to, int64_t mul, int64_t div) {
         return div == 0 or mul >= div ? to : from;
     }
-    template<> RGBA inline transit<RGBA>
-        (RGBA from, RGBA to, int64_t mul, int64_t div) { return RGBA(
+    template<> rgba inline transit<rgba>
+        (rgba from, rgba to, int64_t mul, int64_t div) { return rgba(
             transit<uint8_t>(from.r, to.r, mul, div),
             transit<uint8_t>(from.g, to.g, mul, div),
             transit<uint8_t>(from.b, to.b, mul, div),
             transit<uint8_t>(from.a, to.a, mul, div));
     }
-    template<> XYWH inline transit<XYWH>
-        (XYWH from, XYWH to, int64_t mul, int64_t div) { return XYWH(
+    template<> xywh inline transit<xywh>
+        (xywh from, xywh to, int64_t mul, int64_t div) { return xywh(
             transit<int>(from.x, to.x, mul, div),
             transit<int>(from.y, to.y, mul, div),
             transit<int>(from.w, to.w, mul, div),
             transit<int>(from.h, to.h, mul, div));
     }
-    template<> XY   inline transit<XY>
-        (XY from, XY to, int64_t mul, int64_t div) { return XY(
+    template<> xy   inline transit<xy>
+        (xy from, xy to, int64_t mul, int64_t div) { return xy(
             transit<int>(from.x, to.x, mul, div),
             transit<int>(from.y, to.y, mul, div));
     }

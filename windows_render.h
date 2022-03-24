@@ -23,8 +23,8 @@ inline void glcheck (str what)
 }
 
 void sys::window::render (
-    XYWH r, uint8_t alpha, RGBA c,
-    XY offset, pix::geo geo,
+    xywh r, uint8_t alpha, rgba c,
+    xy offset, pix::geo geo,
     double* points, int n)
 {
     if (geo == pix::geo::none)
@@ -72,7 +72,7 @@ void sys::window::render (
     glDisable(GL_SCISSOR_TEST);
 }
 
-void sys::window::render (XYWH r, uint8_t alpha, RGBA c)
+void sys::window::render (xywh r, uint8_t alpha, rgba c)
 {
     GLint xywh[4];
     glGetIntegerv(GL_VIEWPORT, xywh);
@@ -92,10 +92,10 @@ void sys::window::render (XYWH r, uint8_t alpha, RGBA c)
     glEnd();
 }
 
-void sys::window::render (XYWH r, uint8_t alpha, frame<RGBA> frame)
+void sys::window::render (xywh r, uint8_t alpha, frame<rgba> frame)
 {
     struct texture { unsigned handle = max<unsigned>(); };
-    static std::map<pix::image<RGBA>*, texture> textures;
+    static std::map<pix::image<rgba>*, texture> textures;
 
     auto & [handle] = textures[frame.image];
     if (handle == max<unsigned>()) glGenTextures(1, &handle);
@@ -149,7 +149,7 @@ void sys::window::render (XYWH r, uint8_t alpha, frame<RGBA> frame)
     glDisable(GL_TEXTURE_2D);
 }
 
-void sys::window::render (XYWH r, uint8_t alpha, glyph g, XY offset, int x)
+void sys::window::render (xywh r, uint8_t alpha, glyph g, xy offset, int x)
 {
     const auto & style = g.style();
     if (alpha == 0) return;
@@ -163,20 +163,20 @@ void sys::window::render (XYWH r, uint8_t alpha, glyph g, XY offset, int x)
     int h = g.ascent + g.descent;
     if (w <= 0 || h <= 0) return;
 
-    RGBA fore = style.color;
-    RGBA back = (fore.r + fore.g + fore.b)/3 >= 128 ? RGBA::black : RGBA::white;
+    rgba fore = style.color;
+    rgba back = (fore.r + fore.g + fore.b)/3 >= 128 ? rgba::black : rgba::white;
 
-    static std::unordered_map<cache_glyphs_key, pix::image<RGBA>> cache;
+    static std::unordered_map<cache_glyphs_key, pix::image<rgba>> cache;
     auto key = cache_glyphs_key{g.text, style.font, fore, back};
     auto it = cache.find(key);
     if (it == cache.end())
     {
-        pix::image<RGBA> color (XY(3*w,h), fore);
-        pix::image<RGBA> alpha (XY(w,h), RGBA::black);
+        pix::image<rgba> color (xy(3*w,h), fore);
+        pix::image<rgba> alpha (xy(w,h), rgba::black);
 
         text::style simple_style;
         simple_style.font = style.font;
-        simple_style.color = RGBA::white;
+        simple_style.color = rgba::white;
 
         pix::glyph simple_glyph = g;
         simple_glyph.style_index = text::style_index(simple_style);
@@ -194,7 +194,7 @@ void sys::window::render (XYWH r, uint8_t alpha, glyph g, XY offset, int x)
             std::move(color)).first;
     }
 
-    render(r, alpha, it->second.crop(XYWH(
+    render(r, alpha, it->second.crop(xywh(
         3*offset.x, offset.y,
         3*r.w, r.h)));
 }

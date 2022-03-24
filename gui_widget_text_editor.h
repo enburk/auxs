@@ -13,14 +13,14 @@ namespace gui::text
         canvas& canvas = page.canvas;
         view::text_type& text = page.text;
         view::html_type& html = page.html;
-        property<RGBA>& color = page.color;
+        property<rgba>& color = page.color;
         binary_property<pix::font>& font = page.font;
         binary_property<style>& style = page.style;
-        binary_property<XY>& alignment = page.alignment;
+        binary_property<xy>& alignment = page.alignment;
         binary_property<int>& lpadding = page.lpadding;
         binary_property<int>& rpadding = page.rpadding;
-        binary_property<array<XY>>& lwrap = page.lwrap;
-        binary_property<array<XY>>& rwrap = page.rwrap;
+        binary_property<array<xy>>& lwrap = page.lwrap;
+        binary_property<array<xy>>& rwrap = page.rwrap;
         unary_property<array<range>>& highlights = page.highlights;
         unary_property<array<range>>& selections = page.selections;
         binary_property<bool>& wordwrap = page.wordwrap;
@@ -38,7 +38,7 @@ namespace gui::text
         editor ()
         {
             model = &model_;
-            alignment.now = XY{pix::left, pix::top};
+            alignment.now = xy{pix::left, pix::top};
             focusable.now = true;
         }
 

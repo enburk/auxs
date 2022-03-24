@@ -21,14 +21,14 @@ namespace gui::text
         void on_change (void* what) override
         {
              if (what == &value) {
-                 resize(XY(
+                 resize(xy(
                  value.now.advance,
                  value.now.ascent +
                  value.now.descent));
                  update();
              }
         }
-        void on_render (sys::window& window, XYWH r, XY offset, uint8_t alpha) override {
+        void on_render (sys::window& window, xywh r, xy offset, uint8_t alpha) override {
              window.render(r, alpha, value.now, offset, coord.now.x);
         }
     };
@@ -75,7 +75,7 @@ namespace gui::text
             or  what == &breadth)
             {
                 time_moved = time::now;
-                XYWH r = coord.now.local();
+                xywh r = coord.now.local();
                 if (insert_mode.now) r.w =
                 max (1, (int)(r.w*breadth.now));
                 image.coord = r;

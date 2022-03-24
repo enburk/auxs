@@ -15,13 +15,13 @@ namespace doc::view
         int columns = 1;
         int gutter = 0;
 
-        XY alignment = XY{ pix::center, pix::center };
+        xy alignment = xy{ pix::center, pix::center };
 
         int lpadding = 0;
         int rpadding = 0;
 
-        array<XY> lwrap;
-        array<XY> rwrap;
+        array<xy> lwrap;
+        array<xy> rwrap;
 
         bool wordwrap = true;
         bool ellipsis = false;

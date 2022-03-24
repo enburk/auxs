@@ -65,7 +65,7 @@ widget<Test>
     {
         if (what == &skin)
         {
-            canvas.color = RGBA::red;
+            canvas.color = rgba::red;
         }
         if (what == &coord and
             coord.was.size !=
@@ -77,8 +77,8 @@ widget<Test>
             int h = gui::metrics::text::height*12/7;
             int y = 0;
 
-            canvas.coord = XYWH(0, 0, W, H);
-            buttons.coord = XYWH(W-w, 0, w, H);
+            canvas.coord = xywh(0, 0, W, H);
+            buttons.coord = xywh(W-w, 0, w, H);
 
             for (auto & button : buttons) {
                 str s = button.text.text;
@@ -86,12 +86,12 @@ widget<Test>
                 or  s == "pix"
                 or  s == "gui")
                 y += h;
-                button.coord = XYWH(0, y, w, h);
+                button.coord = xywh(0, y, w, h);
                 y += h; }
 
             for (auto test: tests)
                 test.first->coord =
-                XYWH(0, 0, W-w, H);
+                xywh(0, 0, W-w, H);
         }
 
         if (what == &buttons)

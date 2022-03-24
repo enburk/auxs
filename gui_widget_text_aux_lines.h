@@ -4,7 +4,7 @@ namespace gui::text
 {
     struct lines : widgetarium<line>
     {
-        static void skip (array<XY>& bars, int height)
+        static void skip (array<xy>& bars, int height)
         {
             while (not bars.empty()) {
                 auto& bar = bars.front();
@@ -66,7 +66,7 @@ namespace gui::text
                 }
 
                 line & line = at(n);
-                line.move_to(XY(0, height));
+                line.move_to(xy(0, height));
                 width = max(width, line.coord.now.size.x);
                 height += line.coord.now.size.y;
                 n++;
@@ -76,15 +76,15 @@ namespace gui::text
 
             if (n > 0) at(n-1).last = true;
 
-            resize(XY(width, height));
+            resize(xy(width, height));
         }        
 
         bool focusable_now () override { return false; }
 
-        XYWH bar (place place, bool virtual_space)
+        xywh bar (place place, bool virtual_space)
         {
-            if (place.line < 0) return XYWH{};
-            if (place.line >= size()) return XYWH{};
+            if (place.line < 0) return xywh{};
+            if (place.line >= size()) return xywh{};
             if (place.offset < 0)
                 place.offset = 0;
 
@@ -101,15 +101,15 @@ namespace gui::text
 
             pix::glyph space (" ", line.style);
 
-            XYWH r = line.coord.now;
+            xywh r = line.coord.now;
             r.x = r.x + r.w + place.offset * space.advance;
             r.w = space.advance;
             return r;
         }
 
-        array<XYWH> bars (range range, bool virtual_space)
+        array<xywh> bars (range range, bool virtual_space)
         {
-            array<XYWH> bars;
+            array<xywh> bars;
             auto[from, upto] = range;
             if  (from> upto) std::swap
                 (from, upto);
@@ -122,7 +122,7 @@ namespace gui::text
                 int upto_offset = from.line == upto.line ?
                     upto.offset : max<int>();
 
-                array<XYWH> rr =
+                array<xywh> rr =
                 at (from.line).bars(
                     from_offset,
                     upto_offset,
@@ -139,13 +139,13 @@ namespace gui::text
             return bars;
         }
 
-        place point (XY p, bool virtual_space)
+        place point (xy p, bool virtual_space)
         {
             int l = 0;
 
             for (auto& line : *this)
             {
-                XYWH r = line.coord.now;
+                xywh r = line.coord.now;
                 if (r.y + r.h > p.y or line.last) return
                 {
                     l, line.point(

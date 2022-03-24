@@ -8,9 +8,9 @@ namespace gui::text
     {
         struct glyph: pix::glyph
         {
-            XY offset;
-            XYWH coord() const {
-                return XYWH(
+            xy offset;
+            xywh coord() const {
+                return xywh(
                     offset.x,
                     offset.y,
                     width,
@@ -21,7 +21,7 @@ namespace gui::text
         };
         array<glyph> glyphs;
 
-        XY offset; // for external formatting
+        xy offset; // for external formatting
 
         void operator = (doc::view::token const& t)
         {
@@ -40,7 +40,7 @@ namespace gui::text
                 ascent_ = max(ascent_,  g.ascent_);
                 descent = max(descent,  g.descent);
                 descent_= max(descent_, g.descent_);
-                glyphs += glyph{ g, XY{} };
+                glyphs += glyph{ g, xy{} };
             }
 
             if (glyphs.size() > 0) {
@@ -58,7 +58,7 @@ namespace gui::text
 
             bearing = style.style().shift.x;
 
-            resize(XY(width, ascent + descent));
+            resize(xy(width, ascent + descent));
 
             update();
         }
@@ -66,11 +66,11 @@ namespace gui::text
         int size() const { return glyphs.size(); }
 
         void on_render(sys::window& window,
-        XYWH r, XY offset, uint8_t alpha) override
+        xywh r, xy offset, uint8_t alpha) override
         {
             for (auto& g : glyphs) {
-                XYWH child_global = g.coord() + r.origin - offset;
-                XYWH child_frame = r & child_global;
+                xywh child_global = g.coord() + r.origin - offset;
+                xywh child_frame = r & child_global;
                 if (child_frame.size.x <= 0) continue;
                 if (child_frame.size.y <= 0) continue;
                 window.render(
@@ -81,14 +81,14 @@ namespace gui::text
             }
         }
 
-        XYWH bar (int from, int upto)
+        xywh bar (int from, int upto)
         {
             from = max(from, 0);
             upto = min(upto, glyphs.size());
-            if (from >= upto) return XYWH{}; upto--;
-            XYXY r1 = glyphs[from].coord();
-            XYXY r2 = glyphs[upto].coord();
-            return XYXY(
+            if (from >= upto) return xywh{}; upto--;
+            xyxy r1 = glyphs[from].coord();
+            xyxy r2 = glyphs[upto].coord();
+            return xyxy(
                 r1.x1, r1.y1,
                 r2.x2, r2.y2);
         }

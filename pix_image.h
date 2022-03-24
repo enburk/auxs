@@ -6,12 +6,12 @@ namespace pix
     template<class T> struct image
     {
         typedef T type;
-        std::vector<type> data; XY size;
+        std::vector<type> data; xy size;
         coord::rectifier<int> updates;
 
-	    explicit image (               ) : data(                  ), size(0, 0) { updates = XYXY(*this); }
-	    explicit image (XY size        ) : data(size.x * size.y   ), size(size) { updates = XYXY(*this); }
-	    explicit image (XY size, type c) : data(size.x * size.y, c), size(size) { updates = XYXY(*this); }
+	    explicit image (               ) : data(                  ), size(0, 0) { updates = xyxy(*this); }
+	    explicit image (xy size        ) : data(size.x * size.y   ), size(size) { updates = xyxy(*this); }
+	    explicit image (xy size, type c) : data(size.x * size.y, c), size(size) { updates = xyxy(*this); }
         template<typename U>
         explicit image (frame<U> f) : image (f.size)
         {
@@ -22,23 +22,23 @@ namespace pix
         const type& operator () (int x, int y) const { return data[y*size.x + x]; }
         /***/ type& operator () (int x, int y) /***/ { return data[y*size.x + x]; }
 
-        explicit operator XYWH () const { return XYWH(0, 0, size.x, size.y); }
-        explicit operator XYXY () const { return XYXY(0, 0, size.x, size.y); }
+        explicit operator xywh () const { return xywh(0, 0, size.x, size.y); }
+        explicit operator xyxy () const { return xyxy(0, 0, size.x, size.y); }
 
         frame<type> crop (      ) { return frame<type>(*this); }
-        frame<type> crop (XYWH r) { return crop().crop(r); }
+        frame<type> crop (xywh r) { return crop().crop(r); }
 
-	    void resize (XY Size)
+	    void resize (xy Size)
         {
             data.resize(Size.x * Size.y);
             size = Size;
-            updates = XYXY(*this);
+            updates = xyxy(*this);
         }
 
         void fill (const type & c)
         {
             for (auto & v : data) v = c;
-            updates = XYXY(*this);
+            updates = xyxy(*this);
         }
     };
 
@@ -46,54 +46,54 @@ namespace pix
     {
         typedef T type;
         type * ptr = nullptr;
-        XY size; int pitch = 0;
+        xy size; int pitch = 0;
 
         view () = default;
-        view (type * ptr, XY size, int pitch) : ptr (ptr), size(size), pitch(pitch) {}
+        view (type * ptr, xy size, int pitch) : ptr (ptr), size(size), pitch(pitch) {}
         const type & operator () (int x, int y) const { return *(ptr + y*pitch + x); }
         /***/ type & operator () (int x, int y) /***/ { return *(ptr + y*pitch + x); }
 
-        view from (XY p) const { return from(p.x, p.y); }
+        view from (xy p) const { return from(p.x, p.y); }
         view from (int x, int y) const
         {
             int w = size.x - x; if (w <= 0) return view();
             int h = size.y - y; if (h <= 0) return view();
-            return view (ptr + y*pitch + x, XY(w,h), pitch);
+            return view (ptr + y*pitch + x, xy(w,h), pitch);
         }
 
-        XY  fill (const type & c)
+        xy  fill (const type & c)
         {
             for (int y=0; y<size.y; y++)
             for (int x=0; x<size.x; x++) (*this)(x,y) = c;
             return size;
         }
-        XY  blend (const type & c, uint8_t alpha = 255)
+        xy  blend (const type & c, uint8_t alpha = 255)
         {
-            if (alpha == 0) return XY();
+            if (alpha == 0) return xy();
             for (int y=0; y<size.y; y++)
             for (int x=0; x<size.x; x++) (*this)(x,y).blend(c, alpha);
             return size;
         }
 
-        XY  copy_to   (view v) const { return v.copy_from(*this); }
-        XY  copy_from (view v)
+        xy  copy_to   (view v) const { return v.copy_from(*this); }
+        xy  copy_from (view v)
         {
-            int w = min(size.x, v.size.x); if (w <= 0) return XY();
-            int h = min(size.y, v.size.y); if (h <= 0) return XY();
+            int w = min(size.x, v.size.x); if (w <= 0) return xy();
+            int h = min(size.y, v.size.y); if (h <= 0) return xy();
             for (int y=0; y<h; y++)
             for (int x=0; x<w; x++) (*this)(x,y) = v(x,y);
-            return XY(w,h);
+            return xy(w,h);
         }
 
-        XY  blend_to   (view v, uint8_t alpha=255) const { return v.blend_from(*this, alpha); }
-        XY  blend_from (view v, uint8_t alpha=255)
+        xy  blend_to   (view v, uint8_t alpha=255) const { return v.blend_from(*this, alpha); }
+        xy  blend_from (view v, uint8_t alpha=255)
         {
-            if (alpha == 0) return XY();
-            int w = min(size.x, v.size.x); if (w <= 0) return XY();
-            int h = min(size.y, v.size.y); if (h <= 0) return XY();
+            if (alpha == 0) return xy();
+            int w = min(size.x, v.size.x); if (w <= 0) return xy();
+            int h = min(size.y, v.size.y); if (h <= 0) return xy();
             for (int y=0; y<h; y++)
             for (int x=0; x<w; x++) (*this)(x,y).blend(v(x,y), alpha);
-            return XY(w,h);
+            return xy(w,h);
         }
     };
 } 

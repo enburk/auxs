@@ -24,15 +24,15 @@ namespace gui::text
         text_type text{*this};
         html_type html{*this};
 
-        property<RGBA> color;
+        property<rgba> color;
         binary_property<pix::font> font;
         binary_property<style> style;
         binary_property<int> lpadding;
         binary_property<int> rpadding;
-        binary_property<array<XY>> lwrap;
-        binary_property<array<XY>> rwrap;
-        binary_property<XY> alignment = XY{pix::center, pix::center};
-        binary_property<XY> shift;
+        binary_property<array<xy>> lwrap;
+        binary_property<array<xy>> rwrap;
+        binary_property<xy> alignment = xy{pix::center, pix::center};
+        binary_property<xy> shift;
         binary_property<bool> wordwrap = true;
         binary_property<bool> ellipsis = false;
 
@@ -56,7 +56,7 @@ namespace gui::text
                 coord.was.size !=
                 coord.now.size)
             {
-                XYWH r = coord.now.local();
+                xywh r = coord.now.local();
                 canvas.coord = r;
                 frame .coord = r;
                 update_layout.go(true, time(l));
@@ -134,7 +134,7 @@ namespace gui::text
                 int H = coord.now.size.y;
                 int h = cell.coord.now.size.y;
 
-                cell.move_to(XY(0, H > h and
+                cell.move_to(xy(0, H > h and
                     alignment.now.y == pix::center ? H/2 - h/2 :
                     alignment.now.y == pix::bottom ? H   - h   :
                     0) + shift.now);
@@ -151,7 +151,7 @@ namespace gui::text
                 model->selections = selections.now;
                 if (selections.now.size() == 1
                     and focus_on.now) {
-                    XYWH r = cell.carets(0).coord.now;
+                    xywh r = cell.carets(0).coord.now;
                     r.x = 0; r.w = coord.now.w;
                     current_line_frame.coord = r;
                     current_line_frame.show(); } else
@@ -167,7 +167,7 @@ namespace gui::text
 
         auto selected () { return cell.selected(); }
 
-        place point (XY p) { return cell.point(p - shift.now); }
+        place point (xy p) { return cell.point(p - shift.now); }
 
         auto rows() { return cell.rows(); }
         auto row(int n) { return cell.row(n); }

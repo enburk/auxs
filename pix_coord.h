@@ -3,164 +3,164 @@
 namespace pix::coord
 {
     using std::abs;
-    template<class T> struct XYWH;
-    template<class T> struct XYXY;
-    template<class T> struct XY
+    template<class T> struct xywh;
+    template<class T> struct xyxy;
+    template<class T> struct xy
     {
         int x, y;
 
-        XY (        ) : x(0), y(0) {}
-        XY (T x, T y) : x(x), y(y) {}
+        xy (        ) : x(0), y(0) {}
+        xy (T x, T y) : x(x), y(y) {}
 
         void operator *= (T n) { x *= n; y *= n; };
         void operator /= (T n) { x /= n; y /= n; };
 
-        void operator += (XY r) { x += r.x; y += r.y; };
-        void operator -= (XY r) { x -= r.x; y -= r.y; };
+        void operator += (xy r) { x += r.x; y += r.y; };
+        void operator -= (xy r) { x -= r.x; y -= r.y; };
 
-        bool operator == (XY v) const { return x == v.x and y == v.y; }
-        bool operator != (XY v) const { return not (*this == v); }
+        bool operator == (xy v) const { return x == v.x and y == v.y; }
+        bool operator != (xy v) const { return not (*this == v); }
 
-        friend XY operator + (XY a, XY b) { a += b; return a; }
-        friend XY operator - (XY a, XY b) { a -= b; return a; }
+        friend xy operator + (xy a, xy b) { a += b; return a; }
+        friend xy operator - (xy a, xy b) { a -= b; return a; }
 
-        friend XY operator * (T n, XY v) { v *= n; return v; }
-        friend XY operator * (XY v, T n) { v *= n; return v; }
-        friend XY operator / (XY v, T n) { v /= n; return v; }
+        friend xy operator * (T n, xy v) { v *= n; return v; }
+        friend xy operator * (xy v, T n) { v *= n; return v; }
+        friend xy operator / (xy v, T n) { v /= n; return v; }
     };
-    template<class T> struct XYXY
+    template<class T> struct xyxy
     {
         union  {
         struct { T l, t, r, b; };
         struct { T x1, y1, x2, y2; };
         struct { T xl, yl, xh, yh; };
         struct { T left,top, right,bottom; };
-        struct { XY<T> left_top, right_bottom; };
-        struct { XY<T> origin, end; };
-        struct { XY<T> p1, p2; };
-        struct { XY<T> lt, rb; };
+        struct { xy<T> left_top, right_bottom; };
+        struct { xy<T> origin, end; };
+        struct { xy<T> p1, p2; };
+        struct { xy<T> lt, rb; };
         };
 
-        XYXY (                  ) : l(0), t(0), r(0), b(0) {}
-        XYXY (T l, T t, T r, T b) : l(l), t(t), r(r), b(b) {}
-        XYXY (XYWH<T>);
+        xyxy (                  ) : l(0), t(0), r(0), b(0) {}
+        xyxy (T l, T t, T r, T b) : l(l), t(t), r(r), b(b) {}
+        xyxy (xywh<T>);
 
         explicit operator bool () { return l < r and t < b; }
 
-        friend XYXY operator & (XYXY a, XYXY q) {
-            if (not a or not q) return XYXY{};
+        friend xyxy operator & (xyxy a, xyxy q) {
+            if (not a or not q) return xyxy{};
             a.l = max(a.l, q.l); a.r = min(a.r, q.r);
             a.t = max(a.t, q.t); a.b = min(a.b, q.b);
-            return a ? a : XYXY();
+            return a ? a : xyxy();
         }
-        friend XYXY operator | (XYXY a, XYXY q) {
+        friend xyxy operator | (xyxy a, xyxy q) {
             if (not q) return a; if (not a) return q;
             a.l = min(a.l, q.l); a.r = max(a.r, q.r);
             a.t = min(a.t, q.t); a.b = max(a.b, q.b);
             return a;
         }
-        void operator &= (XYXY q) { *this = *this & q; };
-        void operator |= (XYXY q) { *this = *this | q; };
+        void operator &= (xyxy q) { *this = *this & q; };
+        void operator |= (xyxy q) { *this = *this | q; };
 
-        void operator += (XYXY q) { l += q.l; t += q.t; r -= q.r; b -= q.b; }
-        void operator -= (XYXY q) { l -= q.l; t -= q.t; r += q.r; b += q.b; }
-        friend XYXY operator + (XYXY a, XYXY q) { a += q; return a; }
-        friend XYXY operator - (XYXY a, XYXY q) { a -= q; return a; }
+        void operator += (xyxy q) { l += q.l; t += q.t; r -= q.r; b -= q.b; }
+        void operator -= (xyxy q) { l -= q.l; t -= q.t; r += q.r; b += q.b; }
+        friend xyxy operator + (xyxy a, xyxy q) { a += q; return a; }
+        friend xyxy operator - (xyxy a, xyxy q) { a -= q; return a; }
 
-        void operator += (XY<T> p) { l += p.x; t += p.y; r += p.x; b += p.y; }
-        void operator -= (XY<T> p) { l -= p.x; t -= p.y; r -= p.x; b -= p.y; }
-        friend XYXY operator + (XYXY a, XY<T> p) { a += p; return a; }
-        friend XYXY operator - (XYXY a, XY<T> p) { a -= p; return a; }
+        void operator += (xy<T> p) { l += p.x; t += p.y; r += p.x; b += p.y; }
+        void operator -= (xy<T> p) { l -= p.x; t -= p.y; r -= p.x; b -= p.y; }
+        friend xyxy operator + (xyxy a, xy<T> p) { a += p; return a; }
+        friend xyxy operator - (xyxy a, xy<T> p) { a -= p; return a; }
 
         void operator *= (T n) { l *= n; t *= n; r *= n; b *= n; }
         void operator /= (T n) { l /= n; t /= n; r /= n; b /= n; }
-        friend XYXY operator * (XYXY a, T n) { a *= n; return a; }
-        friend XYXY operator / (XYXY a, T n) { a /= n; return a; }
+        friend xyxy operator * (xyxy a, T n) { a *= n; return a; }
+        friend xyxy operator / (xyxy a, T n) { a /= n; return a; }
 
-        bool operator != (XYXY q) const { return not (*this == q); }
-        bool operator == (XYXY q) const { return
+        bool operator != (xyxy q) const { return not (*this == q); }
+        bool operator == (xyxy q) const { return
             l == q.l and t == q.t and
             r == q.r and b == q.b; }
 
-        bool excludes (XY<T> p) const { return not includes(p); }
-        bool includes (XY<T> p) const { return
+        bool excludes (xy<T> p) const { return not includes(p); }
+        bool includes (xy<T> p) const { return
             l <= p.x and p.x < r and
             t <= p.y and p.y < b; }
 
         void inflate (T n) { l -= n; t -= n; r += n; b += n; }
         void deflate (T n) { l += n; t += n; r -= n; b -= n; }
 
-        XYXY local () const { return *this - origin; }
+        xyxy local () const { return *this - origin; }
     };
-    template<class T> struct XYWH
+    template<class T> struct xywh
     {
         union  {
         struct { T x, y, w, h; };
         struct { T left, top, width, height; };
-        struct { XY<T> origin, size; };
+        struct { xy<T> origin, size; };
         };
 
-        XYWH (                  ) : x(0), y(0), w(0), h(0) {}
-        XYWH (T x, T y, T w, T h) : x(x), y(y), w(w), h(h) {}
-        XYWH (XYXY<T>);
+        xywh (                  ) : x(0), y(0), w(0), h(0) {}
+        xywh (T x, T y, T w, T h) : x(x), y(y), w(w), h(h) {}
+        xywh (xyxy<T>);
 
         explicit operator bool () { return w > 0 and h > 0; }
 
-        void operator &= (XYWH r) { *this = XYXY<T>(*this) & XYXY<T>(r); }
-        void operator |= (XYWH r) { *this = XYXY<T>(*this) | XYXY<T>(r); }
-        friend XYWH operator & (XYWH a, XYWH b) { a &= b; return a; }
-        friend XYWH operator | (XYWH a, XYWH b) { a |= b; return a; }
+        void operator &= (xywh r) { *this = xyxy<T>(*this) & xyxy<T>(r); }
+        void operator |= (xywh r) { *this = xyxy<T>(*this) | xyxy<T>(r); }
+        friend xywh operator & (xywh a, xywh b) { a &= b; return a; }
+        friend xywh operator | (xywh a, xywh b) { a |= b; return a; }
 
-        void operator += (XY<T> p) { x += p.x; y += p.y; }
-        void operator -= (XY<T> p) { x -= p.x; y -= p.y; }
-        friend XYWH operator + (XYWH r, XY<T> p) { r += p; return r; }
-        friend XYWH operator - (XYWH r, XY<T> p) { r -= p; return r; }
+        void operator += (xy<T> p) { x += p.x; y += p.y; }
+        void operator -= (xy<T> p) { x -= p.x; y -= p.y; }
+        friend xywh operator + (xywh r, xy<T> p) { r += p; return r; }
+        friend xywh operator - (xywh r, xy<T> p) { r -= p; return r; }
 
         void operator *= (T n) { x *= n; y *= n; w *= n; h *= n; }
         void operator /= (T n) { x /= n; y /= n; w /= n; h /= n; }
-        friend XYWH operator * (XYWH r, T n) { r *= n; return r; }
-        friend XYWH operator / (XYWH r, T n) { r /= n; return r; }
+        friend xywh operator * (xywh r, T n) { r *= n; return r; }
+        friend xywh operator / (xywh r, T n) { r /= n; return r; }
 
-        bool operator != (XYWH r) const { return not (*this == r); }
-        bool operator == (XYWH r) const { return
+        bool operator != (xywh r) const { return not (*this == r); }
+        bool operator == (xywh r) const { return
             x == r.x and y == r.y and
             w == r.w and h == r.h; }
 
-        bool excludes (XY<T> p) const { return not includes(p); }
-        bool includes (XY<T> p) const { return
+        bool excludes (xy<T> p) const { return not includes(p); }
+        bool includes (xy<T> p) const { return
             x <= p.x and p.x < x + w and
             y <= p.y and p.y < y + h; }
 
         void inflate (T n) { x -= n; y -= n; w += n+n; h += n+n; }
         void deflate (T n) { x += n; y += n; w -= n+n; h -= n+n; }
 
-        XYWH local () const { return *this - origin; }
+        xywh local () const { return *this - origin; }
     };
 
-    template<class T> XYXY<T>::XYXY(XYWH<T> q) : l (q.x), t (q.y), r (q.x+q.w), b (q.y+q.h) {}
-    template<class T> XYWH<T>::XYWH(XYXY<T> q) : x (q.l), y (q.t), w (q.r-q.l), h (q.b-q.t) {}
+    template<class T> xyxy<T>::xyxy(xywh<T> q) : l (q.x), t (q.y), r (q.x+q.w), b (q.y+q.h) {}
+    template<class T> xywh<T>::xywh(xyxy<T> q) : x (q.l), y (q.t), w (q.r-q.l), h (q.b-q.t) {}
 
-    template<class T> XYXY<T> operator & (XYXY<T> a, XYWH<T> b) { a &= XYXY<T>(b); return a; }
-    template<class T> XYXY<T> operator | (XYXY<T> a, XYWH<T> b) { a |= XYXY<T>(b); return a; }
-    template<class T> XYXY<T> operator & (XYWH<T> a, XYXY<T> b) { b &= XYXY<T>(a); return b; }
-    template<class T> XYXY<T> operator | (XYWH<T> a, XYXY<T> b) { b |= XYXY<T>(a); return b; }
+    template<class T> xyxy<T> operator & (xyxy<T> a, xywh<T> b) { a &= xyxy<T>(b); return a; }
+    template<class T> xyxy<T> operator | (xyxy<T> a, xywh<T> b) { a |= xyxy<T>(b); return a; }
+    template<class T> xyxy<T> operator & (xywh<T> a, xyxy<T> b) { b &= xyxy<T>(a); return b; }
+    template<class T> xyxy<T> operator | (xywh<T> a, xyxy<T> b) { b |= xyxy<T>(a); return b; }
 
-    template<class T> XYXY<T> operator * (double k, XYXY<T> r) {
+    template<class T> xyxy<T> operator * (double k, xyxy<T> r) {
         r.l *= k; r.r *= k;
         r.t *= k; r.b *= k;
         return r; }
-    template<class T> XYWH<T> operator * (double k, XYWH<T> r) {
+    template<class T> xywh<T> operator * (double k, xywh<T> r) {
         r.x *= k; r.w *= k;
         r.y *= k; r.h *= k;
         return r; }
 
-    template<> XYXY<int> operator * (double k, XYXY<int> r) {
+    template<> xyxy<int> operator * (double k, xyxy<int> r) {
         r.l = clamp<int>(std::lround(k*r.l));
         r.t = clamp<int>(std::lround(k*r.t));
         r.r = clamp<int>(std::lround(k*r.r));
         r.b = clamp<int>(std::lround(k*r.b));
         return r; }
-    template<> XYWH<int> operator * (double k, XYWH<int> r) {
+    template<> xywh<int> operator * (double k, xywh<int> r) {
         r.x = clamp<int>(std::lround(k*r.x));
         r.y = clamp<int>(std::lround(k*r.y));
         r.w = clamp<int>(std::lround(k*r.w));
@@ -170,16 +170,16 @@ namespace pix::coord
 
     template<class T> struct rectifier
     {
-        array<XYWH<T>> rectangles;
-        void operator  = (XYWH<T> r) { rectangles.clear(); rectangles += r; }
-        void operator += (XYWH<T> r) {
+        array<xywh<T>> rectangles;
+        void operator  = (xywh<T> r) { rectangles.clear(); rectangles += r; }
+        void operator += (xywh<T> r) {
             if (!r) return;
             for (auto
                 i = rectangles.rbegin();
                 i != rectangles.rend(); ++i)
             {
                 auto & R = *i;
-                XYWH u = R | r;
+                xywh u = R | r;
                 auto Rsquare = R.w * R.h;
                 auto rsquare = r.w * r.h;
                 auto usquare = u.w * u.h;
@@ -191,7 +191,7 @@ namespace pix::coord
             }
             rectangles += r;
         }
-        typedef array<XYWH<T>>::iterator iterator;
+        typedef array<xywh<T>>::iterator iterator;
         iterator begin () { return rectangles.begin(); }
         iterator end   () { return rectangles.end  (); }
         int      size  () { return rectangles.size (); }
@@ -203,9 +203,9 @@ namespace pix::coord
 namespace pix
 {
     using real = aux::fixed<32,32>;
-    using XYXY = coord::XYXY<int>;
-    using XYWH = coord::XYWH<int>;
-    using XY   = coord::XY  <int>;
+    using xyxy = coord::xyxy<int>;
+    using xywh = coord::xywh<int>;
+    using xy   = coord::xy  <int>;
 
     ///////////////////////////////////////////////////////////////////////
                                 const  int

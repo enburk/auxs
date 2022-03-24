@@ -12,13 +12,13 @@ namespace gui
 
     struct runner : button
     {
-        void on_mouse_hover (XY p) override
+        void on_mouse_hover (xy p) override
         {
             button::on_mouse_hover(p);
             parent->on_mouse_hover(p +
                 coord.now.origin);
         }
-        void on_mouse_press (XY p, str button, bool down) override
+        void on_mouse_press (xy p, str button, bool down) override
         {
             button::on_mouse_press(p, button, down);
             parent->on_mouse_press(p + 
@@ -61,9 +61,9 @@ namespace gui
                 int w = coord.now.w;
                 int h = coord.now.h;
                 int d = clamp<int>(std::round(w/ratio.now));
-                up.coord = XYWH(0,0,w,d);
-                down.coord = XYWH(0,h-d,w,d);
-                canvas.coord = XYWH(0,0,w,h);
+                up.coord = xywh(0,0,w,d);
+                down.coord = xywh(0,h-d,w,d);
+                canvas.coord = xywh(0,0,w,h);
                 up.text.font = pix::font{"", d/2};
                 down.text.font = pix::font{"", d/2};
                 refresh();
@@ -109,23 +109,23 @@ namespace gui
             int w = up.coord.now.w;
             int d = up.coord.now.h;
 
-            runner.coord = XYWH(0, d+fake_top, w, fake_page);
-            page_up.coord = XYXY(0, d, w, runner.coord.now.y);
-            page_down.coord = XYXY(0, d+fake_top+fake_page, w, down.coord.now.y);
+            runner.coord = xywh(0, d+fake_top, w, fake_page);
+            page_up.coord = xyxy(0, d, w, runner.coord.now.y);
+            page_down.coord = xyxy(0, d+fake_top+fake_page, w, down.coord.now.y);
 
             up.enabled = top.now > 0;
             down.enabled = top.now < span.now - real_page;
             runner.enabled = up.enabled.now or down.enabled.now;
         }
 
-        void on_mouse_press (XY p, str button, bool down) override
+        void on_mouse_press (xy p, str button, bool down) override
         {
             if (button != "left") return;
             if (down && !touch) touch_point = p.y;
             if (down && !touch) touch_top = top.now;
             touch = down;
         }
-        void on_mouse_hover (XY p) override
+        void on_mouse_hover (xy p) override
         {
             if (!touch) return;
             int real_page = coord.now.h; if (real_page <= 0) return;
@@ -169,9 +169,9 @@ namespace gui
                 int w = coord.now.w;
                 int h = coord.now.h;
                 int d = clamp<int>(std::round(h/ratio.now));
-                left.coord = XYWH(0,0,d,h);
-                right.coord = XYWH(w-d,0,d,h);
-                canvas.coord = XYWH(0,0,w,h);
+                left.coord = xywh(0,0,d,h);
+                right.coord = xywh(w-d,0,d,h);
+                canvas.coord = xywh(0,0,w,h);
                 left.text.font = pix::font{"", d*2/3};
                 right.text.font = pix::font{"", d*2/3};
                 refresh();
@@ -217,23 +217,23 @@ namespace gui
             int h = left.coord.now.h;
             int d = left.coord.now.w;
 
-            runner.coord = XYWH(d+fake_top, 0, fake_page, h);
-            page_left.coord = XYXY(d, 0, runner.coord.now.y, h);
-            page_right.coord = XYXY(d+fake_top+fake_page, 0, right.coord.now.y, h);
+            runner.coord = xywh(d+fake_top, 0, fake_page, h);
+            page_left.coord = xyxy(d, 0, runner.coord.now.y, h);
+            page_right.coord = xyxy(d+fake_top+fake_page, 0, right.coord.now.y, h);
 
             left.enabled = top.now > 0;
             right.enabled = top.now < span.now - real_page;
             runner.enabled = left.enabled.now or right.enabled.now;
         }
 
-        void on_mouse_press (XY p, str button, bool down) override
+        void on_mouse_press (xy p, str button, bool down) override
         {
             if (button != "left") return;
             if (down && !touch) touch_point = p.x;
             if (down && !touch) touch_top = top.now;
             touch = down;
         }
-        void on_mouse_hover (XY p) override
+        void on_mouse_hover (xy p) override
         {
             if (!touch) return;
             int real_page = coord.now.w; if (real_page <= 0) return;

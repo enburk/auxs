@@ -7,8 +7,8 @@
 //#include "pix_draw.h"
 #include "pix_text.h"
 
-using pix::XY;
-using pix::XYXY;
-using pix::XYWH;
-using pix::RGBA;
+using pix::xy;
+using pix::xyxy;
+using pix::xywh;
+using pix::rgba;
 

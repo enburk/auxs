@@ -15,8 +15,8 @@ namespace gui::text
             rows.clear();
             last = false;
 
-            if (format.height <= 0) { resize(XY()); return; }
-            if (format.width  <= 0) { resize(XY()); return; }
+            if (format.height <= 0) { resize(xy()); return; }
+            if (format.width  <= 0) { resize(xy()); return; }
             if (format.width  == max<int>() and
                 format.alignment.x != pix::left) throw
                 std::out_of_range("text::line: "
@@ -43,7 +43,7 @@ namespace gui::text
                 }
             };
 
-            auto skip = [](array<XY>& bars, int height)
+            auto skip = [](array<xy>& bars, int height)
             {
                 while (not bars.empty()) {
                     auto& bar = bars.front();
@@ -122,7 +122,7 @@ namespace gui::text
                 for (auto& solid: row.solids)
                 for (auto& token: solid.tokens)
                 {
-                    token.move_to(XY(
+                    token.move_to(xy(
                     row.offset.x + solid.offset.x + token.offset.x,
                     row.offset.y + solid.offset.y + token.offset.y));
 
@@ -145,30 +145,30 @@ namespace gui::text
                 height = space.ascent +
                     space.descent; }
 
-            resize(XY(width, height));
+            resize(xy(width, height));
         }
 
-        XYWH bar (int place)
+        xywh bar (int place)
         {
             if (place < 0 or
                 place >= length)
-                return XYWH{};
+                return xywh{};
 
             for (auto& row : rows) {
-                XYWH r = row.bar(place);
-                if (r != XYWH{}) return r + row.offset;
+                xywh r = row.bar(place);
+                if (r != xywh{}) return r + row.offset;
                 place -= row.length; }
 
-            return XYWH{};
+            return xywh{};
         }
 
-        array<XYWH> bars (int from, int upto, bool virtual_space)
+        array<xywh> bars (int from, int upto, bool virtual_space)
         {
-            array<XYWH> bars;
+            array<xywh> bars;
             from = max(0, from);
             for (auto& row : rows)
             {
-                array<XYWH> rr = row.bars(from, upto);
+                array<xywh> rr = row.bars(from, upto);
                 for (auto& r: rr) r += row.offset;
                 from -= row.length;
                 upto -= row.length;
@@ -187,16 +187,16 @@ namespace gui::text
                 
                 pix::glyph space(" ", style);
 
-                XY  offset;
+                xy  offset;
                 if (rows.size() > 0) offset = 
-                    rows.back().offset + XY(
+                    rows.back().offset + xy(
                     rows.back().width +
                     from*space.advance,
                         0);
 
                 int n = min(upto - from, 10000);
 
-                bars += XYWH (0, 0,
+                bars += xywh (0, 0,
                     space.advance * n,
                     space.ascent +
                     space.descent) +
@@ -205,7 +205,7 @@ namespace gui::text
             return bars;
         }
 
-        int point (XY p, bool virtual_space)
+        int point (xy p, bool virtual_space)
         {
             int i = 0;
             for (auto& row : rows)

@@ -5,7 +5,7 @@ namespace gui
     struct line:
     widget<line>
     {
-        property<RGBA> color;
+        property<rgba> color;
         property<double> x1 = 0.0;
         property<double> y1 = 0.0;
         property<double> x2 = 0.0;
@@ -14,7 +14,7 @@ namespace gui
         pix::geo geo = pix::geo::none;
         double points[8];
 
-        void on_render (sys::window& window, XYWH r, XY offset, uint8_t alpha) override
+        void on_render (sys::window& window, xywh r, xy offset, uint8_t alpha) override
         {
             window.render(r, alpha, color.now,
                 offset, geo, points,
@@ -35,7 +35,7 @@ namespace gui
             {
                 if (width.now < 1.1)
                 {
-                    XYXY r (
+                    xyxy r (
                     int(std::floor(min(x1.now, x2.now))),
                     int(std::floor(min(y1.now, y2.now))),
                     int(std::ceil (max(x1.now, x2.now))),
@@ -60,7 +60,7 @@ namespace gui
                     aux::vector<2> v3 = p2 - a;
                     aux::vector<2> v4 = p2 + a;
 
-                    XYXY r (
+                    xyxy r (
                     int(std::floor(min(v1.x, v2.x, v3.x, v4.x))),
                     int(std::floor(min(v1.y, v2.y, v3.y, v4.y))),
                     int(std::ceil (max(v1.x, v2.x, v3.x, v4.x))),
@@ -82,7 +82,7 @@ namespace gui
     struct oval:
     widget<oval>
     {
-        property<RGBA> color;
+        property<rgba> color;
         property<double> x = 0.0;
         property<double> y = 0.0;
         property<double> rx = 0.0;
@@ -92,7 +92,7 @@ namespace gui
         pix::geo geo = pix::geo::none;
         array<double> points;
 
-        void on_render (sys::window& window, XYWH r, XY offset, uint8_t alpha) override
+        void on_render (sys::window& window, xywh r, xy offset, uint8_t alpha) override
         {
             window.render(r, alpha, color.now, offset, geo,
                 points.data(),(int)
@@ -115,7 +115,7 @@ namespace gui
                 if (r1.y > r2.y) std::swap(r1.y, r2.y);
                 double delta = pi/360;
 
-                XYXY r (
+                xyxy r (
                 int(std::floor(x.now - r2.x)),
                 int(std::floor(y.now - r2.y)),
                 int(std::ceil (x.now + r2.x)),

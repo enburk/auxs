@@ -4,8 +4,8 @@ namespace gui::text
 {
     struct row : metrics
     {
-        XY offset;
-        XY column_offset;
+        xy offset;
+        xy column_offset;
         array<solid> solids;
         doc::view::format format;
         bool the_last_row = true;
@@ -148,27 +148,27 @@ namespace gui::text
             width = Width;
         }
 
-        XYWH bar (int place)
+        xywh bar (int place)
         {
             if (place < 0 or
                 place >= length)
-                return XYWH{};
+                return xywh{};
 
             for (auto& solid : solids) {
-                XYWH r = solid.bar(place);
-                if (r != XYWH{}) return r + solid.offset;
+                xywh r = solid.bar(place);
+                if (r != xywh{}) return r + solid.offset;
                 place -= solid.length; }
 
-            return XYWH{};
+            return xywh{};
         }
 
-        array<XYWH> bars (int from, int upto)
+        array<xywh> bars (int from, int upto)
         {
-            array<XYWH> bars;
+            array<xywh> bars;
             from = max(0, from);
             for (auto& solid : solids)
             {
-                array<XYWH> rr = solid.bars(from, upto);
+                array<xywh> rr = solid.bars(from, upto);
                 for (auto& r: rr) r += solid.offset;
                 from -= solid.length;
                 upto -= solid.length;

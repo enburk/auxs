@@ -82,10 +82,10 @@ namespace gui
             }
         }
 
-        bool mouse_sensible (XY) override { return enabled.now; }
-        void on_mouse_hover (XY) override { mouse_hover = true; }
+        bool mouse_sensible (xy) override { return enabled.now; }
+        void on_mouse_hover (xy) override { mouse_hover = true; }
         void on_mouse_leave (  ) override { mouse_hover = false;}
-        void on_mouse_press (XY, str button, bool down) override
+        void on_mouse_press (xy, str button, bool down) override
         {
             if (button != "left") return;
             

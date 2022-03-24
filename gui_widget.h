@@ -9,7 +9,7 @@ namespace gui::base
         widget* parent = nullptr;
         array <widget*> children;
 
-        property<XYWH> coord;
+        property<xywh> coord;
         property<uint8_t> alpha = 255;
         unary_property<str> skin;
         unary_property<str> name;
@@ -18,12 +18,12 @@ namespace gui::base
         void show    (bool on , time t=time()) { alpha.go(on ? 255 : 0, t); }
         void hide    (          time t=time()) { hide(true, t); }
         void show    (          time t=time()) { show(true, t); }
-        void move_to (XYWH  r,  time t=time()) { coord.go(r, t); }
-        void move_to (XY    p,  time t=time()) { coord.go(XYWH(p.x, p.y, coord.to.w, coord.to.h), t); }
-        void shift   (XY    d,  time t=time()) { coord.go(XYWH(coord.to.x+d.x, coord.to.y+d.y, coord.to.w, coord.to.h), t); }
-        void resize  (XY size,  time t=time()) { coord.go(XYWH(coord.to.x, coord.to.y, size.x, size.y), t); }
+        void move_to (xywh  r,  time t=time()) { coord.go(r, t); }
+        void move_to (xy    p,  time t=time()) { coord.go(xywh(p.x, p.y, coord.to.w, coord.to.h), t); }
+        void shift   (xy    d,  time t=time()) { coord.go(xywh(coord.to.x+d.x, coord.to.y+d.y, coord.to.w, coord.to.h), t); }
+        void resize  (xy size,  time t=time()) { coord.go(xywh(coord.to.x, coord.to.y, size.x, size.y), t); }
 
-        virtual void on_render (sys::window& window, XYWH r, XY offset, uint8_t alpha) {}
+        virtual void on_render (sys::window& window, xywh r, xy offset, uint8_t alpha) {}
         virtual void on_change (void* what) { on_change(); }
         virtual void on_change () {}
 
@@ -32,7 +32,7 @@ namespace gui::base
 
         pix::coord::rectifier<int> updates;
         void update () { update (coord.now.local()); }
-        void update (XYWH r) {
+        void update (xywh r) {
             if (alpha.now == 0) return; r &= coord.now.local();
             if (parent) parent->update (r +  coord.now.origin);
         /// prevent multiple redraw with OpenGL
@@ -58,7 +58,7 @@ namespace gui::base
             on_change(what);
         }
 
-        void render (sys::window& window, XYWH r, XY offset, uint8_t combined_alpha = 255)
+        void render (sys::window& window, xywh r, xy offset, uint8_t combined_alpha = 255)
         {
             combined_alpha =
             ((combined_alpha+1) * alpha.now) >> 8;
@@ -69,8 +69,8 @@ namespace gui::base
             on_render (window, r, offset, combined_alpha);
 
             for(auto child : children) {
-                XYWH child_global = child->coord.now + r.origin - offset;
-                XYWH child_frame = r & child_global;
+                xywh child_global = child->coord.now + r.origin - offset;
+                xywh child_frame = r & child_global;
                 if  (child_frame.size.x <= 0) continue;
                 if  (child_frame.size.y <= 0) continue;
                 child->render(window,
@@ -131,16 +131,16 @@ namespace gui::base
         double  mouse_wheel_speed = 1.0;
         unary_property<str> mouse_image;
 
-        virtual bool mouse_sensible (XY p) { return false; }
-        virtual void on_mouse_press (XY, str button, bool down) {}
-        virtual bool on_mouse_wheel (XY, int) { return false; }
-        virtual void on_mouse_hover (XY) {}
+        virtual bool mouse_sensible (xy p) { return false; }
+        virtual void on_mouse_press (xy, str button, bool down) {}
+        virtual bool on_mouse_wheel (xy, int) { return false; }
+        virtual void on_mouse_hover (xy) {}
         virtual void on_mouse_leave () {}
 
-        virtual void on_mouse_press_child (XY, str, bool) {}
-        virtual void on_mouse_hover_child (XY) {}
+        virtual void on_mouse_press_child (xy, str, bool) {}
+        virtual void on_mouse_hover_child (xy) {}
 
-        bool mouse_sense (XY p)
+        bool mouse_sense (xy p)
         {
             if (alpha.now == 0) return false;
             if (coord.now.local().excludes(p)) return false;
@@ -150,7 +150,7 @@ namespace gui::base
             return mouse_sensible(p);
         }
 
-        void mouse_press (XY p, str button, bool down)
+        void mouse_press (xy p, str button, bool down)
         {
             // button ?
             if (down)
@@ -183,7 +183,7 @@ namespace gui::base
             sys::mouse::image(mouse_image.now);
         }
 
-        void mouse_move(XY p)
+        void mouse_move(xy p)
         {
             if (mouse_press_child) {
                 mouse_press_child->mouse_move(p -
@@ -219,7 +219,7 @@ namespace gui::base
             else on_mouse_leave ();
         }
 
-        bool mouse_wheel (XY p, int delta)
+        bool mouse_wheel (xy p, int delta)
         {
             if (alpha.now == 0) return false;
             if (coord.now.local().excludes(p)) return false;

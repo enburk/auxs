@@ -20,12 +20,12 @@ namespace gui
         std::atomic<time> elapsed = time{};
         std::atomic<bool> finish = false;
         std::atomic<bool> pause = false;
-        XY resolution;
+        xy resolution;
         str error;
 
         image frames[2];
-        pix::image<RGBA> sources[2];
-        binary_property<XYXY> padding;
+        pix::image<rgba> sources[2];
+        binary_property<xyxy> padding;
         std::atomic<int> current_frame = 0;
         std::atomic<bool> frame_ready = false;
         property<time> timer;
@@ -35,7 +35,7 @@ namespace gui
 
         ~player () { reset(); }
 
-        void load (pix::frame<RGBA> frame)
+        void load (pix::frame<rgba> frame)
         {
             reset();
             int next = (current_frame + 1) % 2;
@@ -130,7 +130,7 @@ namespace gui
                 thread.join();
 
             data.clear();
-            resolution = XY{};
+            resolution = xy{};
             duration = time{};
             elapsed = time{};
             current_frame = 0;

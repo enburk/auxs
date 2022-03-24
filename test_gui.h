@@ -40,12 +40,12 @@ widget<TestGui>
             int h = gui::metrics::text::height * 12 / 7;
             int W = coord.now.w; if (W <= 0) return; int w = W / 3;
             int H = coord.now.h; if (H <= 0) return;
-            console.coord = XYWH(w * 0, 0, w, H);
+            console.coord = xywh(w * 0, 0, w, H);
 
             if (done) return; done = true;
 
             auto style = pix::text::style{
-            pix::font{"Consolas"}, RGBA::black };
+            pix::font{"Consolas"}, rgba::black };
             console.object.page.style = style;
 
             using namespace aux::unittest;
@@ -96,7 +96,7 @@ widget<TestGuiColors>
             int H = coord.now.h; if (H <= 0) return;
             int h = gui::metrics::text::height*24/7;
 
-            canvas.color = RGBA::black;
+            canvas.color = rgba::black;
             canvas.coord = coord.now.local();
             samples.coord = coord.now.local();
 
@@ -117,7 +117,7 @@ widget<TestGuiColors>
 
                     for (int j = 0; j < 10; j++) {
                         int i = n * 10 + j;
-                        samples(i).coord = XYWH(nx*w, ny*h*10 + j*h, w, h);
+                        samples(i).coord = xywh(nx*w, ny*h*10 + j*h, w, h);
                         samples(i).color = palette[j].first;
                         samples(i).font = pix::font("Tahoma", h*7/12);
                         samples(i).text = name + " " +
@@ -139,7 +139,7 @@ widget<TestGuiColorsX>
     {
         str name;
         gui::schema schema;
-        std::pair<RGBA,RGBA> colors[10];
+        std::pair<rgba,rgba> colors[10];
         gui::text::view palette[10];
         gui::text::view title;
         gui::text::view error1;
@@ -157,31 +157,31 @@ widget<TestGuiColorsX>
                 int h = gui::metrics::text::height*12/7;
                 int q = W/10;
 
-                title.coord = XYWH(0,0, W,h);
-                title.color = RGBA::white;
+                title.coord = xywh(0,0, W,h);
+                title.color = rgba::white;
                 title.html = "<b>"+name+"</b>";
 
                 for (int i=0; i<10; i++) {
-                    palette[i].coord = XYWH(q*i, h, q, q);
+                    palette[i].coord = xywh(q*i, h, q, q);
                     palette[i].canvas.color = colors[i].first;
                     palette[i].color = colors[i].second;
                     palette[i].text = std::to_string(i);
                 }
 
-                buttons.coord = XYWH(0,h+q, W,h);
-                toolbar.coord = XYWH(0,h+q, W,h);
+                buttons.coord = xywh(0,h+q, W,h);
+                toolbar.coord = xywh(0,h+q, W,h);
                 toolbar.color = schema.light.first;
 
                 int n = 3;
                 for (int i=0; i<n; i++) {
                     buttons(i).text.text = "button";
-                    buttons(i).coord = XYWH(i*W/n, 0, W/n, h);
+                    buttons(i).coord = xywh(i*W/n, 0, W/n, h);
                     buttons(i).skin = name;
                     buttons(i).on = i == 0;
                 }
 
-                error1.coord = XYWH(0,   h+q+h, W/2, h);
-                error2.coord = XYWH(W/2, h+q+h, W/2, h);
+                error1.coord = xywh(0,   h+q+h, W/2, h);
+                error2.coord = xywh(W/2, h+q+h, W/2, h);
                 error1.canvas.color = schema.error.first;
                 error2.canvas.color = schema.error.second;
                 error1.color = schema.error.second;
@@ -190,9 +190,9 @@ widget<TestGuiColorsX>
                 error2.text = "error";
 
                 page.skin = name;
-                page.coord = XYXY(0,h+q+h+h, W, H);
+                page.coord = xyxy(0,h+q+h+h, W, H);
                 page.object.html = Lorem;
-                page.object.alignment = XY{pix::left, pix::top};
+                page.object.alignment = xy{pix::left, pix::top};
                 page.object.canvas.color = schema.ultralight.first;
                 page.object.style = pix::text::style{
                     pix::font{"Segoe UI", h*4/7},
@@ -240,7 +240,7 @@ widget<TestGuiColorsX>
             {
                 int i = y*nx + x;
                 if (i >= n) break;
-                samples(i).coord = XYWH(
+                samples(i).coord = xywh(
                 x*side, y*side, side, side);
             }
         }
@@ -263,10 +263,10 @@ widget<TestGuiFormat>
         {
             for (int i=0; i<2; i++)
             for (int j=0; j<n; j++) {
-            pages.emplace_back().object.alignment = XY{pix::left,         pix::top};
-            pages.emplace_back().object.alignment = XY{pix::center,       pix::top};
-            pages.emplace_back().object.alignment = XY{pix::justify_left, pix::top};
-            pages.emplace_back().object.alignment = XY{pix::right,        pix::top};
+            pages.emplace_back().object.alignment = xy{pix::left,         pix::top};
+            pages.emplace_back().object.alignment = xy{pix::center,       pix::top};
+            pages.emplace_back().object.alignment = xy{pix::justify_left, pix::top};
+            pages.emplace_back().object.alignment = xy{pix::right,        pix::top};
             }
             auto schema = gui::skins[skin];
 
@@ -289,40 +289,40 @@ widget<TestGuiFormat>
             int h = H / 2 / n;
 
             for (int j=0; j<n; j++) { int v = w/(j+1);
-            pages(1*4*n+j*4+0).object.lwrap = array<XY>{XY(0, h/2), XY(v/4, h/4)};
-            pages(1*4*n+j*4+1).object.lwrap = array<XY>{XY(0, h/2), XY(v/4, h/4)};
-            pages(1*4*n+j*4+2).object.lwrap = array<XY>{XY(0, h/2), XY(v/4, h/4)};
-            pages(1*4*n+j*4+3).object.lwrap = array<XY>{XY(0, h/2), XY(v/4, h/4)};
-            pages(1*4*n+j*4+0).object.rwrap = array<XY>{XY(v/4, h/4)};
-            pages(1*4*n+j*4+1).object.rwrap = array<XY>{XY(v/4, h/4)};
-            pages(1*4*n+j*4+2).object.rwrap = array<XY>{XY(v/4, h/4)};
-            pages(1*4*n+j*4+3).object.rwrap = array<XY>{XY(v/4, h/4)};
+            pages(1*4*n+j*4+0).object.lwrap = array<xy>{xy(0, h/2), xy(v/4, h/4)};
+            pages(1*4*n+j*4+1).object.lwrap = array<xy>{xy(0, h/2), xy(v/4, h/4)};
+            pages(1*4*n+j*4+2).object.lwrap = array<xy>{xy(0, h/2), xy(v/4, h/4)};
+            pages(1*4*n+j*4+3).object.lwrap = array<xy>{xy(0, h/2), xy(v/4, h/4)};
+            pages(1*4*n+j*4+0).object.rwrap = array<xy>{xy(v/4, h/4)};
+            pages(1*4*n+j*4+1).object.rwrap = array<xy>{xy(v/4, h/4)};
+            pages(1*4*n+j*4+2).object.rwrap = array<xy>{xy(v/4, h/4)};
+            pages(1*4*n+j*4+3).object.rwrap = array<xy>{xy(v/4, h/4)};
             }
             for (int i=0; i<2; i++)
             for (int j=0; j<n; j++) { int v = w/(j+1);
-            pages(i*4*n+j*4+0).coord = XYWH(w*0, i*h*n+j*h, v, h);
-            pages(i*4*n+j*4+1).coord = XYWH(w*1, i*h*n+j*h, v, h);
-            pages(i*4*n+j*4+2).coord = XYWH(w*2, i*h*n+j*h, v, h);
-            pages(i*4*n+j*4+3).coord = XYWH(w*3, i*h*n+j*h, v, h);
+            pages(i*4*n+j*4+0).coord = xywh(w*0, i*h*n+j*h, v, h);
+            pages(i*4*n+j*4+1).coord = xywh(w*1, i*h*n+j*h, v, h);
+            pages(i*4*n+j*4+2).coord = xywh(w*2, i*h*n+j*h, v, h);
+            pages(i*4*n+j*4+3).coord = xywh(w*3, i*h*n+j*h, v, h);
             }
-            pages.coord = XYWH(0,0,W,H);
-            wraps.coord = XYWH(0,0,W,H);
+            pages.coord = xywh(0,0,W,H);
+            wraps.coord = xywh(0,0,W,H);
             wraps.clear();
 
             for (auto& page : pages)
             {
                 int y = 0;
                 for (auto d : page.object.lwrap.now) {
-                wraps.emplace_back().color = RGBA(255, 0, 0, 128);
-                wraps.back().coord = XYWH(0, y, d.x, d.y) +
+                wraps.emplace_back().color = rgba(255, 0, 0, 128);
+                wraps.back().coord = xywh(0, y, d.x, d.y) +
                     page.object.coord.now.origin +
                     page.coord.now.origin;
                 y += d.y; }
                 y = 0;
                 int v = page.object.view.coord.now.w;
                 for (auto d : page.object.rwrap.now) {
-                wraps.emplace_back().color = RGBA(0, 0, 255, 128);
-                wraps.back().coord = XYWH(v-d.x, y, d.x, d.y) +
+                wraps.emplace_back().color = rgba(0, 0, 255, 128);
+                wraps.back().coord = xywh(v-d.x, y, d.x, d.y) +
                     page.object.coord.now.origin +
                     page.coord.now.origin;
                 y += d.y; }
@@ -348,8 +348,8 @@ widget<TestGuiConsole>
     {
         if (what == &skin)
         {
-            console1.object.canvas.color = RGBA::white;
-            console2.object.canvas.color = RGBA::white;
+            console1.object.canvas.color = rgba::white;
+            console2.object.canvas.color = rgba::white;
         }
         if (what == &coord and
             coord.was.size !=
@@ -361,10 +361,10 @@ widget<TestGuiConsole>
             int h = gui::metrics::text::height*12/7;
             int d = gui::metrics::line::width * 6;
             int m = w * x / 100'00;
-            doubling.coord = XYWH(w-0, 0, w/9, h);
-            console1.coord = XYXY(0-0, 0, m+0, H);
-            console2.coord = XYXY(m-0, 0, w+0, H);
-            splitter.coord = XYXY(m-d, 0, m+d, H);
+            doubling.coord = xywh(w-0, 0, w/9, h);
+            console1.coord = xyxy(0-0, 0, m+0, H);
+            console2.coord = xyxy(m-0, 0, w+0, H);
+            splitter.coord = xyxy(m-d, 0, m+d, H);
             splitter.lower = 20'00 * w / 100'00;
             splitter.upper = 80'00 * w / 100'00;
         }
@@ -405,9 +405,9 @@ widget<TestGuiEditor>
             auto& e1 = editor1.object;
             auto& e2 = editor2.object;
             auto& e3 = editor3.object;
-            e1.canvas.color = RGBA::white;
-            e2.canvas.color = RGBA::white;
-            e3.canvas.color = RGBA::white;
+            e1.canvas.color = rgba::white;
+            e2.canvas.color = rgba::white;
+            e3.canvas.color = rgba::white;
             e1.text = Lorem;
             e2.text = Lorem;
             e3.text = Lorem;
@@ -421,11 +421,11 @@ widget<TestGuiEditor>
             int d = gui::metrics::line::width * 6;
             int l = W * x1 / 100'00;
             int r = W * x2 / 100'00;
-            editor1.coord = XYXY(0-0, 0, l+0, H);
-            editor2.coord = XYXY(l-0, 0, r+0, H);
-            editor3.coord = XYXY(r-0, 0, W+0, H);
-            splitt1.coord = XYXY(l-d, 0, l+d, H);
-            splitt2.coord = XYXY(r-d, 0, r+d, H);
+            editor1.coord = xyxy(0-0, 0, l+0, H);
+            editor2.coord = xyxy(l-0, 0, r+0, H);
+            editor3.coord = xyxy(r-0, 0, W+0, H);
+            splitt1.coord = xyxy(l-d, 0, l+d, H);
+            splitt2.coord = xyxy(r-d, 0, r+d, H);
             splitt1.lower = 10'00 * W / 100'00;
             splitt1.upper = 40'00 * W / 100'00;
             splitt2.lower = 60'00 * W / 100'00;
@@ -482,13 +482,13 @@ widget<TestGuiAnimat>
             view.style = pix::text::style{
                 pix::font{"Segoe UI",
                 gui::metrics::text::height*2},
-                RGBA::black};
+                rgba::black};
 
             text.html = Lorem;
             text.style = pix::text::style{
                 pix::font{"Segoe UI",
                 gui::metrics::text::height},
-                RGBA::black};
+                rgba::black};
 
             go1.text.text = "go!";
             go2.text.text = "go!!";
@@ -496,13 +496,13 @@ widget<TestGuiAnimat>
             go4.text.text = "go!!!!";
             go5.text.text = "go!!!!!";
             go6.text.text = "go!!!!!!";
-            go1.coord = XYWH(W-w, h*0, w, h);
-            go2.coord = XYWH(W-w, h*1, w, h);
-            go3.coord = XYWH(W-w, h*2, w, h);
-            go4.coord = XYWH(W-w, h*3, w, h);
-            go5.coord = XYWH(W-w, h*4, w, h);
-            go6.coord = XYWH(W-w, h*5, w, h);
-            log.coord = XYWH(W-w, h*6, w, H-h*6);
+            go1.coord = xywh(W-w, h*0, w, h);
+            go2.coord = xywh(W-w, h*1, w, h);
+            go3.coord = xywh(W-w, h*2, w, h);
+            go4.coord = xywh(W-w, h*3, w, h);
+            go5.coord = xywh(W-w, h*4, w, h);
+            go6.coord = xywh(W-w, h*5, w, h);
+            log.coord = xywh(W-w, h*6, w, H-h*6);
             on_change(&go2);
         }
 
@@ -528,16 +528,16 @@ widget<TestGuiAnimat>
 
             switch (turn) {
             break; case 0:
-                quad.color.go(RGBA::black, lapse);
-                view.color.go(RGBA::black, lapse);
-                text.color.go(RGBA::green, lapse);
-                view.canvas.color.go(RGBA::white,  lapse);
-                text.canvas.color.go(RGBA::silver, lapse);
-                quad.coord.go(XYWH(0, 0*h, 1*w, 1*h), lapse);
-                view.coord.go(XYWH(0, 1*h, 2*w, 2*h), lapse);
-                text.coord.go(XYWH(0, 3*h, 3*w, 7*h), lapse);
-                line.color.go(RGBA::black, lapse);
-                lin1.color.go(RGBA::black, lapse);
+                quad.color.go(rgba::black, lapse);
+                view.color.go(rgba::black, lapse);
+                text.color.go(rgba::green, lapse);
+                view.canvas.color.go(rgba::white,  lapse);
+                text.canvas.color.go(rgba::silver, lapse);
+                quad.coord.go(xywh(0, 0*h, 1*w, 1*h), lapse);
+                view.coord.go(xywh(0, 1*h, 2*w, 2*h), lapse);
+                text.coord.go(xywh(0, 3*h, 3*w, 7*h), lapse);
+                line.color.go(rgba::black, lapse);
+                lin1.color.go(rgba::black, lapse);
                 line.width.go(1.0, lapse);
                 line.x1.go( 0*w, lapse);
                 lin1.x2.go( 0*w, lapse);
@@ -547,7 +547,7 @@ widget<TestGuiAnimat>
                 lin1.x1.go( 3*w, lapse);
                 line.y2.go(10*h, lapse);
                 lin1.y2.go(10*h, lapse);
-                oval.color.go(RGBA::black, lapse);
+                oval.color.go(rgba::black, lapse);
                 oval.x.go( 3*h, lapse);
                 oval.y.go( 2*h + 10*h, lapse);
                 oval.rx.go( 2*h, lapse);
@@ -555,21 +555,21 @@ widget<TestGuiAnimat>
                 oval.rx2.go( 3*h, lapse);
                 oval.ry2.go( 2*h, lapse);
                 node.text.text = "5";
-                node.text.color.go(RGBA::yellow, lapse);
-                node.outer.color.go(RGBA::white, lapse);
-                node.inner.color.go(RGBA::black, lapse);
-                node.coord.go(XYWH(0, 15*h, 1*h, 1*h), lapse);
+                node.text.color.go(rgba::yellow, lapse);
+                node.outer.color.go(rgba::white, lapse);
+                node.inner.color.go(rgba::black, lapse);
+                node.coord.go(xywh(0, 15*h, 1*h, 1*h), lapse);
             break; default:
-                quad.color.go(RGBA::olive,  lapse);
-                view.color.go(RGBA::white,  lapse);
-                text.color.go(RGBA::yellow, lapse);
-                view.canvas.color.go(RGBA::black, lapse);
-                text.canvas.color.go(RGBA::green, lapse);
-                quad.coord.go(XYWH(W-3*w, 0*h, 2*w, 2*h), lapse);
-                view.coord.go(XYWH(W-5*w, 2*h, 4*w, 4*h), lapse);
-                text.coord.go(XYWH(W-3*w, 6*h, 2*w,11*h), lapse);
-                line.color.go(RGBA::white, lapse);
-                lin1.color.go(RGBA::white, lapse);
+                quad.color.go(rgba::olive,  lapse);
+                view.color.go(rgba::white,  lapse);
+                text.color.go(rgba::yellow, lapse);
+                view.canvas.color.go(rgba::black, lapse);
+                text.canvas.color.go(rgba::green, lapse);
+                quad.coord.go(xywh(W-3*w, 0*h, 2*w, 2*h), lapse);
+                view.coord.go(xywh(W-5*w, 2*h, 4*w, 4*h), lapse);
+                text.coord.go(xywh(W-3*w, 6*h, 2*w,11*h), lapse);
+                line.color.go(rgba::white, lapse);
+                lin1.color.go(rgba::white, lapse);
                 line.width.go(5.0, lapse);
                 line.x1.go(W-3*w, lapse);
                 lin1.x2.go(W-3*w, lapse);
@@ -579,17 +579,17 @@ widget<TestGuiAnimat>
                 lin1.x1.go(W-1*w, lapse);
                 line.y2.go( 17*h, lapse);
                 lin1.y2.go( 17*h, lapse);
-                oval.color.go(RGBA::white, lapse);
+                oval.color.go(rgba::white, lapse);
                 oval.x.go(W-w-2*h, lapse);
                 oval.y.go(3*h + 17*h, lapse);
                 oval.rx.go(1*h, lapse);
                 oval.ry.go(2*h, lapse);
                 oval.rx2.go(2*h, lapse);
                 oval.ry2.go(3*h, lapse);
-                node.text.color.go(RGBA::green, lapse);
-                node.outer.color.go(RGBA::black, lapse);
-                node.inner.color.go(RGBA::white, lapse);
-                node.coord.go(XYWH(W-w-3*h, 24*h, 3*h, 2*h), lapse);
+                node.text.color.go(rgba::green, lapse);
+                node.outer.color.go(rgba::black, lapse);
+                node.inner.color.go(rgba::white, lapse);
+                node.coord.go(xywh(W-w-3*h, 24*h, 3*h, 2*h), lapse);
             }
 
             turn = (turn + 1) % 2;
@@ -639,18 +639,18 @@ widget<TestGuiGraph>
                 buttons.emplace_back().text.text = "tree";
                 buttons.front().on = true;
                 canvas.color =
-                RGBA::black;
+                rgba::black;
 
                 for (int i=0; i<500; i++)
                 tree.add(aux::random(0,99));
             }
 
             int y = 0; for (auto& button: buttons) {
-            button.coord = XYWH(0,y,w,h); y += h; }
-            buttons.coord = XYWH(W-w,0,w,H);
-            canvas.coord = XYWH(0,0,W,H);
+            button.coord = xywh(0,y,w,h); y += h; }
+            buttons.coord = xywh(W-w,0,w,H);
+            canvas.coord = xywh(0,0,W,H);
 
-            tree.coord = XYWH(0,0,W-w,H);
+            tree.coord = xywh(0,0,W-w,H);
         }
     }
 };

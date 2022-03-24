@@ -21,14 +21,14 @@ namespace gui::text
         canvas& canvas = view.canvas;
         view::text_type& text = view.text;
         view::html_type& html = view.html;
-        property<RGBA>& color = view.color;
+        property<rgba>& color = view.color;
         binary_property<pix::font>& font = view.font;
         binary_property<style>& style = view.style;
-        binary_property<XY>& alignment = view.alignment;
+        binary_property<xy>& alignment = view.alignment;
         binary_property<int>& lpadding = view.lpadding;
         binary_property<int>& rpadding = view.rpadding;
-        binary_property<array<XY>>& lwrap = view.lwrap;
-        binary_property<array<XY>>& rwrap = view.rwrap;
+        binary_property<array<xy>>& lwrap = view.lwrap;
+        binary_property<array<xy>>& rwrap = view.rwrap;
         unary_property<array<range>>& highlights = view.highlights;
         unary_property<array<range>>& selections = view.selections;
         binary_property<bool>& wordwrap = view.wordwrap;
@@ -52,7 +52,7 @@ namespace gui::text
             if (what == &update_text
             or  what == &update_layout)
             {
-                XY size = coord.now.size;
+                xy size = coord.now.size;
                 bool
                     scroll_x =
                     scroll.x.mode == scroll::mode::permanent or (
@@ -73,8 +73,8 @@ namespace gui::text
                 scroll.x.show(scroll_x);
                 scroll.y.show(scroll_y);
 
-                scroll.x.coord = XYWH(0, size.y-d, x, d);
-                scroll.y.coord = XYWH(size.x-d, 0, d, y);
+                scroll.x.coord = xywh(0, size.y-d, x, d);
+                scroll.y.coord = xywh(size.x-d, 0, d, y);
 
                 scroll.x.span = view.cell.coord.now.size.x;
                 scroll.y.span = view.cell.coord.now.size.y;
@@ -89,7 +89,7 @@ namespace gui::text
             }
             if (what == &selections and not selections.now.empty())
             {
-                XYXY r = view.cell.carets.back().coord.now +
+                xyxy r = view.cell.carets.back().coord.now +
                          view.shift.now;
 
                 int d = gui::metrics::text::height;
@@ -119,8 +119,8 @@ namespace gui::text
                 }
             }
 
-            if (what == &scroll.x) view.shift = XY(-scroll.x.top, view.shift.now.y);
-            if (what == &scroll.y) view.shift = XY(view.shift.now.x, -scroll.y.top);
+            if (what == &scroll.x) view.shift = xy(-scroll.x.top, view.shift.now.y);
+            if (what == &scroll.y) view.shift = xy(view.shift.now.x, -scroll.y.top);
 
             if (what == &focus_on)
             {
@@ -277,7 +277,7 @@ namespace gui::text
             }
         }
 
-        bool on_mouse_wheel (XY p, int delta) override
+        bool on_mouse_wheel (xy p, int delta) override
         {
             delta /= 20;
             delta *= gui::metrics::text::height;
@@ -295,17 +295,17 @@ namespace gui::text
         bool  touch = false;
         place touch_place;
         time  touch_time;
-        XY    touch_point;
+        xy    touch_point;
         
         property<time> timer;
         time select_delay = time{};
         time select_lapse = 100ms;
         time select_notch;
-        XY   select_point;
+        xy   select_point;
 
-        bool mouse_sensible (XY p) override { return true; }
+        bool mouse_sensible (xy p) override { return true; }
 
-        void on_mouse_press (XY p, str button, bool down) override
+        void on_mouse_press (xy p, str button, bool down) override
         {
             if (button == "right") return;
             if (button != "left") return;
@@ -335,7 +335,7 @@ namespace gui::text
                       down ? time::infinity : time());
         }
 
-        void on_mouse_hover (XY p) override
+        void on_mouse_hover (xy p) override
         {
             bool drag_and_drop = false;
             bool inside_selection = false;
@@ -359,15 +359,15 @@ namespace gui::text
                 {
                     //if (auto token = view.target(p); token && token->info != "")
                     //{
-                    //    XYWH r = view.cell.bar(view.point(p).from);
+                    //    xywh r = view.cell.bar(view.point(p).from);
                     //    info.hide(); r.w = r.h*100;
-                    //    info.alignment = XY{pix::left, pix::top};
+                    //    info.alignment = xy{pix::left, pix::top};
                     //    info.coord = r;
                     //    info.html = token->info;
                     //    r.w = info.cell.coord.now.w + r.h*2; r.y += r.h;
                     //    r.h = info.cell.coord.now.h + r.h/2;
                     //    info.coord = r;
-                    //    info.alignment = XY{pix::center, pix::center};
+                    //    info.alignment = xy{pix::center, pix::center};
                     //    info.see();
                     //}
                     //else info.hide();

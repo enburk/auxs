@@ -5,7 +5,7 @@
 #include "aux_math.h"
 namespace pix
 {
-    struct RGBA
+    struct rgba
     {
         union
         {
@@ -15,17 +15,17 @@ namespace pix
             uint32_t value; // byte-order-dependent
         };
 
-        RGBA () : value (0) {}
-        RGBA (int r, int g, int b, int a = 255) : b(b), g(g), r(r), a(a) {}
+        rgba () : value (0) {}
+        rgba (int r, int g, int b, int a = 255) : b(b), g(g), r(r), a(a) {}
 
-        bool operator == (const RGBA & c) const { return value == c.value; }
-        bool operator != (const RGBA & c) const { return value != c.value; }
-        bool operator <  (const RGBA & c) const { return value <  c.value; }
+        bool operator == (const rgba & c) const { return value == c.value; }
+        bool operator != (const rgba & c) const { return value != c.value; }
+        bool operator <  (const rgba & c) const { return value <  c.value; }
 
         static const int color_channels = 3;
         static const int total_channels = 4;
 
-        void blend (RGBA c, uint8_t alpha = 255) {
+        void blend (rgba c, uint8_t alpha = 255) {
             uint8_t
                 A = alpha == 255 ? c.a : c.a * alpha >> 8;
             r = A == 255 ? c.r : r + ( A * (c.r - r) >> 8 );
@@ -33,12 +33,12 @@ namespace pix
             b = A == 255 ? c.b : b + ( A * (c.b - b) >> 8 );
         }
 
-        static RGBA random(uint8_t l = 64, uint8_t u = 255) { return RGBA(
+        static rgba random(uint8_t l = 64, uint8_t u = 255) { return rgba(
                aux::random<int>(l, u),
                aux::random<int>(l, u),
                aux::random<int>(l, u)); }
 
-        static const RGBA
+        static const rgba
         black,  silver, gray,   white,
         maroon, red,    purple, fuchsia,
         green,  lime,   olive,  yellow,
@@ -48,18 +48,18 @@ namespace pix
         amber;
     };
 
-    inline RGBA ARGB (uint32_t value)
+    inline rgba ARGB (uint32_t value)
     {
-        RGBA c;
+        rgba c;
         c.a = (value >> 24) & 0xFF;
         c.r = (value >> 16) & 0xFF;
         c.g = (value >>  8) & 0xFF;
         c.b = (value      ) & 0xFF;
         return c;
     }
-    inline RGBA XRGB (uint32_t value)
+    inline rgba XRGB (uint32_t value)
     {
-        RGBA c;
+        rgba c;
         c.a = 0xFF;
         c.r = (value >> 16) & 0xFF;
         c.g = (value >>  8) & 0xFF;
@@ -67,18 +67,18 @@ namespace pix
         return c;
     }
 
-    inline const RGBA
-    RGBA::black  = XRGB(0x000000), RGBA::silver  = XRGB(0xC0C0C0),
-    RGBA::maroon = XRGB(0x800000), RGBA::red     = XRGB(0xFF0000),
-    RGBA::green  = XRGB(0x008000), RGBA::lime    = XRGB(0x00FF00),
-    RGBA::navy   = XRGB(0x000080), RGBA::blue    = XRGB(0x0000FF),
-    RGBA::purple = XRGB(0x800080), RGBA::fuchsia = XRGB(0xFF00FF),
-    RGBA::olive  = XRGB(0x808000), RGBA::yellow  = XRGB(0xFFFF00),
-    RGBA::teal   = XRGB(0x008080), RGBA::aqua    = XRGB(0x00FFFF),
-    RGBA::gray   = XRGB(0x808080), RGBA::white   = XRGB(0xFFFFFF),
+    inline const rgba
+    rgba::black  = XRGB(0x000000), rgba::silver  = XRGB(0xC0C0C0),
+    rgba::maroon = XRGB(0x800000), rgba::red     = XRGB(0xFF0000),
+    rgba::green  = XRGB(0x008000), rgba::lime    = XRGB(0x00FF00),
+    rgba::navy   = XRGB(0x000080), rgba::blue    = XRGB(0x0000FF),
+    rgba::purple = XRGB(0x800080), rgba::fuchsia = XRGB(0xFF00FF),
+    rgba::olive  = XRGB(0x808000), rgba::yellow  = XRGB(0xFFFF00),
+    rgba::teal   = XRGB(0x008080), rgba::aqua    = XRGB(0x00FFFF),
+    rgba::gray   = XRGB(0x808080), rgba::white   = XRGB(0xFFFFFF),
 
-    RGBA::amber  = XRGB(0xFFBF00),
-    RGBA::error  = XRGB(0xB00020);
+    rgba::amber  = XRGB(0xFFBF00),
+    rgba::error  = XRGB(0xB00020);
 
     struct  MONO
     {
@@ -86,7 +86,7 @@ namespace pix
 
         MONO () : value (0) {}
         MONO (int value) : value(value) {}
-        MONO (RGBA c) { value = aux::clamp
+        MONO (rgba c) { value = aux::clamp
             <uint8_t>(255* (
             0.212671 * c.r +
             0.715160 * c.g +
@@ -100,9 +100,9 @@ namespace pix
 
 namespace std
 {
-    template <> struct hash<pix::RGBA>
+    template <> struct hash<pix::rgba>
     {
-        std::size_t operator()(const pix::RGBA& c) const
+        std::size_t operator()(const pix::rgba& c) const
         {
             return std::hash<std::uint32_t>()(c.value);
         }

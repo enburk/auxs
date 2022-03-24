@@ -6,7 +6,7 @@ namespace gui::text
     struct cell:
     widget<cell>
     {
-        using color_range = std::pair<range, RGBA>;
+        using color_range = std::pair<range, rgba>;
         using color_bars = widgetarium<canvas>;
 
         color_bars highlight_bars;
@@ -22,7 +22,7 @@ namespace gui::text
         void fill(array<doc::view::line> data)
         {
             lines.fill(std::move(data));
-            resize(XY(virtual_space.now? max<int>()/2:
+            resize(xy(virtual_space.now? max<int>()/2:
                 lines.coord.now.size.x,
                 lines.coord.now.size.y));
         }
@@ -33,7 +33,7 @@ namespace gui::text
                 coord.was.size !=
                 coord.now.size)
             {
-                XYWH r = coord.now.local();
+                xywh r = coord.now.local();
                 highlight_bars.coord = r;
                 selection_bars.coord = r;
                 carets.coord = r;
@@ -43,7 +43,7 @@ namespace gui::text
             {
                 int n = 0;
                 for (auto range: highlights.now)
-                for (XYWH r: lines.bars(range, virtual_space)) {
+                for (xywh r: lines.bars(range, virtual_space)) {
                     auto& bar = highlight_bars(n++);
                     bar.color = skins[skin.now].highlight.first;
                     bar.coord = r; }
@@ -55,7 +55,7 @@ namespace gui::text
             {
                 int n = 0;
                 for (auto range: selections.now)
-                for (XYWH r: lines.bars(range, virtual_space)) {
+                for (xywh r: lines.bars(range, virtual_space)) {
                     auto& bar = selection_bars(n++);
                     bar.color = skins[skin.now].selection.first;
                     bar.coord = r; }
@@ -122,15 +122,15 @@ namespace gui::text
             return s;
         }
 
-        XYWH bar(place place) {
+        xywh bar(place place) {
             return lines.bar(place,
                 virtual_space.now); }
 
-        generator<XYWH> bars(range range) {
-            for (XYWH bar: lines.bars(range, virtual_space))
+        generator<xywh> bars(range range) {
+            for (xywh bar: lines.bars(range, virtual_space))
                 co_yield bar; }
 
-        place point (XY p) { return lines.
+        place point (xy p) { return lines.
             point(p, virtual_space.now); }
 
         auto rows() { return lines.rows(); }

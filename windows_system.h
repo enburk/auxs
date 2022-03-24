@@ -225,11 +225,11 @@ void sys::clipboard::set (str s)
     }
     catch(...){}
 }
-pix::image<RGBA> sys::clipboard::get::image ()
+pix::image<rgba> sys::clipboard::get::image ()
 {
-    return pix::image<RGBA>();
+    return pix::image<rgba>();
 }
-void sys::clipboard::set (pix::frame<RGBA> image)
+void sys::clipboard::set (pix::frame<rgba> image)
 {
 }
 
