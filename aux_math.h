@@ -30,6 +30,13 @@ namespace aux
 
     auto sum (auto... xs) { return (xs + ...); }
 
+    static inline double epsilon = 1.e-5;
+
+    using std::optional;
+    using std::numbers::pi;
+    using std::sin;
+    using std::cos;
+
     // vector
 
     namespace vector_data {
@@ -42,6 +49,7 @@ namespace aux
 
     template<int D, class T=double> struct vector : vector_data::s<T,D>
     {
+        enum { dim = D };
         using data_type = vector_data::s<T,D>;
         using data_type::data;
 
@@ -71,13 +79,20 @@ namespace aux
 
         bool operator == (vector const& v) const { return data == v.data; }
         bool operator != (vector const& v) const { return data != v.data; }
+        friend bool same (vector const& v1, vector const& v2)
+        {
+            if (v1.size() != v2.size()) return false;
+            for (int i=0; i<v1.size(); i++)
+                if (abs(v1[i]-v2[i]) > epsilon)
+                    return false; return true;
+        }
 
         double  norm() const { return sqrt(double(norm2())); }
         auto    norm2() const { return (*this) * (*this); }
         vector& normalize() { *this /= norm(); return *this; }
         vector  normalized() const { return (*this) / norm(); }
 
-        vector rotated (auto a) const requires (D==2) {
+        vector rotated (auto a) const requires (dim == 2) {
         return vector { // rotation is from x-axis toward y-axis:
             cos(a)*data[0] - sin(a)*data[1], // if x:right y:up then counterclockwise
             sin(a)*data[0] + cos(a)*data[1]  // if x:right y:down then clockwise
@@ -269,4 +284,89 @@ namespace aux
         0,  0,  z,  0,
         0,  0,  0,  1
     };}
+
+    // geometry
+
+    template<class v=vector<3>> struct line
+    {
+        v p1, p2;
+
+        v normal () requires (v.dim == 2 ){ return (p2-p1).rotated(pi/2); }
+
+        auto intersection (line a, line b) -> optional<v> requires (v.dim == 2)
+        {
+            auto A1 = a.p2.y - a.p1.y;
+            auto A2 = b.p2.y - b.p1.y;
+            auto B1 = a.p1.x - a.p2.x;
+            auto B2 = b.p1.x - b.p2.x;
+
+            auto D = A1 * B2 - A2 * B1;
+            if (abs(D) < 1.e-5) // parallel
+                return std::nullopt;
+
+            auto C1 = - (a.p1.x * A1 + a.p1.y * B1);
+            auto C2 = - (b.p1.x * A2 + b.p1.y * B2);
+
+            return vector<2>(
+            (B1 * C2 - B2 * C1) / D,
+            (C1 * A2 - C2 * A1) / D);
+        }
+
+        v projection (v p) requires (v.dim == 2)
+        {
+            line n {p, p + normal()};
+            auto projection = intersection(*this, n);
+            if (!projection) return p;
+            return *projection;
+        }
+
+        //friend auto distance (line a, line b)
+        //{
+        //    line n {a.p1, a.p1 + b.normal()};  vector<2> t;  if( ! intersect (l2,n,t) ) return 0;  return distance (l1.p1,t);
+        //}
+        //inline    double      distance         (    line< vector<2> > l,           vector<2>   p    )
+        //{
+        //    line< vector<2> > n ( p, p + (l.p2-l.p1).copy ().rotate (pi/2) );  vector<2> t;  if( ! intersect (l,n,t) ) return 0;  return distance (p,t);
+        //}
+        //inline    double      distance         (          vector<2>   p,     line< vector<2> > l    ){ return distance ( l, p ); }
+
+    };
+    template<class v=vector<3>> struct segment
+    {
+        v p1, p2;
+
+        auto length () { return (p2-p1).norm(); }
+
+        //auto intersection (
+        //    segment<vector<2>> a,
+        //    segment<vector<2>> b) ->
+        //    std::optional<vector<2>>
+        //{
+        //    auto v = intersection(
+        //    line<vector<2>>{a.p1, a.p2},
+        //    line<vector<2>>{a.p1, a.p2});
+        //    if (not v) return std::nullopt;
+        //
+        //    auto eps = 1.e-5;
+        //    if (v->x+eps < min(a.p1.x, a.p2.x)
+        //    or  v->x+eps < min(b.p1.x, b.p2.x)
+        //    or  v->x-eps > max(a.p1.x, a.p2.x)
+        //    or  v->x-eps > max(b.p1.x, b.p2.x)
+        //    or  v->y+eps < min(a.p1.y, a.p2.y)
+        //    or  v->y+eps < min(b.p1.y, b.p2.y)
+        //    or  v->y-eps > max(a.p1.y, a.p2.y)
+        //    or  v->y-eps > max(b.p1.y, b.p2.y))
+        //    return std::nullopt;
+        //    return v;
+        //}
+    };
+    struct circle
+    {
+        vector<2> center; double radius;
+    };
 }
+
+
+
+
+

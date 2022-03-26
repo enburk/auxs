@@ -8,6 +8,60 @@ widget<TestPix>
 {
 };
 
+struct TestPixDraw:
+widget<TestPixDraw>
+{
+    gui::image Image;
+    pix::image<rgba> image;
+
+    void on_change (void* what) override
+    {
+        if (what != &alpha or alpha.to == 0 or
+            coord.now.size == image.size or
+            coord.now.size == xy())
+            return;
+
+        image.resize(coord.now.size);
+        Image.coord = coord.now.local();
+        Image.source = image.crop();
+
+        int w = image.size.x;
+        int h = image.size.y;
+
+        pix::image<rgba> plane;
+        plane.resize(image.size);
+        image.fill(rgba::black);
+        plane.fill(rgba{});
+
+        auto frame1 = image.crop(xyxy(0,0,w,h/2));
+        auto frame2 = plane.crop(xyxy(0,h/2,w,h));
+
+        int n = 32;
+        int r = h/4;
+        for (double a = 0; a < 2*pi-0.001; a += 2*pi/n)
+        {
+            frame1.blend(pix::line{{r,r},
+                pix::vector{r,0}.rotated(-a) +
+                pix::vector{r,r}}, rgba::white,
+                0.1 + 1.9*a/2/pi);
+            frame2.copy(pix::line{{r,r},
+                pix::vector{r,0}.rotated(-a) +
+                pix::vector{r,r}}, rgba::white,
+                2.0 - 1.9*a/2/pi);
+
+            frame1.blend(pix::circle{{3*r,r},
+                r - r*a/2/pi}, rgba::white,
+                2.0 - 1.9*a/2/pi);
+            frame2.copy(pix::circle{{3*r,r},
+                r - r*a/2/pi}, rgba::white,
+                2.0 - 1.9*a/2/pi);
+        }
+
+        image.crop().blend_from(
+        plane.crop());
+    }
+};
+
 struct TestPixFonts:
 widget<TestPixFonts>
 {
@@ -61,27 +115,6 @@ widget<TestPixFonts>
                 x += glyph.advance + gap;
             }
         }
-    }
-};
-
-struct TestPixDraw:
-widget<TestPixDraw>
-{
-    gui::image Image;
-    pix::image<rgba> image;
-
-    void on_change (void* what) override
-    {
-        if (what != &alpha or alpha.to == 0 or
-            coord.now.size == image.size or
-            coord.now.size == xy())
-            return;
-
-        image.resize(coord.now.size);
-        Image.coord = coord.now.local();
-        Image.source = image.crop();
-        image.fill(rgba::black);
-
     }
 };
 

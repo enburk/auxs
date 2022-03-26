@@ -14,7 +14,7 @@ namespace gui::text
         view::text_type& text = page.text;
         view::html_type& html = page.html;
         property<rgba>& color = page.color;
-        binary_property<pix::font>& font = page.font;
+        binary_property<font>& font = page.font;
         binary_property<style>& style = page.style;
         binary_property<xy>& alignment = page.alignment;
         binary_property<int>& lpadding = page.lpadding;

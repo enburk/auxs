@@ -4,7 +4,7 @@
 #include "pix_image.h"
 #include "pix_frame.h"
 #include "pix_process.h"
-//#include "pix_draw.h"
+#include "pix_draw.h"
 #include "pix_text.h"
 
 using pix::xy;

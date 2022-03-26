@@ -25,7 +25,7 @@ namespace gui::text
         html_type html{*this};
 
         property<rgba> color;
-        binary_property<pix::font> font;
+        binary_property<font> font;
         binary_property<style> style;
         binary_property<int> lpadding;
         binary_property<int> rpadding;

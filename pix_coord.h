@@ -202,10 +202,14 @@ namespace pix::coord
 
 namespace pix
 {
-    using real = aux::fixed<32,32>;
     using xyxy = coord::xyxy<int>;
     using xywh = coord::xywh<int>;
     using xy   = coord::xy  <int>;
+
+    using vector  = aux::vector<2>;
+    using line    = aux::line<vector>;
+    using segment = aux::segment<vector>;
+    using circle  = aux::circle;
 
     ///////////////////////////////////////////////////////////////////////
                                 const  int

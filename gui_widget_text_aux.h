@@ -4,6 +4,7 @@
 #include "gui_widget_canvas.h"
 namespace gui::text
 {
+    using pix::font;
     using pix::text::style;
     using pix::text::style_index;
     using pix::text::metrics;

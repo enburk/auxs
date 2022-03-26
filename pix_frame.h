@@ -4,9 +4,12 @@ namespace pix
 {
     template<class T> struct frame
     {
-        typedef T type; image<type> * image; xy offset, size;
+        typedef T type;
+        typedef T color;
+        image<type>* image = nullptr;
+        xy offset, size;
 
-        frame (                        ) : image (nullptr) {}
+        frame () = default;
         frame (pix::image<type> & image) : image (&image), size(image.size) {}
 
         const type& operator () (int x, int y) const { return (*image)(offset.x+x, offset.y+y); }
@@ -15,8 +18,8 @@ namespace pix
         bool  operator == (frame f) const { return image == f.image && offset == f.offset && size == f.size; }
         bool  operator != (frame f) const { return image != f.image || offset != f.offset || size != f.size; }
 
-        explicit operator xywh () const { return xywh (offset.x, offset.y, size.x, size.y); }
-        explicit operator xyxy () const { return xywh (*this); }
+        explicit operator xywh () const { return xywh(offset.x, offset.y, size.x, size.y); }
+        explicit operator xyxy () const { return xywh(*this); }
 
         [[nodiscard]] frame crop (xywh r) const
         {
@@ -103,5 +106,14 @@ namespace pix
             for (int y=0; y<h; y++)
             for (int x=0; x<w; x++) v(x,y).blend((*this)(x,y), alpha);
         }
+
+        frame& copy  (line, color, double width=1);
+        frame& blend (line, color, double width=1);
+        frame& copy  (segment s, color c) { return copy (line{s.p1, s.p2}, c); }
+        frame& blend (segment s, color c) { return blend(line{s.p1, s.p2}, c); }
+        frame& copy  (circle, color, double width);
+        frame& blend (circle, color, double width);
+        frame& copy  (circle, color);
+        frame& blend (circle, color);
     };
 } 

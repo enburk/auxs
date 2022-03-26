@@ -22,7 +22,7 @@ namespace gui::text
         view::text_type& text = view.text;
         view::html_type& html = view.html;
         property<rgba>& color = view.color;
-        binary_property<pix::font>& font = view.font;
+        binary_property<font>& font = view.font;
         binary_property<style>& style = view.style;
         binary_property<xy>& alignment = view.alignment;
         binary_property<int>& lpadding = view.lpadding;

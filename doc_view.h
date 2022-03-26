@@ -4,6 +4,7 @@
 #include "pix_abc.h"
 namespace doc::view
 {
+    using pix::font;
     using pix::text::style;
     using pix::text::style_index;
 

@@ -17,6 +17,7 @@ widget<Test>
     TestDoc        doc;
     TestDocHtml    doc_html;
     TestPix        pix;
+    TestPixDraw    pix_draw;
     TestPixFonts   pix_fonts;
     TestGui        gui;
     TestGuiColors  gui_colors;
@@ -40,6 +41,7 @@ widget<Test>
         tests += {&doc_html,    "html"};
 
         tests += {&pix,         "pix"};
+        tests += {&pix_draw,    "draw"};
         tests += {&pix_fonts,   "fonts"};
 
         tests += {&gui,         "gui"};

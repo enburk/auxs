@@ -113,7 +113,7 @@ namespace gui
                 aux::vector<2> r2 {rx2.now, ry2.now};
                 if (r1.x > r2.x) std::swap(r1.x, r2.x); 
                 if (r1.y > r2.y) std::swap(r1.y, r2.y);
-                double delta = pi/360;
+                double delta = 1/(max(r2.x,r2.y)+1);
 
                 xyxy r (
                 int(std::floor(x.now - r2.x)),
