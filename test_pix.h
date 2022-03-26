@@ -55,6 +55,11 @@ widget<TestPixDraw>
             frame2.copy(pix::circle{{3*r,r},
                 r - r*a/2/pi}, rgba::white,
                 2.0 - 1.9*a/2/pi);
+
+            frame1.blend(pix::circle{{5*r,r},
+                r - r*a/2/pi}, rgba(int(255*a/2/pi),0,0));
+            frame2.copy(pix::circle{{5*r,r},
+                r - r*a/2/pi}, rgba(int(255*a/2/pi),0,0));
         }
 
         image.crop().blend_from(

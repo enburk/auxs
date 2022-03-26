@@ -74,4 +74,44 @@ namespace pix
         }
         return *this;
     }
+    template<>
+    frame<rgba>&
+    frame<rgba>::copy (circle circle, rgba color)
+    {
+        aa_line al;
+        auto c = circle.center;
+        auto r = circle.radius;
+        int y1 = max(int(floor(c.y - r)), 0);
+        int y2 = min(int(ceil (c.y + r)), size.y-1);
+        for(int y=y1; y<=y2; y++)
+        {
+            double a = asin((y-c.y)/r);
+            double d = abs(r*cos(a));
+            int x1 = max(int(floor(c.x - d)), 0);
+            int x2 = min(int(ceil (c.x + d)), size.x-1);
+            for(int x=x1; x<=x2; x++)
+            (*this)(x, y) = color;
+        }
+        return *this;
+    }
+    template<>
+    frame<rgba>&
+    frame<rgba>::blend (circle circle, rgba color)
+    {
+        aa_line al;
+        auto c = circle.center;
+        auto r = circle.radius;
+        int y1 = max(int(floor(c.y - r)), 0);
+        int y2 = min(int(ceil (c.y + r)), size.y-1);
+        for(int y=y1; y<=y2; y++)
+        {
+            double a = asin((y-c.y)/r);
+            double d = abs(r*cos(a));
+            int x1 = max(int(floor(c.x - d)), 0);
+            int x2 = min(int(ceil (c.x + d)), size.x-1);
+            for(int x=x1; x<=x2; x++)
+            (*this)(x, y).blend(color);
+        }
+        return *this;
+    }
 }

@@ -94,6 +94,6 @@ namespace pix
         bool operator == (glyph const&) const = default;
         bool operator != (glyph const&) const = default;
 
-        void render (pix::frame<rgba>, xy offset=xy(), uint8_t alpha=255, int x=0);
+        void render (frame<rgba>, xy offset=xy(), uint8_t alpha=255, int x=0);
     };
 }
