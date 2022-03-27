@@ -83,7 +83,7 @@ namespace pix
 
             for (i = 0; i < FI_TABLE_SIZE; i++)
             {
-                d = ((double) i + 0.5) / (float) (FI_TABLE_SIZE / 2.0);
+                d = ((double) i + 0.5) / (float) (int(FI_TABLE_SIZE) / 2.0);
                 d = d / FILTER_WIDTH;
                 v = 1.0 / exp(d * d);        // Gaussian function 
                 filter_table[i] = (int64_t) (v * 256.0);

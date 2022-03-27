@@ -8,6 +8,8 @@ namespace gui
     {
         oval inner;
         oval outer;
+        oval outex;
+        oval outey;
         text::view text;
 
         void on_change (void* what) override
@@ -17,16 +19,16 @@ namespace gui
                 coord.now.size)
             {
                 xywh r = coord.now.local();
-                outer.x = r.w/2.0;
-                outer.y = r.h/2.0;
-                inner.x = r.w/2.0;
-                inner.y = r.h/2.0;
-                outer.rx = r.w/2.0;
-                outer.ry = r.h/2.0;
-                inner.rx = r.w/2.0-0/5;
-                inner.ry = r.h/2.0-0.5;
-                outer.rx2 = r.w/2.0;
-                outer.ry2 = r.h/2.0;
+                auto rx = r.w/2.0;
+                auto ry = r.h/2.0;
+                inner.x = rx; inner.rx = rx-0.5;
+                inner.y = ry; inner.ry = ry-0.5;
+                outer.x = rx; outer.rx = rx; outer.rx2 = rx;
+                outer.y = ry; outer.ry = ry; outer.ry2 = ry;
+                outex.x = rx; outex.rx = rx-1; outex.rx2 = rx-1;
+                outex.y = ry; outex.ry = ry-1; outex.ry2 = ry-1;
+                outey.x = rx; outey.rx = rx-2; outey.rx2 = rx-2;
+                outey.y = ry; outey.ry = ry-2; outey.ry2 = ry-2;
                 text.coord = r;
             }
         }
@@ -74,6 +76,8 @@ namespace gui
                 node->text.color = rgba::navy;
                 node->inner.color = rgba::white;
                 node->outer.color = rgba::red;
+                node->outex.color = rgba::red;
+                node->outey.color = rgba::red;
                 edge->color = rgba::white;
             }
             else

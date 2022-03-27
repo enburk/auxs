@@ -51,7 +51,7 @@ widget<TestPixDraw>
 
             frame1.blend(pix::circle{{3*r,r},
                 r - r*a/2/pi}, rgba::white,
-                2.0 - 1.9*a/2/pi);
+                0.1 + 1.9*a/2/pi);
             frame2.copy(pix::circle{{3*r,r},
                 r - r*a/2/pi}, rgba::white,
                 2.0 - 1.9*a/2/pi);
@@ -59,7 +59,7 @@ widget<TestPixDraw>
             frame1.blend(pix::circle{{5*r,r},
                 r - r*a/2/pi}, rgba(int(255*a/2/pi),0,0));
             frame2.copy(pix::circle{{5*r,r},
-                r - r*a/2/pi}, rgba(int(255*a/2/pi),0,0));
+                r - r*a/2/pi}, rgba(int(255 - 255*a/2/pi),0,0));
         }
 
         image.crop().blend_from(
@@ -123,3 +123,36 @@ widget<TestPixFonts>
     }
 };
 
+struct TestPixUtil:
+widget<TestPixUtil>
+{
+    gui::image Image;
+    pix::image<rgba> image;
+
+    void on_change (void* what) override
+    {
+        if (what != &alpha or alpha.to == 0 or
+            coord.now.size == image.size or
+            coord.now.size == xy())
+            return;
+
+        image.resize(coord.now.size);
+        Image.coord = coord.now.local();
+        Image.source = image.crop();
+        image.fill(rgba::white);//black);
+        auto frame = image.crop();
+
+        int w = image.size.x;
+        int h = image.size.y;
+        int f = gui::metrics::text::height;
+
+        int x = 10;
+        for (int i=f/2; i<=f*4/3; i++)
+        {
+            auto node = pix::util::node("99",
+            rgba::red, rgba::white, rgba::black, font{"",i});
+            frame.from(x,10).blend_from(node);
+            x += node.size.x*3/2;
+        }
+    }
+};

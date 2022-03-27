@@ -19,6 +19,7 @@ widget<Test>
     TestPix        pix;
     TestPixDraw    pix_draw;
     TestPixFonts   pix_fonts;
+    TestPixUtil    pix_util;
     TestGui        gui;
     TestGuiColors  gui_colors;
     TestGuiColorsX gui_colorsx;
@@ -43,6 +44,7 @@ widget<Test>
         tests += {&pix,         "pix"};
         tests += {&pix_draw,    "draw"};
         tests += {&pix_fonts,   "fonts"};
+        tests += {&pix_util,    "util"};
 
         tests += {&gui,         "gui"};
         tests += {&gui_colors,  "colors"};

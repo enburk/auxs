@@ -16,6 +16,7 @@ namespace gui
 
         void on_render (sys::window& window, xywh r, xy offset, uint8_t alpha) override
         {
+            if (alpha > 0 and color.now.a > 0)
             window.render(r, alpha, color.now,
                 offset, geo, points,
                 geo == geo::lines?
@@ -74,7 +75,6 @@ namespace gui
                     points[6] = v4.x - r.l; points[7] = v4.y - r.t;
                 }
                 update();
-
             }
         }
     };
@@ -94,6 +94,7 @@ namespace gui
 
         void on_render (sys::window& window, xywh r, xy offset, uint8_t alpha) override
         {
+            if (alpha > 0 and color.now.a > 0)
             window.render(r, alpha, color.now, offset, geo,
                 points.data(),(int)
                 points.size());
@@ -109,11 +110,13 @@ namespace gui
             if (what == &x or what == &rx or what == &rx2 or
                 what == &y or what == &ry or what == &ry2)
             {
+                points.clear();
                 aux::vector<2> r1 {rx.now, ry.now};
                 aux::vector<2> r2 {rx2.now, ry2.now};
                 if (r1.x > r2.x) std::swap(r1.x, r2.x); 
                 if (r1.y > r2.y) std::swap(r1.y, r2.y);
-                double delta = 1/(max(r2.x,r2.y)+1);
+                double rmax = max(r2.x,r2.y); if (rmax < 0.5) return;
+                double delta = 1/(rmax+2);
 
                 xyxy r (
                 int(std::floor(x.now - r2.x)),
@@ -125,7 +128,6 @@ namespace gui
                 if (r1.x < 0.5 or r1.y < 0.5)
                 {
                     geo = pix::geo::triangle_fan;
-                    points.clear();
                     points.reserve(int(2*2*pi/delta + 2 + 2));
                     points += x.now - r.l;
                     points += y.now - r.t;
@@ -140,7 +142,6 @@ namespace gui
                 if (aux::distance(r1, r2) < 1.1)
                 {
                     geo = pix::geo::lines;
-                    points.clear();
                     points.reserve(int(2*2*pi/delta + 2));
                     for (double a = 0.0;
                         a < 2*pi + delta/2;
@@ -152,7 +153,6 @@ namespace gui
                 else
                 {
                     geo = pix::geo::triangle_strip;
-                    points.clear();
                     points.reserve(int(4*2*pi/delta + 4));
                     for (double a = 0.0;
                         a < 2*pi + delta/2;
@@ -164,7 +164,6 @@ namespace gui
                     }
                 }
                 update();
-
             }
         }
     };

@@ -25,12 +25,42 @@ namespace pix
         static const int color_channels = 3;
         static const int total_channels = 4;
 
-        void blend (rgba c, uint8_t alpha = 255) {
-            uint8_t
-                A = alpha == 255 ? c.a : c.a * alpha >> 8;
-            r = A == 255 ? c.r : r + ( A * (c.r - r) >> 8 );
-            g = A == 255 ? c.g : g + ( A * (c.g - g) >> 8 );
-            b = A == 255 ? c.b : b + ( A * (c.b - b) >> 8 );
+        // a*x + (1-a)*y = a*(x-y) + y
+        static uint8_t blend (uint8_t dst, uint8_t src, uint8_t a)
+        {
+            return a == 255 ? src : (a*(src-dst) >> 8) + dst;
+        }
+        void blend (rgba c)
+        {
+            r = blend(r, c.r, c.a);
+            g = blend(g, c.g, c.a);
+            b = blend(b, c.b, c.a);
+        }
+        void blend (rgba c, uint8_t alpha)
+        {
+            uint8_t A = alpha == 255 ? c.a : (c.a+1)*(alpha+1) >> 8;
+            r = blend(r, c.r, A);
+            g = blend(g, c.g, A);
+            b = blend(b, c.b, A);
+        }
+        // accumulating for 3 and more planes
+        // x1 (below), x2 (middle), x3 (above)
+        // blend(x1, accum(x2, x3)) == blend(blend(x1, x2), x3)
+        // 
+        // a2*x2 + (1-a2)*(a1*x1 + (1-a1)*x0) ==
+        // a2*x2 + (1-a2)*a1*x1 + (1 - a1 - a2 + a1*a2)*x0 ==
+        // [denote a1 + a2 - a1*a2 as A] == A*(a2*x2 + (1-a2)*a1*x1)/A + (1-A)*x0
+        // A = a1 + a2 - a1*a2; X = (a2*x2 + (1-a2)*a1*x1) / A; (blending x2 to a1*x1)
+        void accumulate (rgba c)
+        {
+            if (a == 0 or c.a == 255) *this = c; else if (a == 255) blend(c); else
+            {
+                int A = a;
+                a = a + c.a + 1 - ((a+1)*(c.a+1) >> 8); // prevent 0x100 cast to 0x00
+                r = (blend((r*A >> 8), c.r, c.a) << 8) / a;
+                g = (blend((g*A >> 8), c.g, c.a) << 8) / a;
+                b = (blend((b*A >> 8), c.b, c.a) << 8) / a;
+            }
         }
 
         static rgba random(uint8_t l = 64, uint8_t u = 255) { return rgba(
@@ -80,21 +110,21 @@ namespace pix
     rgba::amber  = XRGB(0xFFBF00),
     rgba::error  = XRGB(0xB00020);
 
-    struct  MONO
+    struct  mono
     {
         union { uint8_t value; uint8_t channels [1]; };
 
-        MONO () : value (0) {}
-        MONO (int value) : value(value) {}
-        MONO (rgba c) { value = aux::clamp
+        mono () : value (0) {}
+        mono (int value) : value(value) {}
+        mono (rgba c) { value = aux::clamp
             <uint8_t>(255* (
             0.212671 * c.r +
             0.715160 * c.g +
             0.072169 * c.b)); }
 
-        bool operator == (const MONO & c) const { return value == c.value; }
-        bool operator != (const MONO & c) const { return value != c.value; }
-        bool operator <  (const MONO & c) const { return value <  c.value; }
+        bool operator == (const mono & c) const { return value == c.value; }
+        bool operator != (const mono & c) const { return value != c.value; }
+        bool operator <  (const mono & c) const { return value <  c.value; }
     };
 }
 

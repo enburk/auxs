@@ -1,4 +1,5 @@
 #pragma once
+#include "aux_abc.h"
 #include "pix_color.h"
 #include "pix_frame.h"
 namespace pix

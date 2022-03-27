@@ -249,6 +249,9 @@
     <ClInclude Include="pix_abc.h">
       <Filter>pix</Filter>
     </ClInclude>
+    <ClInclude Include="pix_util.h">
+      <Filter>pix</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="test.cpp">
