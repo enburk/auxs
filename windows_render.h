@@ -38,7 +38,7 @@ void sys::window::render (
     glEnable(GL_BLEND);
 
     int kind = 0;
-    switch (geo) { using enum geo;
+    switch (geo) { using enum pix::geo;
     break; case points: kind = GL_POINTS;
     break; case lines: kind = GL_LINES;
     break; case line_strip: kind = GL_LINE_STRIP;
@@ -149,7 +149,7 @@ void sys::window::render (xywh r, uint8_t alpha, frame<rgba> frame)
     glDisable(GL_TEXTURE_2D);
 }
 
-void sys::window::render (xywh r, uint8_t alpha, glyph g, xy offset, int x)
+void sys::window::render (xywh r, uint8_t alpha, pix::glyph g, xy offset, int x)
 {
     const auto & style = g.style();
     if (alpha == 0) return;
@@ -174,12 +174,12 @@ void sys::window::render (xywh r, uint8_t alpha, glyph g, xy offset, int x)
         pix::image<rgba> color (xy(3*w,h), fore);
         pix::image<rgba> alpha (xy(w,h), rgba::black);
 
-        text::style simple_style;
+        pix::text::style simple_style;
         simple_style.font = style.font;
         simple_style.color = rgba::white;
 
         pix::glyph simple_glyph = g;
-        simple_glyph.style_index = text::style_index(simple_style);
+        simple_glyph.style_index = pix::text::style_index(simple_style);
         simple_glyph.render(alpha);
 
         for (int y=0; y<h; y++)

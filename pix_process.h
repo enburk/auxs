@@ -64,7 +64,7 @@ namespace pix
             for (int xx=0; xx<kernel.size(); xx++) {
                 int X = clamp(x + xx - d, 0, src.size.x-1);
                 for (int i=0; i<color::color_channels; i++)
-                    c(i) += float(kernel[xx] * src(X, y).channels[i]);
+                    c[i] += float(kernel[xx] * src(X, y).channels[i]);
             }
 
             intermediate(x, y) = c;
@@ -76,19 +76,19 @@ namespace pix
             COLOR c0, c1;
 
             for (int i=0; i<color::color_channels; i++) 
-                c0(i) = src(x, y).channels[i];
+                c0[i] = src(x, y).channels[i];
 
             for (int yy=0; yy<kernel.size(); yy++) {
                 int Y = clamp(y + yy - d, 0, src.size.y-1);
                 for (int i=0; i<color::color_channels; i++) 
-                    c1(i) += float(kernel[yy] * intermediate(x, Y)(i));
+                    c1[i] += float(kernel[yy] * intermediate(x, Y)[i]);
             }
 
             if ((c1-c0).norm() < threshold) { dst(x, y) = src(x, y); continue; }
 
             for (int i=0; i<color::color_channels; i++) 
                 dst(x, y).channels[i] = clamp<uint8_t>(
-                    k1 * c0(i) + k2 * c1(i));
+                    k1 * c0[i] + k2 * c1[i]);
         }
     }
 
