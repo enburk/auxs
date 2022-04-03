@@ -111,7 +111,7 @@ MAKE_HASHABLE(cache_metrics_key, t.text, t.font);
 
 static std::unordered_map<cache_metrics_key, pix::text::metrics> cache_metrics;
 
-pix::glyph::glyph (str text, text::style_index i) : text(text), style_index(i)
+pix::glyph::glyph (aux::unicode::glyph text, text::style_index i) : text(text), style_index(i)
 {
     if (text == "") return;
     const auto & style = this->style();
@@ -155,26 +155,32 @@ pix::glyph::glyph (str text, text::style_index i) : text(text), style_index(i)
 
         xyxy r = xywh(0, 0, image.size.x, image.size.y);
 
-//        for (bool stop = false; !stop && r.yh > 0; r.yh--)
-//            for (int x = 0; x < r.xh; x++)
-//                if (image(x, r.yh-1) != rgba::white)
-//                { stop = true; break; }
-//
-//        for (bool stop = false; !stop && r.yl < r.yh; r.yl++)
-//            for (int x = 0; x < r.xh; x++)
-//                if (image(x, r.yl) != rgba::white)
-//                { stop = true; break; }
+        for (; r.yh > 0; r.yh--)
+            for (int x = 0; x < r.xh; x++)
+                if (image(x, r.yh-1) != rgba::white)
+                    goto a;
+        a:
+        for (; r.yl < r.yh; r.yl++)
+            for (int x = 0; x < r.xh; x++)
+                if (image(x, r.yl) != rgba::white)
+                    goto b;
+        b:
+        for (; r.xh > 0; r.xh--)
+            for (int y = r.yl; y < r.yh; y++)
+                if (image(r.xh-1, y) != rgba::white)
+                    goto c;
+        c:
+        for (; r.xl < r.xh; r.xl++)
+            for (int y = r.yl; y < r.yh; y++)
+                if (image(r.xl, y) != rgba::white)
+                    goto d;
+        d:
 
-        for (bool stop = false; !stop && width > 0; width--)
-            for (int y = 0; y < image.size.y; y++)
-                if (image(width-1, y) != rgba::white)
-                { stop = true; break; }
+        ascent_  = ascent - r.yl;
+        descent_ = descent - (image.size.y - r.yh);
 
-        ascent_  = ascent;
-        descent_ = descent;
-
-        rpadding = advance - width; // negative for italic
-
+        lpadding = r.xl;
+        rpadding = advance - r.xh; // negative for italic
         width = max(advance, advance - rpadding);
 
         cache_metrics.emplace(key, *this);
@@ -210,9 +216,9 @@ void pix::glyph::render (pix::frame<rgba> frame, xy offset, uint8_t alpha, int x
     const auto & style = this->style();
     if (alpha == 0) return;
     if (text == "") return;
-    if (text.contains_only(one_of(" \t\r\n"))
-    &&  style.underline.color.a == 0
-    &&  style.strikeout.color.a == 0)
+    if (text == " "
+    and style.underline.color.a == 0
+    and style.strikeout.color.a == 0)
         return;
 
     auto text = this->text;

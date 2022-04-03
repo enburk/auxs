@@ -243,7 +243,7 @@ namespace gui::base
         bool inholds (void* p) {
             std::byte* begin = (std::byte*) this;
             std::byte* end = begin + size_in_bytes;
-            return begin <= p && p < end;
+            return begin <= p and p < end;
         }
         widget* descendant_inholder(void* p) {
             if (!inholds(p)) return nullptr;
@@ -256,17 +256,16 @@ namespace gui::base
 }
 namespace gui
 {
-    inline void change (base::widget* widget, void* what) {
-        widget->change (what);
-    }
+    std::set<base::widget*> widgets;
 
-    inline std::set<base::widget*> widgets;
-
-    inline base::widget* inholder (void* p) {
+    base::widget* inholder (void* p)
+    {
         auto it = widgets.upper_bound((base::widget*)p);
         if (it == widgets.begin()) return nullptr;
         return (*--it)->descendant_inholder(p);
     }
+
+    void change (base::widget* widget, void* what) { widget->change(what); }
 
     template<class T> struct widget : base::widget
     {
@@ -277,6 +276,13 @@ namespace gui
             if (p && parent && p != parent) throw std::runtime_error("widget: wrong parent");
             if (p && !parent) { parent = p; parent->children += this; }
             if (!p) widgets.emplace(this);
+        }
+        widget (base::widget* p)
+        {
+            size_in_bytes = sizeof(T);
+            if (!p) throw std::runtime_error("widget: wrong parent");
+            parent = p; parent->children += this;
+            widgets.emplace(this);
         }
         widget (widget &&) = delete;
         widget (widget const&) = delete;

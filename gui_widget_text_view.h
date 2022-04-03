@@ -12,11 +12,17 @@ namespace gui::text
         frame frame;
 
         struct text_type { view& v; text_type(view& v) : v(v) {}
+        auto operator == (str text) { return str(*this) ==  text; }
+        auto operator != (str text) { return str(*this) !=  text; }
+        auto operator <=>(str text) { return str(*this) <=> text; }
         void operator  = (str text) { v.model->set_text(std::move(text)); v.on_change(this); }
         void operator += (str text) { v.model->add_text(std::move(text)); v.on_change(this); }
         operator str() const { return v.model->get_text(); } };
 
         struct html_type { view& v; html_type(view& v) : v(v) {}
+        auto operator == (str text) { return str(*this) ==  text; }
+        auto operator != (str text) { return str(*this) !=  text; }
+        auto operator <=>(str text) { return str(*this) <=> text; }
         void operator  = (str html) { v.model->set_html(std::move(html)); v.on_change(this); }
         void operator += (str html) { v.model->add_html(std::move(html)); v.on_change(this); }
         operator str() const { return v.model->get_html(); } };

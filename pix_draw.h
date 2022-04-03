@@ -22,6 +22,7 @@ namespace pix
     circle c, rgba color, double width)
     {
         aa_line al;
+        al.capline = false;
         double r = c.radius;
         if (r < 0.5) return;
         vector v1 {r, 0};

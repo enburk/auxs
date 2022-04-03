@@ -83,12 +83,13 @@ namespace pix
 
     struct glyph : text::metrics
     {
-        str text; text::style_index style_index;
+        aux::unicode::glyph text;
+        text::style_index style_index;
 
         glyph () = default;
-        glyph (str text, text::style_index);
-        glyph (str text, text::style style):
-            glyph (text, text::style_index(style)) {}
+        glyph (aux::unicode::glyph text, text::style_index);
+        glyph (aux::unicode::glyph text, text::style style):
+        glyph (text, text::style_index(style)) {}
 
         text::style style () const { return style_index.style(); }
 

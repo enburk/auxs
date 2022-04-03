@@ -1,7 +1,7 @@
 #pragma once
 #include "gui_widget_console.h"
-#include "doc_text_model_a.h"
-#include "doc_text_model_b.h"
+#include "test_doc_text_a.h"
+#include "test_doc_text_b.h"
 using namespace pix;
 using gui::widget;
 

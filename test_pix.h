@@ -25,42 +25,117 @@ widget<TestPixDraw>
         Image.coord = coord.now.local();
         Image.source = image.crop();
 
+        pix::image<rgba> plane;
+        plane.resize(image.size);
+        image.fill(rgba::black);
+        plane.fill(rgba{});
+
         int w = image.size.x;
-        int h = image.size.y;
+        int h = image.size.y/2;
+
+        auto frame1 = image.crop(xywh(0,0,w,h));
+        auto frame2 = plane.crop(xywh(0,h,w,h));
+
+        int n = 32;
+        int r = h/2;
+        for (double a = 0; a < 2*pi-0.001; a += 2*pi/n)
+        {
+            auto w1 = 0.1 + 1.9*a/2/pi;
+            auto w2 = 2.0 - 1.9*a/2/pi;
+
+            frame1.blend(line{{r,r},
+                vector{r,0}.rotated(-a) +
+                vector{r,r}}, rgba::white, w1);
+            frame2.copy (line{{r,r},
+                vector{r,0}.rotated(-a) +
+                vector{r,r}}, rgba::white, w2);
+
+            frame1.blend(circle{{3*r,r}, r - r*a/2/pi},
+                rgba::white, w1);
+            frame2.copy (circle{{3*r,r}, r - r*a/2/pi},
+                rgba::white, w2);
+
+            frame1.blend(circle{{5*r,r}, r - r*a/2/pi},
+                rgba(int(255*a/2/pi),0,0));
+            frame2.copy (circle{{5*r,r}, r - r*a/2/pi},
+                rgba(int(255 - 255*a/2/pi),0,0));
+        }
+
+        image.crop().blend_from(
+        plane.crop());
+    }
+};
+
+struct TestPixDrawX:
+widget<TestPixDrawX>
+{
+    gui::image Image;
+    pix::image<rgba> image;
+
+    void on_change (void* what) override
+    {
+        if (what != &alpha or alpha.to == 0 or
+            coord.now.size == image.size or
+            coord.now.size == xy())
+            return;
+
+        image.resize(coord.now.size);
+        Image.coord = coord.now.local();
+        Image.source = image.crop();
 
         pix::image<rgba> plane;
         plane.resize(image.size);
         image.fill(rgba::black);
         plane.fill(rgba{});
 
-        auto frame1 = image.crop(xyxy(0,0,w,h/2));
-        auto frame2 = plane.crop(xyxy(0,h/2,w,h));
+        int w = image.size.x;
+        int h = image.size.y/2;
+        int u = gui::metrics::text::height;
 
-        int n = 32;
-        int r = h/4;
-        for (double a = 0; a < 2*pi-0.001; a += 2*pi/n)
-        {
-            frame1.blend(pix::line{{r,r},
-                pix::vector{r,0}.rotated(-a) +
-                pix::vector{r,r}}, rgba::white,
-                0.1 + 1.9*a/2/pi);
-            frame2.copy(pix::line{{r,r},
-                pix::vector{r,0}.rotated(-a) +
-                pix::vector{r,r}}, rgba::white,
-                2.0 - 1.9*a/2/pi);
+        auto frame1 = image.crop(xywh(0,0,w,h));
+        auto frame2 = plane.crop(xywh(0,h,w,h));
 
-            frame1.blend(pix::circle{{3*r,r},
-                r - r*a/2/pi}, rgba::white,
-                0.1 + 1.9*a/2/pi);
-            frame2.copy(pix::circle{{3*r,r},
-                r - r*a/2/pi}, rgba::white,
-                2.0 - 1.9*a/2/pi);
-
-            frame1.blend(pix::circle{{5*r,r},
-                r - r*a/2/pi}, rgba(int(255*a/2/pi),0,0));
-            frame2.copy(pix::circle{{5*r,r},
-                r - r*a/2/pi}, rgba(int(255 - 255*a/2/pi),0,0));
-        }
+        int q = h/2; int c = q/2;
+        int r = q/3; int e = q-r;
+        auto frame1a = frame1.crop(xywh(0,0,q,q));
+        auto frame1b = frame1.crop(xywh(0,q,q,q));
+        auto frame2a = frame2.crop(xywh(0,0,q,q));
+        auto frame2b = frame2.crop(xywh(0,q,q,q));
+        frame1a.fill(rgba::white);
+        frame2a.fill(rgba::white);
+        frame1a.blend(circle{{c,r},double(r)}, rgba(255,0,0,128));
+        frame1b.blend(circle{{c,r},double(r)}, rgba(255,0,0,128));
+        frame2a.copy (circle{{c,r},double(r)}, rgba(255,0,0,128));
+        frame2b.copy (circle{{c,r},double(r)}, rgba(255,0,0,128));
+        frame1a.blend(circle{{r,e},double(r)}, rgba(0,255,0,128));
+        frame1b.blend(circle{{r,e},double(r)}, rgba(0,255,0,128));
+        frame2a.copy (circle{{r,e},double(r)}, rgba(0,255,0,128));
+        frame2b.copy (circle{{r,e},double(r)}, rgba(0,255,0,128));
+        frame1a.blend(circle{{e,e},double(r)}, rgba(0,0,255,128));
+        frame1b.blend(circle{{e,e},double(r)}, rgba(0,0,255,128));
+        frame2a.copy (circle{{e,e},double(r)}, rgba(0,0,255,128));
+        frame2b.copy (circle{{e,e},double(r)}, rgba(0,0,255,128));
+        for (int i = 1; i <= 4; i++) {
+        frame1a = frame1.crop(xywh(i*q,0,q,q));
+        frame1b = frame1.crop(xywh(i*q,q,q,q));
+        frame2a = frame2.crop(xywh(i*q,0,q,q));
+        frame2b = frame2.crop(xywh(i*q,q,q,q));
+        frame1a.fill(rgba::white);
+        frame2a.fill(rgba::white);
+        for (int R = r; R > 0; R -= 1 << (i-1)) {
+        frame1a.blend(circle{{c,r},double(R)}, rgba(255,0,0,128), 2.0);
+        frame1b.blend(circle{{c,r},double(R)}, rgba(255,0,0,128), 2.0);
+        frame2a.copy (circle{{c,r},double(R)}, rgba(255,0,0,128), 2.0);
+        frame2b.copy (circle{{c,r},double(R)}, rgba(255,0,0,128), 2.0);
+        frame1a.blend(circle{{r,e},double(R)}, rgba(0,255,0,128), 2.0);
+        frame1b.blend(circle{{r,e},double(R)}, rgba(0,255,0,128), 2.0);
+        frame2a.copy (circle{{r,e},double(R)}, rgba(0,255,0,128), 2.0);
+        frame2b.copy (circle{{r,e},double(R)}, rgba(0,255,0,128), 2.0);
+        frame1a.blend(circle{{e,e},double(R)}, rgba(0,0,255,128), 2.0);
+        frame1b.blend(circle{{e,e},double(R)}, rgba(0,0,255,128), 2.0);
+        frame2a.copy (circle{{e,e},double(R)}, rgba(0,0,255,128), 2.0);
+        frame2b.copy (circle{{e,e},double(R)}, rgba(0,0,255,128), 2.0);
+        }}
 
         image.crop().blend_from(
         plane.crop());
@@ -111,7 +186,7 @@ widget<TestPixFonts>
             style.font.italic = r == 1 || r == 3;
 
             for (char c : alnum) {
-                auto glyph = pix::glyph(str(c), style);
+                auto glyph = pix::glyph(c, style);
                 auto w = glyph.width;
                 auto h = glyph.ascent + glyph.descent;
                 auto frame = image.crop(xywh(x, y, w, h));
@@ -120,6 +195,38 @@ widget<TestPixFonts>
                 x += glyph.advance + gap;
             }
         }
+    }
+};
+
+struct TestPixText:
+widget<TestPixText>
+{
+    gui::image Image;
+    pix::image<rgba> image;
+
+    void on_change (void* what) override
+    {
+        if (what != &alpha or alpha.to == 0 or
+            coord.now.size == image.size or
+            coord.now.size == xy())
+            return;
+
+        image.resize(coord.now.size);
+        Image.coord = coord.now.local();
+        Image.source = image.crop();
+        image.fill(rgba::white);
+        auto frame = image.crop();
+
+        int w = image.size.x;
+        int h = image.size.y/2;
+        int u = gui::metrics::text::height;
+
+        pix::text::style style;
+        style.color = rgba::black;
+        pix::text::style_index s(style);
+        auto frame1 = frame.crop(xywh(u,u,u*5,u*2));
+        frame1.blend(rgba::red, 200);
+        pix::text::token("abc", s).render(frame1, xy{}, 200);
     }
 };
 
@@ -139,19 +246,24 @@ widget<TestPixUtil>
         image.resize(coord.now.size);
         Image.coord = coord.now.local();
         Image.source = image.crop();
-        image.fill(rgba::white);//black);
         auto frame = image.crop();
 
         int w = image.size.x;
-        int h = image.size.y;
-        int f = gui::metrics::text::height;
+        int h = image.size.y/2;
+        int u = gui::metrics::text::height;
+
+        auto frame1 = image.crop(xywh(0,0,w,h));
+        auto frame2 = image.crop(xywh(0,h,w,h));
+        frame1.fill(rgba::white);
+        frame2.fill(rgba::black);
 
         int x = 10;
-        for (int i=f/2; i<=f*4/3; i++)
+        for (int i=u/2; i<=u*4/3; i++)
         {
-            auto node = pix::util::node("99",
-            rgba::red, rgba::white, rgba::black, font{"",i});
-            frame.from(x,10).blend_from(node);
+            auto node = pix::util::node("13",
+            rgba::red, rgba::white, rgba::black, 0, font{"",i});
+            frame1.from(x,10).blend_from(node);
+            frame2.from(x,10).blend_from(node);
             x += node.size.x*3/2;
         }
     }

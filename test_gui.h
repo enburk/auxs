@@ -621,6 +621,9 @@ widget<TestGuiGraph>
 {
     gui::canvas canvas;
     gui::radio::group buttons;
+    gui::image Image;
+    pix::image<rgba> image;
+    gui::DynamicBST bst;
     gui::BST tree;
 
     void on_change (void* what) override
@@ -636,21 +639,71 @@ widget<TestGuiGraph>
 
             if (buttons.empty())
             {
-                buttons.emplace_back().text.text = "tree";
+                int i = 0;
+                buttons(i++).text.text = "tree";
+                buttons(i++).text.text ="+tree+";
+                buttons(i++).text.text = "unbalanced";
+                buttons(i++).text.text = "red-black";
+                buttons(i++).text.text = "AVL";
                 buttons.front().on = true;
                 canvas.color =
                 rgba::black;
-
-                for (int i=0; i<500; i++)
-                tree.add(aux::random(0,99));
             }
 
             int y = 0; for (auto& button: buttons) {
             button.coord = xywh(0,y,w,h); y += h; }
             buttons.coord = xywh(W-w,0,w,H);
             canvas.coord = xywh(0,0,W,H);
-
             tree.coord = xywh(0,0,W-w,H);
+            bst.coord = xywh(0,0,W-w,H);
+        }
+
+        if (what == &buttons)
+        {
+            str text = buttons.notifier->text.text;
+            if (text == "tree")
+            {
+                tree.clear();
+                for (int i=0; i<500; i++)
+                tree.add(aux::random(0,99));
+
+            }
+            if (text == "+tree+") if (image.size == xy{})
+            {
+                xywh r = tree.coord.now;
+                r.h /= 2; r.y += r.h;
+                image.resize(r.size);
+                Image.coord = r;
+                Image.source = image.crop();
+                auto frame = image.crop();
+                frame.fill(rgba::black);
+
+                for (auto& edge: tree.edges) if (edge)
+                    frame.blend(pix::line{
+                        {edge->x1.now, edge->y1.now},
+                        {edge->x2.now, edge->y2.now}},
+                        rgba::white, 2.0);
+
+                for (auto& node: tree.nodes) if (node)
+                    frame.crop(node->coord.now).
+                    blend_from(pix::util::node(
+                        node->text.text,
+                        rgba::red,
+                        rgba::white,
+                        rgba::navy,
+                        node->coord.now.w)
+                        .crop());
+            }
+            if (text == "unbalanced"
+            or  text == "red-black"
+            or  text == "AVL")
+            {
+                bst.kind = text;
+            }
+
+            Image.show(text == "tree" or text == "+tree+");
+            tree.show(text == "tree" or text == "+tree+");
+            bst.show(text != "tree" && text != "+tree+");
         }
     }
 };

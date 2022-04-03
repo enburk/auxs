@@ -75,9 +75,6 @@
     <ClInclude Include="doc_html_utils.h">
       <Filter>doc</Filter>
     </ClInclude>
-    <ClInclude Include="doc_text_glyph.h">
-      <Filter>doc</Filter>
-    </ClInclude>
     <ClInclude Include="doc_text_model.h">
       <Filter>doc</Filter>
     </ClInclude>
@@ -251,6 +248,27 @@
     </ClInclude>
     <ClInclude Include="pix_util.h">
       <Filter>pix</Filter>
+    </ClInclude>
+    <ClInclude Include="pix_text_token.h">
+      <Filter>pix</Filter>
+    </ClInclude>
+    <ClInclude Include="pix_text_solid.h">
+      <Filter>pix</Filter>
+    </ClInclude>
+    <ClInclude Include="pix_text_row.h">
+      <Filter>pix</Filter>
+    </ClInclude>
+    <ClInclude Include="pix_text_line.h">
+      <Filter>pix</Filter>
+    </ClInclude>
+    <ClInclude Include="pix_text_block.h">
+      <Filter>pix</Filter>
+    </ClInclude>
+    <ClInclude Include="test_doc_text_a.h">
+      <Filter>test</Filter>
+    </ClInclude>
+    <ClInclude Include="test_doc_text_b.h">
+      <Filter>test</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

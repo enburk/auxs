@@ -103,8 +103,8 @@ namespace gui
         void on_change (void* what) override
         {
             if (timer.now == time())
-                timer.go (time::infinity,
-                          time::infinity);
+                timer.go(time::infinity,
+                         time::infinity);
 
             if (what == &coord or what == &padding)
             {

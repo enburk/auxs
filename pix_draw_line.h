@@ -54,11 +54,21 @@ namespace pix
             SC_TABLE_SIZE   = 32,   // Slope correction table size
         };
 
-        static inline int64_t slope_corr_table [SC_TABLE_SIZE];
-        static inline int64_t filter_table     [FI_TABLE_SIZE];
-        static inline int64_t sqrt_table       [SR_TABLE_SIZE];
-        static inline void    init_tables      (double  width)
+        static thread_local inline bool    initialized       [20]{};
+        static thread_local inline int64_t slope_corr_tables [20][SC_TABLE_SIZE];
+        static thread_local inline int64_t filter_tables     [20][FI_TABLE_SIZE];
+        static thread_local inline int64_t sqrt_tables       [20][SR_TABLE_SIZE];
+        int64_t* slope_corr_table = nullptr;
+        int64_t* filter_table = nullptr;
+        int64_t* sqrt_table = nullptr;
+        void init_tables (double  width)
         {
+            int index = max(0, min(19, int(10*width)));
+            slope_corr_table = slope_corr_tables[index];
+            filter_table = filter_tables[index];
+            sqrt_table = sqrt_tables[index];
+            if (initialized[index]) return;
+
             int    i;   // Iterative counter 
             double m;   // Slope 
             double d;   // Distance from center of curve 
@@ -328,7 +338,7 @@ namespace pix
             }
 
             // Get initial values and count 
-            if (m_Antialiased) {
+            if (antialiased) {
             // Antialiased 
             if (line->negative) {
                 u_off = FRACT_XY(line->us) - ONE_XY;
@@ -376,11 +386,11 @@ namespace pix
             b = line->bs + Fix_xy_mult(line->dbdu, u_off);
             a = line->as + Fix_xy_mult(line->dadu, u_off);
 
-            if ((m_Antialiased) == 0) {
+            if (not antialiased) {
             // Jaggy line 
 
             // If not capped, shorten by one 
-            if (m_Capline == 0)
+            if (not capline)
                 count -= ONE_XY;
 
             // Interpolate the edges 
@@ -490,8 +500,8 @@ namespace pix
 
         } // End of draw_line 
 
-        bool  m_Antialiased = true;
-        bool  m_Capline = true; // edge points drawing
+        bool antialiased = true;
+        bool capline = true; // edge points drawing
 
         void draw (line line, rgba color, double width, auto ProcessPixel)
         {
@@ -516,14 +526,18 @@ namespace pix
             v2.x = (float) line.p2.x;
             v2.y = (float) line.p2.y;
 
-            SetupLine(&v1, &v2, [this, ProcessPixel]
+            SetupLine(&v1, &v2, [this, ProcessPixel, color]
             (int x, int y, fix_rgb r, fix_rgb g, fix_rgb b, fix_rgb a)
             {
-                ProcessPixel(x, y, rgba(
+                rgba c(
                 clamp<int8_t>(FIX_TO_FLOAT_RGB(r)*255),
                 clamp<int8_t>(FIX_TO_FLOAT_RGB(g)*255),
                 clamp<int8_t>(FIX_TO_FLOAT_RGB(b)*255),
-                clamp<int8_t>(FIX_TO_FLOAT_RGB(a)*255)));
+                clamp<int8_t>(FIX_TO_FLOAT_RGB(a)*255));
+
+                c.a = color.a == 255 ? c.a : (c.a+1)*(color.a+1) >> 8;
+
+                ProcessPixel(x, y, c);
             });
         }
     };

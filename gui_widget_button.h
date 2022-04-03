@@ -142,25 +142,29 @@ namespace gui
 
         struct group : widgetarium<button>
         {
+            bool inner_call = false;
+
             void on_change (void* w) override
             {
+                if (inner_call) return;
+
                 int n = -1;
                 
                 for (int i=0; i<size(); i++)
-                    if (w == &(*this)(i))
+                    if (w == &at(i))
                         n = i;
 
                 if (n == -1) return;
 
                 if (!(*this)(n).on.now) return;
 
-                if (!(*this)(n).mouse_pressed.now) return;
-
+                inner_call = true;
                 for (int i=0; i<size(); i++)
                     if (i != n)
-                        (*this)(i).on = false;
+                        at(i).on = false;
+                inner_call = false;
 
-                notifier = &(*this)(n);
+                notifier = &at(n);
                 notifier_index = n;
                 widget::notify();
             }

@@ -18,7 +18,9 @@ widget<Test>
     TestDocHtml    doc_html;
     TestPix        pix;
     TestPixDraw    pix_draw;
+    TestPixDrawX   pix_drawx;
     TestPixFonts   pix_fonts;
+    TestPixText    pix_text;
     TestPixUtil    pix_util;
     TestGui        gui;
     TestGuiColors  gui_colors;
@@ -43,12 +45,14 @@ widget<Test>
 
         tests += {&pix,         "pix"};
         tests += {&pix_draw,    "draw"};
+        tests += {&pix_drawx,  "+draw+"};
         tests += {&pix_fonts,   "fonts"};
+        tests += {&pix_text,    "text"};
         tests += {&pix_util,    "util"};
 
         tests += {&gui,         "gui"};
         tests += {&gui_colors,  "colors"};
-        tests += {&gui_colorsx, "colors+"};
+        tests += {&gui_colorsx,"+colors+"};
         tests += {&gui_format,  "format"};
         tests += {&gui_animat,  "animation"};
         tests += {&gui_console, "console"};
@@ -60,9 +64,6 @@ widget<Test>
             .text.text = title;
 
         buttons(0).on = true;
-        for (int i=1; i<tests.size(); i++)
-            tests[i].first->hide();
-
     }
 
     void on_change (void* what) override
@@ -91,17 +92,27 @@ widget<Test>
                 or  s == "gui")
                 y += h;
                 button.coord = xywh(0, y, w, h);
-                y += h; }
+                y += h;
+            }
 
-            for (auto test: tests)
-                test.first->coord =
-                xywh(0, 0, W-w, H);
+            for (int i=0; i<tests.size(); i++)
+            {
+                if (buttons(i).on.now)
+                tests[i].first->coord = xyxy(0,0,
+                buttons.coord.now.x, coord.now.h);
+            }
         }
 
         if (what == &buttons)
+        {
             for (int i=0; i<tests.size(); i++)
-                tests[i].first->show(
-                    buttons(i).on.now);
+            {
+                bool on = buttons(i).on.now;
+                tests[i].first->show(on); if (on)
+                tests[i].first->coord = xyxy(0,0,
+                buttons.coord.now.x, coord.now.h);
+            }
+        }
     }
 };
 

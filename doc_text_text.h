@@ -1,8 +1,9 @@
 #pragma once
 #include "doc.h"
-#include "doc_text_glyph.h"
 namespace doc::text
 {
+    using aux::unicode::glyph;
+
     struct text
     {
         array<array<glyph>> lines;
@@ -14,11 +15,11 @@ namespace doc::text
         explicit text (str s) {
             lines.reserve(s.size()/80);
             for (str line : s.split_by("\n"))
-                lines += glyph::parse(line);
+                lines += aux::unicode::array(line);
         }
         str string () const {
             str s; for (const auto & line : lines)
-                s += doc::text::string(line) + "\n";
+                s += aux::unicode::string(line) + "\n";
             if (s != "") s.pop_back();
             return s;
         }

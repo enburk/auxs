@@ -1,4 +1,5 @@
 #pragma once
+#include "aux_abc.h"
 namespace doc
 {
     struct place

@@ -1,15 +1,13 @@
 #pragma once
-#include "doc_view.h"
-#include "gui_widget_text_aux.h"
-namespace gui::text
+#include "pix_text.h"
+namespace pix::text
 {
-    struct token final:
-    widget<token>, doc::view::token, metrics
+    struct token: metrics
     {
         struct glyph: pix::glyph
         {
             xy offset;
-            xywh coord() const {
+            xywh coords() const {
                 return xywh(
                     offset.x,
                     offset.y,
@@ -21,26 +19,21 @@ namespace gui::text
         };
         array<glyph> glyphs;
 
+        str text; style_index style;
+
         xy offset; // for external formatting
 
-        void operator = (doc::view::token const& t)
+        token () = default;
+        token (str text, style_index style) : text(text), style(style)
         {
-            bool same = text == t.text and style == t.style;
-
-            doc::view::token::operator = (t); if (same) return;
-
-            pix::text::metrics::operator = (pix::text::metrics{});
-
-            glyphs.clear();
-
-            for (auto c: aux::unicode::glyphs(text))
+            for (auto text: aux::unicode::glyphs(text))
             {
-                auto g = pix::glyph(c, style);
+                auto g = pix::glyph(text, style);
                 ascent  = max(ascent,   g.ascent);
                 ascent_ = max(ascent_,  g.ascent_);
                 descent = max(descent,  g.descent);
                 descent_= max(descent_, g.descent_);
-                glyphs += glyph{ g, xy{} };
+                glyphs += glyph{g, xy{}};
             }
 
             if (glyphs.size() > 0) {
@@ -57,27 +50,17 @@ namespace gui::text
             }
 
             bearing = style.style().shift.x;
-
-            resize(xy(width, ascent + descent));
-
-            update();
         }
 
-        int size() const { return glyphs.size(); }
-
-        void on_render(sys::window& window,
-        xywh r, xy offset, uint8_t alpha) override
+        void render (frame<rgba> frame, xy shift=xy{}, uint8_t alpha=255)
         {
-            for (auto& g : glyphs) {
-                xywh child_global = g.coord() + r.origin - offset;
-                xywh child_frame = r & child_global;
-                if (child_frame.size.x <= 0) continue;
-                if (child_frame.size.y <= 0) continue;
-                window.render(
-                    child_frame, alpha, g,
-                    child_frame.origin -
-                    child_global.origin,
-                    g.offset.x);
+            for (auto& g: glyphs)
+            {
+                auto w = g.width;
+                auto h = g.ascent + g.descent;
+                auto p = offset + shift + g.offset;
+                auto f = frame.crop(xywh(p.x, p.y, w, h));
+                g.render(f, xy{}, alpha);
             }
         }
 
@@ -86,8 +69,8 @@ namespace gui::text
             from = max(from, 0);
             upto = min(upto, glyphs.size());
             if (from >= upto) return xywh{}; upto--;
-            xyxy r1 = glyphs[from].coord();
-            xyxy r2 = glyphs[upto].coord();
+            xyxy r1 = glyphs[from].coords();
+            xyxy r2 = glyphs[upto].coords();
             return xyxy(
                 r1.x1, r1.y1,
                 r2.x2, r2.y2);
@@ -102,7 +85,7 @@ namespace gui::text
                     return i;
                     else i++;
 
-            return size() - 1;
+            return glyphs.size()-1;
         }
     };
 } 

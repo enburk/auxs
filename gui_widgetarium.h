@@ -31,7 +31,7 @@ namespace gui
         void on_change (void* w) override
         {
             for (int i = 0; i < size(); i++)
-                if (&(*this)(i) == w)
+                if (&at(i) == w)
                 {
                     notifier = &(*this)(i);
                     notifier_index = i;
