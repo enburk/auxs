@@ -289,7 +289,6 @@ namespace gui
                             queue(i+1).coord;
                         }
                         queue.back().text.text = "";
-                        queue_place();
                     }
                     else maverick.hide();
                 }
@@ -306,9 +305,9 @@ namespace gui
 
                     if (not node)
                     {
-                        node.emplace(); children += &*node; node->parent = this; gui::widgets.insert(&*node);
-                        edge.emplace(); children += &*edge; edge->parent = this; gui::widgets.insert(&*edge);
-                        text.emplace(); children += &*text; text->parent = this; gui::widgets.insert(&*text);
+                        node.emplace(); children += &*node; node->parent = this;
+                        edge.emplace(); children += &*edge; edge->parent = this;
+                        text.emplace(); children += &*text; text->parent = this;
                         node->text.text = str(maverick.text.text);
                         node->text.color = rgba::navy;
                         node->inner.color = rgba::white;
@@ -316,10 +315,9 @@ namespace gui
                         node->outex.color = rgba::red;
                         node->outey.color = rgba::red;
                         edge->color = rgba::white;
-                        //node->hide();
-                        //edge->hide();
+                        node->hide();
+                        edge->hide();
                         text->hide();
-                        place();
                     }
                     else
                     if (maverick.coord.now.origin == 
@@ -337,9 +335,7 @@ namespace gui
                             edge->show();
                             text->show();
                         }
-                        place();
                     }
-                    queue_place();
                 }
                 queue_place();
                 place();
