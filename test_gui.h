@@ -621,6 +621,8 @@ widget<TestGuiGraph>
 {
     gui::canvas canvas;
     gui::radio::group buttons;
+    gui::button zoom , speed ;
+    gui::button zoom_, speed_;
     gui::image Image;
     pix::image<rgba> image;
     gui::DynamicBST bst;
@@ -645,6 +647,7 @@ widget<TestGuiGraph>
                 buttons(i++).text.text = "unbalanced";
                 buttons(i++).text.text = "red-black";
                 buttons(i++).text.text = "AVL";
+                buttons(i++).text.text = "pause";
                 buttons.front().on = true;
                 canvas.color =
                 rgba::black;
@@ -656,6 +659,23 @@ widget<TestGuiGraph>
             canvas.coord = xywh(0,0,W,H);
             tree.coord = xywh(0,0,W-w,H);
             bst.coord = xywh(0,0,W-w,H);
+
+            zoom  .coord = xywh(W-w,H-4*h,w,h);
+            zoom_ .coord = xywh(W-w,H-3*h,w,h);
+            speed .coord = xywh(W-w,H-2*h,w,h);
+            speed_.coord = xywh(W-w,H-1*h,w,h);
+            zoom  .text.text = "zoom+";
+            zoom_ .text.text = "zoom-";
+            speed .text.text = "speed+";
+            speed_.text.text = "speed-";
+            zoom  .repeat_lapse = 0ms;
+            zoom_ .repeat_lapse = 0ms;
+            speed .repeat_lapse = 0ms;
+            speed_.repeat_lapse = 0ms;
+            zoom  .repeating = true;
+            zoom_ .repeating = true;
+            speed .repeating = true;
+            speed_.repeating = true;
         }
 
         if (what == &buttons)
@@ -699,11 +719,23 @@ widget<TestGuiGraph>
             or  text == "AVL")
             {
                 bst.kind = text;
+                bst.pause = false;
+            }
+            if (text == "pause")
+            {
+                bst.pause = true;
             }
 
             Image.show(text == "tree" or text == "+tree+");
             tree.show(text == "tree" or text == "+tree+");
             bst.show(text != "tree" && text != "+tree+");
         }
+
+        int d = gui::metrics::text::height;
+
+        if (what == &zoom  ) bst.side  = min(bst.side+1, d*2);
+        if (what == &zoom_ ) bst.side  = max(bst.side-1, d/3);
+        if (what == &speed ) bst.speed = min(bst.speed*1.1, 10.0);
+        if (what == &speed_) bst.speed = max(bst.speed*0.9, 0.01);
     }
 };

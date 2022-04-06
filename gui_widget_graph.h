@@ -29,7 +29,21 @@ namespace gui
                 outex.y = ry; outex.ry = ry-1; outex.ry2 = ry-1;
                 outey.x = rx; outey.rx = rx-2; outey.rx2 = rx-2;
                 outey.y = ry; outey.ry = ry-2; outey.ry2 = ry-2;
+                auto font =
+                text.font.now; font.size = (coord.now.size.y*7+1)/12;
+                text.font = font;
                 text.coord = r;
+
+                pix::text::style style;
+                style.color = text.color;
+                style.font = font;
+                pix::text::token t(text.text, style);
+                int dx = t.lpadding;
+                int dy = t.ascent - t.ascent_;
+                text.shift = xy(-dx/2,0);//-dy/2);
+                text.alignment = xy{
+                    pix::center,
+                    pix::center};
             }
         }
     };
@@ -95,7 +109,6 @@ namespace gui
         {
             nodes.clear();
             edges.clear();
-            children.clear();
         }
 
         void place (int i, xyxy r)
@@ -105,8 +118,6 @@ namespace gui
             auto& edge = edges[i];
             if (not node) return;
 
-            int W = r.x2 - r.x1; if (W <= 0) return;
-            int H = r.y2 - r.y1; if (H <= 0) return;
             int d = gui::metrics::text::height*12/7;
             int c = (r.x1 + r.x2)/2;
 
@@ -140,11 +151,12 @@ namespace gui
     {
         binary_property<str> kind;
         std::deque<std::optional<line>> edges;
-        std::deque<std::optional<node>> nodes;
         std::deque<std::optional<text::view>> texts;
+        std::deque<std::optional<node>> nodes;
         widgetarium<node> queue; deque<str> queux;
         property<int> side = gui::metrics::text::height*12/7;
         property<double> speed = 1.0;
+        property<bool> pause = true;
         property<time> timer;
         node maverick;
         int target=0;
@@ -154,9 +166,8 @@ namespace gui
             nodes.clear();
             edges.clear();
             texts.clear();
-            queue.clear();
-            queux.clear();
-            children.clear();
+            maverick.text.text = "";
+            target = 0;
         }
 
         void queue_place ()
@@ -214,22 +225,30 @@ namespace gui
             auto& text = texts[i];
             if (not node) return;
 
+            time ms {int(100/speed.now)};
+
+            // if (i > 0
+            // and r.x2-r.x1 < 3
+            // and side.now > gui::metrics::text::height/2)
+            //     side.go(side-1,
+            //         10*ms);
+
             int d = side.now;
             if (i == 0) {
                 r = coord.now.local();
                 r.x1 += d/2;
                 r.x2 -= d/2;
             }
-            time ms {int(100/speed.now)};
-            int W = r.x2 - r.x1; if (W <= 0) return;
-            int H = r.y2 - r.y1; if (H <= 0) return;
             int c = (r.x1 + r.x2)/2;
 
-            auto t = time(100);//node->coord.now == xywh{} ? time{} : ms;
+            auto t = node->coord.now == xywh{} ? time{} : ms;
+            int dtx = -d/2;
+            int dty = d*3/2;
 
             node->coord.go(xywh(c-d/2, d+r.y1+d/2, d, d), t);
-            text->coord.go(xywh(c+d/2, d+r.y1+d/2, d, d), t);
-            text->alignment = xy{pix::left, pix::center};
+            text->coord.go(xywh(c+dtx, d+r.y1+dty, d, d), t);
+            text->alignment = xy{pix::center, pix::center};
+            text->font = pix::font{"", (d*7+1)/12};
             edge->y1 = d + r.y1 - d/2;
             edge->y2 = d + r.y1 + d;
             edge->x2 = c;
@@ -254,7 +273,8 @@ namespace gui
 
             time ms {int(100/speed.now)};
 
-            if (what == &coord)
+            if (what == &coord
+            or  what == &side)
             {
                 xyxy r = coord.now.local();
                 r.x1 = (r.x1+r.x2)/2 - side.now/2;
@@ -262,12 +282,14 @@ namespace gui
                 queue_place();
                 place();
             }
+
+            if (what == &kind) clear();
             
             if (what == &timer)
             {
                 if (maverick.text.text == "")
                 {
-                    if (not queue.empty())
+                    if (not queue.empty() and not pause.now)
                     {
                         maverick.text.text = str(
                         queue.front().text.text);
@@ -286,7 +308,7 @@ namespace gui
                             queue(i+0).text.text = str(
                             queue(i+1).text.text);
                             queue(i+0).coord =
-                            queue(i+1).coord;
+                            queue(i+1).coord.now;
                         }
                         queue.back().text.text = "";
                     }
@@ -315,6 +337,8 @@ namespace gui
                         node->outex.color = rgba::red;
                         node->outey.color = rgba::red;
                         edge->color = rgba::white;
+                        text->color = rgba::green;
+                        text->text = kind.now == "AVL" ? "0" : "";
                         node->hide();
                         edge->hide();
                         text->hide();
@@ -326,11 +350,35 @@ namespace gui
                         int x = std::stoi(str(maverick.text.text));
                         int y = std::stoi(str(node->text.text));
 
-                        if (x < y) target = target*2+1; else
-                        if (x > y) target = target*2+2; else
+                        if (x < y)
+                        {
+                            target = target*2+1;
+                            if (kind.now == "AVL") {
+                                int w = std::stoi(str(text->text));
+                                w--; str plus = w > 0 ? "+" : "";
+                                text->text = plus + std::to_string(w);
+                                text->color = -1 <= w and w <= 1 ?
+                                rgba::green : rgba::red; }
+                        }
+                        else
+                        if (x > y)
+                        {
+                            target = target*2+2;
+                            if (kind.now == "AVL") {
+                                int w = std::stoi(str(text->text));
+                                w++; str plus = w > 0 ? "+" : "";
+                                text->text = plus + std::to_string(w);
+                                text->color = -1 <= w and w <= 1 ?
+                                rgba::green : rgba::red; }
+                        }
+                        else
                         {
                             maverick.text.text = "";
                             maverick.hide();
+                            rgba color = 
+                            node->inner.color.now;
+                            node->inner.color = rgba::yellow;
+                            node->inner.color.go(color, 300ms);
                             node->show();
                             edge->show();
                             text->show();

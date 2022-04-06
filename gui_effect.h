@@ -26,6 +26,10 @@ namespace gui
         friend time operator + (time a, time b) { a += b; return a; }
         friend time operator - (time a, time b) { a -= b; return a; }
 
+        friend time operator * (double x, time t) { t.ms = int(t.ms*x); return t; }
+        friend time operator * (time t, double x) { t.ms = int(t.ms*x); return t; }
+        friend time operator / (time t, double x) { t.ms = int(t.ms/x); return t; }
+
         auto operator <=> (time const&) const = default;
 
         static time was;
