@@ -95,7 +95,8 @@ namespace gui
         void on_render (sys::window& window, xywh r, xy offset, uint8_t alpha) override
         {
             if (alpha > 0 and color.now.a > 0)
-            window.render(r, alpha, color.now, offset, geo,
+            window.render(r, alpha, color.now,
+                offset, geo,
                 points.data(),(int)
                 points.size());
         }
@@ -103,9 +104,9 @@ namespace gui
         void on_change (void* what) override
         {
             if (what == &color)
-                if (color.was.a != 0 or
-                    color.now.a != 0 )
-                    update();
+            if (color.was.a != 0 or
+                color.now.a != 0 )
+                update();
 
             if (what == &x or what == &rx or what == &rx2 or
                 what == &y or what == &ry or what == &ry2)
@@ -125,17 +126,20 @@ namespace gui
                 int(std::ceil (y.now + r2.y)));
                 coord = r;
 
+                double dx = x.now - r.l;
+                double dy = y.now - r.t;
+
                 if (r1.x < 0.5 or r1.y < 0.5)
                 {
                     geo = pix::geo::triangle_fan;
                     points.reserve(int(2*2*pi/delta + 2 + 2));
-                    points += x.now - r.l;
-                    points += y.now - r.t;
+                    points += dx;
+                    points += dy;
                     for (double a = 0.0;
                         a < 2*pi + delta/2;
                         a += delta) {
-                        points += x.now - r.l + r2.x*cos(a);
-                        points += y.now - r.t + r2.y*sin(a);
+                        points += dx + r2.x*cos(a);
+                        points += dy + r2.y*sin(a);
                     }
                 }
                 else
@@ -146,8 +150,8 @@ namespace gui
                     for (double a = 0.0;
                         a < 2*pi + delta/2;
                         a += delta) {
-                        points += x.now - r.l + r2.x*cos(a);
-                        points += y.now - r.t + r2.y*sin(a);
+                        points += dx + r2.x*cos(a);
+                        points += dy + r2.y*sin(a);
                     }
                 }
                 else
@@ -157,10 +161,10 @@ namespace gui
                     for (double a = 0.0;
                         a < 2*pi + delta/2;
                         a += delta) {
-                        points += x.now - r.l + r1.x*cos(a);
-                        points += y.now - r.t + r1.y*sin(a);
-                        points += x.now - r.l + r2.x*cos(a);
-                        points += y.now - r.t + r2.y*sin(a);
+                        points += dx + r1.x*cos(a);
+                        points += dy + r1.y*sin(a);
+                        points += dx + r2.x*cos(a);
+                        points += dy + r2.y*sin(a);
                     }
                 }
                 update();

@@ -459,7 +459,6 @@ widget<TestGuiAnimat>
     gui::text::view view, text;
     gui::line line, lin1;
     gui::oval oval;
-    gui::node node;
     gui::button go1, go2, go3, go4, go5, go6; 
     gui::property<gui::time> timer;
     gui::console log;
@@ -554,11 +553,6 @@ widget<TestGuiAnimat>
                 oval.ry.go( 1*h, lapse);
                 oval.rx2.go( 3*h, lapse);
                 oval.ry2.go( 2*h, lapse);
-                node.text.text = "5";
-                node.text.color.go(rgba::yellow, lapse);
-                node.outer.color.go(rgba::white, lapse);
-                node.inner.color.go(rgba::black, lapse);
-                node.coord.go(xywh(0, 15*h, 1*h, 1*h), lapse);
             break; default:
                 quad.color.go(rgba::olive,  lapse);
                 view.color.go(rgba::white,  lapse);
@@ -586,10 +580,6 @@ widget<TestGuiAnimat>
                 oval.ry.go(2*h, lapse);
                 oval.rx2.go(2*h, lapse);
                 oval.ry2.go(3*h, lapse);
-                node.text.color.go(rgba::green, lapse);
-                node.outer.color.go(rgba::black, lapse);
-                node.inner.color.go(rgba::white, lapse);
-                node.coord.go(xywh(W-w-3*h, 24*h, 3*h, 2*h), lapse);
             }
 
             turn = (turn + 1) % 2;
@@ -625,8 +615,8 @@ widget<TestGuiGraph>
     gui::button zoom_, speed_;
     gui::image Image;
     pix::image<rgba> image;
-    gui::DynamicBST bst;
-    gui::BST tree;
+    gui::graphs::DynamicBST bst;
+    gui::graphs::BST tree;
 
     void on_change (void* what) override
     {
