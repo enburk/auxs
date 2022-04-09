@@ -205,8 +205,7 @@ widget<TestPixText>
 
     void on_change (void* what) override
     {
-        if (what != &alpha or alpha.to == 0 or
-            coord.now.size == image.size or
+        if (coord.now.size == image.size or
             coord.now.size == xy())
             return;
 
@@ -237,8 +236,7 @@ widget<TestPixUtil>
 
     void on_change (void* what) override
     {
-        if (what != &alpha or alpha.to == 0 or
-            coord.now.size == image.size or
+        if (coord.now.size == image.size or
             coord.now.size == xy())
             return;
 
