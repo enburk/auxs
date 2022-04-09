@@ -16,8 +16,7 @@ widget<TestPixDraw>
 
     void on_change (void* what) override
     {
-        if (what != &alpha or alpha.to == 0 or
-            coord.now.size == image.size or
+        if (coord.now.size == image.size or
             coord.now.size == xy())
             return;
 
@@ -31,7 +30,7 @@ widget<TestPixDraw>
         plane.fill(rgba{});
 
         int w = image.size.x;
-        int h = image.size.y/2;
+        int h = image.size.y/4;
 
         auto frame1 = image.crop(xywh(0,0,w,h));
         auto frame2 = plane.crop(xywh(0,h,w,h));
@@ -42,6 +41,8 @@ widget<TestPixDraw>
         {
             auto w1 = 0.1 + 1.9*a/2/pi;
             auto w2 = 2.0 - 1.9*a/2/pi;
+            auto rr = r - r*a/2/pi;
+            auto cc = int(255*a/2/pi);
 
             frame1.blend(line{{r,r},
                 vector{r,0}.rotated(-a) +
@@ -50,17 +51,16 @@ widget<TestPixDraw>
                 vector{r,0}.rotated(-a) +
                 vector{r,r}}, rgba::white, w2);
 
-            frame1.blend(circle{{3*r,r}, r - r*a/2/pi},
+            frame1.blend(circle{{3*r,r}, rr},
                 rgba::white, w1);
-            frame2.copy (circle{{3*r,r}, r - r*a/2/pi},
+            frame2.copy (circle{{3*r,r}, rr},
                 rgba::white, w2);
 
-            frame1.blend(circle{{5*r,r}, r - r*a/2/pi},
-                rgba(int(255*a/2/pi),0,0));
-            frame2.copy (circle{{5*r,r}, r - r*a/2/pi},
-                rgba(int(255 - 255*a/2/pi),0,0));
+            frame1.blend(circle{{5*r,r}, rr},
+                rgba(cc,0,0));
+            frame2.copy (circle{{5*r,r}, rr},
+                rgba(255 - cc,0,0));
         }
-
         image.crop().blend_from(
         plane.crop());
     }
@@ -74,8 +74,7 @@ widget<TestPixDrawX>
 
     void on_change (void* what) override
     {
-        if (what != &alpha or alpha.to == 0 or
-            coord.now.size == image.size or
+        if (coord.now.size == image.size or
             coord.now.size == xy())
             return;
 
@@ -89,7 +88,7 @@ widget<TestPixDrawX>
         plane.fill(rgba{});
 
         int w = image.size.x;
-        int h = image.size.y/2;
+        int h = image.size.y/4;
         int u = gui::metrics::text::height;
 
         auto frame1 = image.crop(xywh(0,0,w,h));
@@ -150,8 +149,7 @@ widget<TestPixFonts>
 
     void on_change (void* what) override
     {
-        if (what != &alpha or alpha.to == 0 or
-            coord.now.size == image.size or
+        if (coord.now.size == image.size or
             coord.now.size == xy())
             return;
 
