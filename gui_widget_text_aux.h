@@ -24,8 +24,7 @@ namespace gui::text
              if (what == &value) {
                  resize(xy(
                  value.now.advance,
-                 value.now.ascent +
-                 value.now.descent));
+                 value.now.Height()));
                  update();
              }
         }

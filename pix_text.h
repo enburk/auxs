@@ -66,15 +66,19 @@ namespace pix
 
         struct metrics
         {
-            int ascent   = 0; // pixels above the base line (font based)
-            int ascent_  = 0; // pixels above the base line (actual)
-            int descent  = 0; // pixels below the base line (font based)
-            int descent_ = 0; // pixels below the base line (actual)
+            int Ascent   = 0; // pixels above the base line (font based)
+            int ascent   = 0; // pixels above the base line (actual)
+            int Descent  = 0; // pixels below the base line (font based)
+            int descent  = 0; // pixels below the base line (actual)
             int bearing  = 0; // horizontal displacement
             int advance  = 0; // pen position increment
             int lpadding = 0; // from begin to first pixel
             int rpadding = 0; // from last pixel to advance (negative for italic)
-            int width    = 0; // max(advance, advance - rpadding)
+
+            int Width  () const { return max(advance, advance - rpadding); }
+            int width  () const { return advance - lpadding - rpadding; }
+            int Height () const { return Ascent + Descent; }
+            int height () const { return ascent + descent; }
 
             bool operator == (metrics const&) const = default;
             bool operator != (metrics const&) const = default;

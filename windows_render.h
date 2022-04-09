@@ -159,8 +159,8 @@ void sys::window::render (xywh r, uint8_t alpha, pix::glyph g, xy offset, int x)
     and style.strikeout.color.a == 0)
         return;
 
-    int w = g.width;
-    int h = g.ascent + g.descent;
+    int w = g.Width();
+    int h = g.Height();
     if (w <= 0 || h <= 0) return;
 
     rgba fore = style.color;

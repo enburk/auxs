@@ -36,40 +36,41 @@ namespace gui::graphs
         }
         void on_change (void* what) override
         {
-            if (what == &coord and
-                coord.was.size !=
-                coord.now.size)
+            if (what == &x or
+                what == &y or
+                what == &r or
+                what == &kinda)
             {
-                xywh r = coord.now.local();
-                auto rx = r.w/2.0;
-                auto ry = r.h/2.0;
-                inner.x = rx; inner.rx = rx-0.5;
-                inner.y = ry; inner.ry = ry-0.5;
-                outer.x = rx; outer.rx = rx; outer.rx2 = rx;
-                outer.y = ry; outer.ry = ry; outer.ry2 = ry;
-                outex.x = rx; outex.rx = rx-1; outex.rx2 = rx-1;
-                outex.y = ry; outex.ry = ry-1; outex.ry2 = ry-1;
-                outey.x = rx; outey.rx = rx-2; outey.rx2 = rx-2;
-                outey.y = ry; outey.ry = ry-2; outey.ry2 = ry-2;
+                int d = 2*int(ceil(r));
+                int X = int(std::round(x.now));
+                int Y = int(std::round(y.now));
+                inner.x = d*3/2; inner.rx = r-0.5;
+                inner.y = d*3/2; inner.ry = r-0.5;
+                outer.x = d*3/2; outer.rx = r; outer.rx2 = r;
+                outer.y = d*3/2; outer.ry = r; outer.ry2 = r;
+                outex.x = d*3/2; outex.rx = r-1; outex.rx2 = r-1;
+                outex.y = d*3/2; outex.ry = r-1; outex.ry2 = r-1;
+                outey.x = d*3/2; outey.rx = r-2; outey.rx2 = r-2;
+                outey.y = d*3/2; outey.ry = r-2; outey.ry2 = r-2;
                 auto font =
                 text.font.now;
-                font.size = (coord.now.size.y*7+1)/12;
+                font.size = (d*7+1)/12;
                 text.font = font;
                 kind.font = font;
-                text.coord = r;
-            }
-            if (what == &coord
-            or  what == &kinda)
-            {
-                xywh r = coord.now.local();
-                aux::vector<2> p {r.w, 0};
-                p = p.rotated(kinda);
-                int x = int(std::round(p.x));
-                int y = int(std::round(p.y));
+
+                text.coord = xywh(d,d,d,d);
+                auto p = aux::vector<2>{d,0}.rotated(kinda);
+                int xx = int(std::round(p.x));
+                int yy = int(std::round(p.y));
                 kind.coord = xyxy(
-                x - r.w/2, y - r.h/2,
-                x + r.w/2, y + r.h/2) +
-                coord.now.origin;
+                xx-d/2, yy-d/2,
+                xx+d/2, yy+d/2) +
+                xy{d*3/2, d*3/2};
+                coord = xywh(
+                    X-d*3/2,
+                    Y-d*3/2,
+                    3*d,
+                    3*d);
             }
         }
     };
@@ -79,19 +80,13 @@ namespace gui::graphs
     {
         widgetarium<node> nodes;
         property<double> speed = 1.0;
-        property<bool> pause = true;
         property<time> timer;
         deque<str> extra;
 
         void pop ()
         {
             for (int i=0; i<nodes.size()-1; i++)
-            {
-                nodes(i+0).text.text = str(
-                nodes(i+1).text.text);
-                nodes(i+0).coord =
-                nodes(i+1).coord.now;
-            }
+            nodes(i).mimic(nodes(i+1));
             nodes.back().text.text = "";
         }
         void push (str s) { extra += s; }
@@ -104,10 +99,6 @@ namespace gui::graphs
 
         void on_change (void* what) override
         {
-            if (timer.now == time{})
-                timer.go(time::infinity,
-                         time::infinity);
-
             if (what == &coord
             or  what == &timer)
             {
@@ -115,6 +106,11 @@ namespace gui::graphs
                 int x = 0;
                 int d = coord.now.h;
                 if (d == 0) return;
+
+                if (timer.now == time{})
+                    timer.go(time::infinity,
+                             time::infinity);
+
                 time ms {int(100/speed.now)};
 
                 nodes.coord = coord.now.local();
@@ -122,8 +118,9 @@ namespace gui::graphs
                 while (x + d < coord.now.w)
                 {
                     auto& q = nodes(n++);
-                    q.coord.go(xywh(x,0,d,d),
-                    q.coord.now == xywh{} ? time{} : ms);
+                    q.r = d/2;
+                    q.y = d/2;
+                    q.x.go(x+d/2, q.x==0 ? time{} : ms);
                     x += d;
 
                     if (str(q.text.text) != "")
@@ -165,10 +162,15 @@ namespace gui::graphs
             node* parent = nullptr;
             std::unique_ptr<node> left;
             std::unique_ptr<node> right;
+            line edge;
         };
         std::unique_ptr<node> root;
+        property<double> speed = 1.0;
+        property<time> timer;
 
-        void proceed (int value)
+        void clear () { root.reset(); }
+
+        void proceed (time t, int key, node* n = nullptr)
         {
 
         }

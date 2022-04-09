@@ -11,9 +11,8 @@ namespace pix::text
                 return xywh(
                     offset.x,
                     offset.y,
-                    width,
-                    ascent+
-                    descent
+                    Width (),
+                    Height()
                 );
             }
         };
@@ -29,10 +28,10 @@ namespace pix::text
             for (auto text: aux::unicode::glyphs(text))
             {
                 auto g = pix::glyph(text, style);
-                ascent  = max(ascent,   g.ascent);
-                ascent_ = max(ascent_,  g.ascent_);
-                descent = max(descent,  g.descent);
-                descent_= max(descent_, g.descent_);
+                Ascent  = max(Ascent,  g.Ascent);
+                ascent  = max(ascent,  g.ascent);
+                Descent = max(Descent, g.Descent);
+                descent = max(descent, g.descent);
                 glyphs += glyph{g, xy{}};
             }
 
@@ -44,8 +43,7 @@ namespace pix::text
             for (auto& g: glyphs)
             {
                 g.offset.x = advance;
-                g.offset.y = ascent - g.ascent;
-                width = advance + g.width;
+                g.offset.y = Ascent - g.Ascent;
                 advance += g.advance;
             }
 
@@ -56,8 +54,8 @@ namespace pix::text
         {
             for (auto& g: glyphs)
             {
-                auto w = g.width;
-                auto h = g.ascent + g.descent;
+                auto w = g.Width();
+                auto h = g.Height();
                 auto p = offset + shift + g.offset;
                 auto f = frame.crop(xywh(p.x, p.y, w, h));
                 g.render(f, xy{}, alpha);
@@ -81,7 +79,7 @@ namespace pix::text
             int i = 0;
             for (auto g : glyphs)
                 if (g.offset.x +
-                    g.width > x)
+                    g.Width() > x)
                     return i;
                     else i++;
 

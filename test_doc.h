@@ -190,8 +190,8 @@ widget<TestDocHtml>
                             std::to_string(r) + "(" +
                             std::to_string(row.offset.x) + "," +
                             std::to_string(row.offset.y) + ")-[" +
-                            std::to_string(row.width) + "," +
-                            std::to_string(row.ascent + row.descent) + "]: ";
+                            std::to_string(row.width ()) + "," +
+                            std::to_string(row.height()) + "]: ";
                         r++;
                         for (auto& solid: row.solids)
                             for (auto& token: solid.tokens)

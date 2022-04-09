@@ -71,9 +71,7 @@ namespace gui::text
                 {
                     if (not rows.empty()) // then finishing last row
                     {
-                        int h =                         
-                            rows.back().ascent +
-                            rows.back().descent;
+                        int h = rows.back().Height();
 
                         if (height + h >= fmt.height
                             or not format.wordwrap)
@@ -104,20 +102,17 @@ namespace gui::text
                 rows.back().ellipt();
 
             if (rows.size() != 0) height +=
-                rows.back().ascent +
-                rows.back().descent;
+                rows.back().Height();
 
             int width = 0; length = 0;
 
             for (auto& row: rows)
             {
                 row.align();
-                row.offset.x += row.lpadding(
-                    row.ascent +
-                    row.descent);
+                row.offset.x += row.elpadding(row.Height());
                 width = max (width,
                     row.offset.x +
-                    row.width);
+                    row.Width());
 
                 for (auto& solid: row.solids)
                 for (auto& token: solid.tokens)
@@ -142,8 +137,7 @@ namespace gui::text
 
             if (rows.empty()) {
                 pix::glyph space (" ", style);
-                height = space.ascent +
-                    space.descent; }
+                height = space.Height(); }
 
             resize(xy(width, height));
         }
@@ -190,7 +184,7 @@ namespace gui::text
                 xy  offset;
                 if (rows.size() > 0) offset = 
                     rows.back().offset + xy(
-                    rows.back().width +
+                    rows.back().Width() +
                     from*space.advance,
                         0);
 
@@ -198,8 +192,7 @@ namespace gui::text
 
                 bars += xywh (0, 0,
                     space.advance * n,
-                    space.ascent +
-                    space.descent) +
+                    space.Height()) +
                     offset;
             }
             return bars;
@@ -210,13 +203,12 @@ namespace gui::text
             int i = 0;
             for (auto& row : rows)
             {
-                if (row.ascent +
-                    row.descent +
+                if (row.Height() +
                     row.offset.y > p.y or
                     row.the_last_row)
                 {
                     int x = p.x - row.offset.x;
-                    if (x < row.width
+                    if (x < row.Width()
                     or not virtual_space
                     or not row.the_last_row)
                     return i + row.point(x);
@@ -230,7 +222,7 @@ namespace gui::text
             if (virtual_space and not rows.empty())
             {
                 pix::glyph space(" ", style);
-                int dx = p.x - rows.back().width;
+                int dx = p.x - rows.back().Width();
                 return length + dx/space.advance;
             }
 

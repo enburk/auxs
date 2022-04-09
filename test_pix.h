@@ -145,7 +145,7 @@ widget<TestPixDrawX>
 struct TestPixFonts:
 widget<TestPixFonts>
 {
-    gui::image gui_image;
+    gui::image Image;
     pix::image<rgba> image;
 
     void on_change (void* what) override
@@ -155,9 +155,10 @@ widget<TestPixFonts>
             coord.now.size == xy())
             return;
 
-        image.resize(coord.now.size); image.fill(rgba::red);
-        gui_image.coord = coord.now.local();
-        gui_image.source = image.crop();
+        image.resize(coord.now.size);
+        image.fill(rgba::red);
+        Image.coord = coord.now.local();
+        Image.source = image.crop();
 
         str digit = "0123456789";
         str Latin = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -187,8 +188,8 @@ widget<TestPixFonts>
 
             for (char c : alnum) {
                 auto glyph = pix::glyph(c, style);
-                auto w = glyph.width;
-                auto h = glyph.ascent + glyph.descent;
+                auto w = glyph.Width();
+                auto h = glyph.Height();
                 auto frame = image.crop(xywh(x, y, w, h));
                 frame.blend(rgba::white, 200);
                 glyph.render(frame, xy(), 200, x);

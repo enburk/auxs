@@ -13,9 +13,8 @@ namespace gui::text
                 return xywh(
                     offset.x,
                     offset.y,
-                    width,
-                    ascent+
-                    descent
+                    Width (),
+                    Height()
                 );
             }
         };
@@ -36,29 +35,27 @@ namespace gui::text
             for (auto c: aux::unicode::glyphs(text))
             {
                 auto g = pix::glyph(c, style);
-                ascent  = max(ascent,   g.ascent);
-                ascent_ = max(ascent_,  g.ascent_);
-                descent = max(descent,  g.descent);
-                descent_= max(descent_, g.descent_);
+                Ascent  = max(Ascent,  g.Ascent);
+                ascent  = max(ascent,  g.ascent);
+                Descent = max(Descent, g.Descent);
+                descent = max(descent, g.descent);
                 glyphs += glyph{ g, xy{} };
             }
-
-            if (glyphs.size() > 0) {
+            if (glyphs.size() > 0)
+            {
                 lpadding = glyphs.front().lpadding;
                 rpadding = glyphs.back ().rpadding;
             }
-
             for (auto& g: glyphs)
             {
                 g.offset.x = advance;
-                g.offset.y = ascent - g.ascent;
-                width = advance + g.width;
+                g.offset.y = Ascent - g.Ascent;
                 advance += g.advance;
             }
 
             bearing = style.style().shift.x;
 
-            resize(xy(width, ascent + descent));
+            resize(xy(Width(), Height()));
 
             update();
         }
@@ -98,7 +95,7 @@ namespace gui::text
             int i = 0;
             for (auto g : glyphs)
                 if (g.offset.x +
-                    g.width > x)
+                    g.Width() > x)
                     return i;
                     else i++;
 

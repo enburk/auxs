@@ -137,12 +137,12 @@ pix::glyph::glyph (aux::unicode::glyph text, text::style_index i) : text(text), 
         if (!rc) throw std::runtime_error("pix::font::render: GetTextExtentPoint32W fail");
 
         advance = Size.cx;
-        ascent  = context.font.metrics.ascent;
-        descent = context.font.metrics.descent;
+        Ascent  = context.font.metrics.ascent;
+        Descent = context.font.metrics.descent;
         
-        width = 2*advance; // italics are wider
+        int width = 2*advance; // italics are wider
         static pix::image<rgba> image;
-        image.resize(xy(width, ascent+descent));
+        image.resize(xy(width, Ascent + Descent));
         image.fill(rgba::white);
 
         text::style simple_style;
@@ -176,20 +176,18 @@ pix::glyph::glyph (aux::unicode::glyph text, text::style_index i) : text(text), 
                     goto d;
         d:
 
-        ascent_  = ascent - r.yl;
-        descent_ = descent - (image.size.y - r.yh);
-
+        ascent   = Ascent - r.yl;
+        descent  = Descent - (image.size.y - r.yh);
         lpadding = r.xl;
         rpadding = advance - r.xh; // negative for italic
-        width = max(advance, advance - rpadding);
 
         cache_metrics.emplace(key, *this);
     }
 
+    Ascent  -= style.shift.y;
     ascent  -= style.shift.y;
-    ascent_ -= style.shift.y;
+    Descent += style.shift.y;
     descent += style.shift.y;
-    descent_+= style.shift.y;
     bearing += style.shift.x;
 
     // adapt metrics for style.outline/undeline/shadow here
@@ -260,7 +258,7 @@ void pix::glyph::render (pix::frame<rgba> frame, xy offset, uint8_t alpha, int x
         if (it != cache_glyphs.end())
         {
             frame.blend_from(it->second.crop()
-                .from(offset.x, offset.y), alpha);
+            .from(offset.x, offset.y), alpha);
             return;
         }
     }
@@ -271,7 +269,7 @@ void pix::glyph::render (pix::frame<rgba> frame, xy offset, uint8_t alpha, int x
     }
 
     int w = 2*advance; // italics are wider
-    int h = ascent + descent;
+    int h = Height();
     if (w <= 0 or h <= 0) return;
 
     GDI_CONTEXT context(font);

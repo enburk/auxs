@@ -12,7 +12,7 @@ namespace gui::text
         int length = 0;
         int indent = -1;
 
-        int lpadding (int height)
+        int elpadding (int height)
         {
             int d = 0;
             for (auto bar: format.lwrap) {
@@ -24,7 +24,7 @@ namespace gui::text
             return d +
             format.lpadding;
         }
-        int rpadding (int height)
+        int erpadding (int height)
         {
             int d = 0;
             for (auto bar: format.rwrap) {
@@ -40,16 +40,16 @@ namespace gui::text
         bool add (solid solid)
         {
             int height =
-                max(ascent,  solid.ascent) +
-                max(descent, solid.descent);
+                max(Ascent,  solid.Ascent) +
+                max(Descent, solid.Descent);
 
             int max_width =
                 format.width -
-                lpadding(height) -
-                rpadding(height);
+                elpadding(height) -
+                erpadding(height);
 
             if ((format.wordwrap or format.ellipsis)
-            and advance + solid.width > max_width
+            and advance + solid.width() > max_width
             and not solids.empty()) // at least one should be accepted
             {
                 the_last_row = false;
@@ -57,17 +57,17 @@ namespace gui::text
             }
 
             if (format.ellipsis
-            and advance + solid.width > max_width
+            and advance + solid.width() > max_width
             and solids.empty())
                 solid.ellipt(max_width);
 
-            ascent  = max(ascent,   solid.ascent);
-            ascent_ = max(ascent_,  solid.ascent_);
-            descent = max(descent,  solid.descent);
-            descent_= max(descent_, solid.descent_);
-            width = advance + solid.width;
+            Ascent  = max(Ascent,  solid.Ascent);
+            ascent  = max(ascent,  solid.ascent);
+            Descent = max(Descent, solid.Descent);
+            descent = max(descent, solid.descent);
             solid.offset.x = advance;
             advance += solid.advance;
+            rpadding = solid.rpadding;
             solids += std::move(solid);
             return true;
         }
@@ -76,8 +76,8 @@ namespace gui::text
         {
             int max_width =
                 format.width -
-                lpadding(ascent+descent) -
-                rpadding(ascent+descent);
+                elpadding(Height()) -
+                erpadding(Height());
 
             the_last_row = true;
 
@@ -86,22 +86,19 @@ namespace gui::text
                 auto& solid = solids.back();
                 advance -= solid.advance;
                 solid.ellipt(max<int>());
-                width = advance + solid.width;
                 advance += solid.advance;
-                if (width <= max_width)
+                if (width() <= max_width)
                     return;
 
                 advance -= solid.advance;
                 solid.tokens.clear();
                 solids.truncate();
-                width = advance + solids.back().width;
             }
 
             if (solids.size() > 0) {
                 auto& solid = solids.back();
                 advance -= solid.advance;
                 solid.ellipt(max_width);
-                width = advance + solid.width;
                 advance += solid.advance;
             }
         }
@@ -109,28 +106,28 @@ namespace gui::text
         void align ()
         {
             for (auto& solid: solids)
-                solid.offset.y = ascent -
-                solid.ascent;
+                solid.offset.y = Ascent -
+                solid.Ascent;
 
             int align = format.alignment.x;
             int Width =
                 format.width -
-                lpadding(ascent+descent) -
-                rpadding(ascent+descent);
+                elpadding(Height()) -
+                erpadding(Height());
 
             if (align == pix::left or
                (align == pix::justify_left and the_last_row)) {
                 return;
             }
 
-            if (align == pix::center and Width > width) {
-                offset.x += Width/2 - width/2;
+            if (align == pix::center and Width > width()) {
+                offset.x += Width/2 - width()/2;
                 return;
             }
 
             if (align == pix::right or
                (align == pix::justify_right and the_last_row)) {
-                offset.x += Width - width;
+                offset.x += Width - width();
                 return;
             }
 
@@ -138,14 +135,14 @@ namespace gui::text
             if (n <= 0) return;
             if (n <= 1) return; //  t o k e n
 
-            int d = (Width - width) / (n-1);
-            int e = (Width - width) % (n-1);
+            int d = (Width - width()) / (n-1);
+            int e = (Width - width()) % (n-1);
 
             for (int i=0; i<n; i++)
                 solids[i].offset.x +=
                 d*i + (i >= n-e ? 1 : 0);
 
-            width = Width;
+            advance = Width;
         }
 
         xywh bar (int place)
@@ -187,7 +184,7 @@ namespace gui::text
             int i = 0;
             for (auto& solid: solids)
                 if (solid.offset.x +
-                    solid.width > x) return
+                    solid.Width() > x) return
                     i + solid.point(
                     x - solid.offset.x);
                 else i += solid.length;

@@ -107,7 +107,9 @@ namespace gui
 
         operator type const& () { return now; }
 
-        template<typename X> void operator = (X value) { go(value, time(0)); }
+        template<typename X>
+        void operator = (X value) { go(value, time{}); }
+        void operator = (property const& x) { go(x.now, time{}); }
 
         void go (type to_) { go(to_, transition_time); }
 

@@ -13,19 +13,19 @@ namespace gui::text
         {
             for (auto& token: tokens)
             {
-                ascent   = max(ascent,   token.ascent);
-                ascent_  = max(ascent_,  token.ascent_);
-                descent  = max(descent,  token.descent);
-                descent_ = max(descent_, token.descent_);
-                bearing  = min(bearing,  advance + token.bearing);
+                Ascent  = max(Ascent,  token.Ascent);
+                ascent  = max(ascent,  token.ascent);
+                Descent = max(Descent, token.Descent);
+                descent = max(descent, token.descent);
+                bearing = min(bearing, advance + token.bearing);
                 advance += token.bearing + token.advance;
             }
 
-            advance = 0;
+            advance = 0; int width = 0;
 
             for (auto& token: tokens)
             {
-                int y = ascent - token.ascent;
+                int y = Ascent - token.Ascent;
                 int x = advance + token.bearing - bearing;
                 advance += token.bearing + token.advance;
                 length += token.size();
@@ -37,8 +37,10 @@ namespace gui::text
                 if (token.rpadding != token.advance or
                     tokens.size() == 1)
                     width = max(width,
-                      x + token.width);
+                      x + token.Width());
             }
+
+            rpadding = advance - width;
 
             bearing = 0;
         }
@@ -58,12 +60,10 @@ namespace gui::text
                 text.truncate();
                 token = t;
             }
-            while (advance + token.width > max_width
+            while (advance + token.Width() > max_width
                 and t.text != (char*)(u8"…"));
 
-            width = advance + token.width;
-
-            advance += token.advance;
+            advance += token.Width();
         }
 
         void ellipt(int max_width)
@@ -72,7 +72,7 @@ namespace gui::text
             {
                 auto& token = tokens.back();
                 ellipt(max_width, token);
-                if (width <= max_width)
+                if (width() <= max_width)
                     return;
 
                 tokens.truncate();
@@ -121,7 +121,7 @@ namespace gui::text
             int i = 0;
             for (auto& token: tokens)
                 if (token.offset.x +
-                    token.width > x) return
+                    token.Width() > x) return
                     i + token.point(
                     x - token.offset.x);
                 else i += token.size();
