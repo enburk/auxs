@@ -91,11 +91,7 @@ namespace gui::graphs
         }
         void push (str s) { extra += s; }
         bool empty () { return nodes.empty(); }
-        void clear ()
-        {
-            nodes.clear();
-            extra.clear();
-        }
+        void clear () { nodes.clear(); extra.clear(); }
 
         void on_change (void* what) override
         {
@@ -162,19 +158,75 @@ namespace gui::graphs
             node* parent = nullptr;
             std::unique_ptr<node> left;
             std::unique_ptr<node> right;
-            line edge;
+            std::unique_ptr<line> edge;
         };
         std::unique_ptr<node> root;
-        property<double> speed = 1.0;
-        property<time> timer;
 
-        void clear () { root.reset(); }
+        void clear () { root.reset(); } // f*ck stack overflow
 
-        void proceed (time t, int key, node* n = nullptr)
+        void add (int key, std::unique_ptr<node>& n, node* parent)
         {
+            if (!n.get()) {
+            n = std::make_unique<node>();
+            n->edge = std::make_unique<line>();
+            n->edge->color = rgba::white;
+            n->text.text = std::to_string(key);
+            n->parent = parent;
+            children += n.get();
+            children += n->edge.get();
+            return; }
 
+            int value = std::stoi(str(n->text.text));
+            if (key < value) add(key, n->left,  n.get()); else
+            if (key > value) add(key, n->right, n.get()); else
+            {}
+        }
+        void add (int key) { add(key, root, nullptr); }
+
+        void place (node* n, xyxy r)
+        {
+            if (!n) return;
+            int d = gui::metrics::text::height*12/7;
+            int c = (r.x1 + r.x2)/2;
+
+            n->x = c;
+            n->y = r.yl + d;
+            n->r = d/2;
+
+            if (n->parent) {
+                n->edge->x1 = n->x;
+                n->edge->y1 = n->y;
+                n->edge->x2 = n->parent->x;
+                n->edge->y2 = n->parent->y;
+            }
+
+            place (n->left .get(), xyxy(r.x1, r.y1+d+d/2, c, r.y2));
+            place (n->right.get(), xyxy(c, r.y1+d+d/2, r.x2, r.y2));
         }
 
+        void on_change (void* what) override
+        {
+            if (what == &coord)
+            {
+                int d = gui::metrics::text::height*12/7;
+                xyxy r = coord.now.local();
+                r.x1 += d/2; r.x2 -= d/2;
+                place(root.get(), r);
+            }
+        }
+
+        generator<node*> nodes (node* n)
+        {
+            if (!n) co_return; co_yield n;
+            for (node* x: nodes(n->left .get())) co_yield x;
+            for (node* x: nodes(n->right.get())) co_yield x;
+        }
+        generator<line*> edges (node* n)
+        {
+            if (!n or n == root.get()) co_return;co_yield n->edge.get();
+            for (node* x: nodes(n->left .get())) co_yield x->edge.get();
+            for (node* x: nodes(n->right.get())) co_yield x->edge.get();
+        }
     };
 
     struct BST:

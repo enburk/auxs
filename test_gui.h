@@ -616,7 +616,7 @@ widget<TestGuiGraph>
     gui::image Image;
     pix::image<rgba> image;
     gui::graphs::DynamicBST bst;
-    gui::graphs::BST tree;
+    gui::graphs::bst tree;
 
     void on_change (void* what) override
     {
@@ -688,13 +688,13 @@ widget<TestGuiGraph>
                 auto frame = image.crop();
                 frame.fill(rgba::black);
 
-                for (auto& edge: tree.edges) if (edge)
+                for (auto& edge: tree.edges(tree.root.get()))
                     frame.blend(pix::line{
                         {edge->x1.now, edge->y1.now},
                         {edge->x2.now, edge->y2.now}},
                         rgba::white, 2.0);
 
-                for (auto& node: tree.nodes) if (node)
+                for (auto& node: tree.nodes(tree.root.get()))
                     frame.crop(node->coord.now).
                     blend_from(pix::util::node(
                         node->text.text,
