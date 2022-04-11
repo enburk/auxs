@@ -12,6 +12,7 @@ namespace gui::text
         frame frame;
 
         struct text_type { view& v; text_type(view& v) : v(v) {}
+        void operator =  (text_type const& tt) { *this = str(tt); }
         auto operator == (str text) { return str(*this) ==  text; }
         auto operator != (str text) { return str(*this) !=  text; }
         auto operator <=>(str text) { return str(*this) <=> text; }
@@ -20,6 +21,7 @@ namespace gui::text
         operator str() const { return v.model->get_text(); } };
 
         struct html_type { view& v; html_type(view& v) : v(v) {}
+        void operator =  (html_type const& tt) { *this = str(tt); }
         auto operator == (str text) { return str(*this) ==  text; }
         auto operator != (str text) { return str(*this) !=  text; }
         auto operator <=>(str text) { return str(*this) <=> text; }

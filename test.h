@@ -3,6 +3,7 @@
 #include "test_doc.h"
 #include "test_gui.h"
 #include "test_pix.h"
+#include "test_sfx.h"
 
 struct Test:
 widget<Test>
@@ -29,7 +30,8 @@ widget<Test>
     TestGuiAnimat  gui_animat;
     TestGuiConsole gui_console;
     TestGuiEditor  gui_editor;
-    TestGuiGraph   gui_graph;
+    TestSfx        sfx;
+    TestSfxTrees   sfx_trees;
 
     Test ()
     {
@@ -57,7 +59,9 @@ widget<Test>
         tests += {&gui_animat,  "animation"};
         tests += {&gui_console, "console"};
         tests += {&gui_editor,  "editor"};
-        tests += {&gui_graph,   "graph"};
+
+        tests += {&sfx,         "sfx"};
+        tests += {&sfx_trees,   "trees"};
 
         for (auto [ptr, title] : tests)
             buttons.emplace_back()
@@ -89,7 +93,8 @@ widget<Test>
                 str s = button.text.text;
                 if (s == "doc"
                 or  s == "pix"
-                or  s == "gui")
+                or  s == "gui"
+                or  s == "sfx")
                 y += h;
                 button.coord = xywh(0, y, w, h);
                 y += h;

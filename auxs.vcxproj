@@ -51,7 +51,6 @@
     <ClInclude Include="gui_widget_canvas.h" />
     <ClInclude Include="gui_widget_console.h" />
     <ClInclude Include="gui_widget_geometry.h" />
-    <ClInclude Include="gui_widget_graph.h" />
     <ClInclude Include="gui_widget_image.h" />
     <ClInclude Include="gui_widget_player.h" />
     <ClInclude Include="gui_widget_scroller.h" />
@@ -82,6 +81,10 @@
     <ClInclude Include="pix_text_solid.h" />
     <ClInclude Include="pix_text_token.h" />
     <ClInclude Include="pix_util.h" />
+    <ClInclude Include="sfx.h" />
+    <ClInclude Include="sfx_trees.h" />
+    <ClInclude Include="sfx_trees_bbst.h" />
+    <ClInclude Include="sfx_trees_bst.h" />
     <ClInclude Include="sys_aux.h" />
     <ClInclude Include="sys_ui.h" />
     <ClInclude Include="test.h" />
@@ -96,6 +99,7 @@
     <ClInclude Include="test_doc_text_b.h" />
     <ClInclude Include="test_gui.h" />
     <ClInclude Include="test_pix.h" />
+    <ClInclude Include="test_sfx.h" />
     <ClInclude Include="windows_aux.h" />
     <ClInclude Include="windows_fonts.h" />
     <ClInclude Include="windows_images.h" />

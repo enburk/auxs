@@ -19,6 +19,9 @@
     <Filter Include="test">
       <UniqueIdentifier>{077f124f-6300-4d9f-bbff-274cc079832a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="sfx">
+      <UniqueIdentifier>{28e81e7e-cfab-4768-9448-4a98d7ef397a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="aux_abc.h">
@@ -231,9 +234,6 @@
     <ClInclude Include="test_aux_string.h">
       <Filter>test</Filter>
     </ClInclude>
-    <ClInclude Include="gui_widget_graph.h">
-      <Filter>gui</Filter>
-    </ClInclude>
     <ClInclude Include="pix_draw_line.h">
       <Filter>pix</Filter>
     </ClInclude>
@@ -268,6 +268,21 @@
       <Filter>test</Filter>
     </ClInclude>
     <ClInclude Include="test_doc_text_b.h">
+      <Filter>test</Filter>
+    </ClInclude>
+    <ClInclude Include="sfx.h">
+      <Filter>sfx</Filter>
+    </ClInclude>
+    <ClInclude Include="sfx_trees.h">
+      <Filter>sfx</Filter>
+    </ClInclude>
+    <ClInclude Include="sfx_trees_bst.h">
+      <Filter>sfx</Filter>
+    </ClInclude>
+    <ClInclude Include="sfx_trees_bbst.h">
+      <Filter>sfx</Filter>
+    </ClInclude>
+    <ClInclude Include="test_sfx.h">
       <Filter>test</Filter>
     </ClInclude>
   </ItemGroup>
