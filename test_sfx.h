@@ -1,6 +1,6 @@
 #pragma once
 #include "sfx_trees_bst.h"
-#include "sfx_trees_bbst.h"
+#include "sfx_trees_bbst_avl.h"
 using namespace std::literals::chrono_literals;
 using namespace pix;
 using gui::widget;
@@ -19,8 +19,13 @@ widget<TestSfxTrees>
     gui::button zoom_, speed_;
     gui::image Image;
     pix::image<rgba> image;
-    sfx::trees::binary::bbst bst;
-    sfx::trees::binary::bst tree;
+    sfx::trees::binary::bst dynamic;
+    sfx::trees::binary::static_bst tree;
+    sfx::trees::binary::unbalanced unbalanced;
+    sfx::trees::binary::avl redblack;
+    sfx::trees::binary::avl splay;
+    sfx::trees::binary::avl avl;
+    sfx::trees::binary::bst* bst = &dynamic;
 
     void on_change (void* what) override
     {
@@ -38,8 +43,10 @@ widget<TestSfxTrees>
                 int i = 0;
                 buttons(i++).text.text = "tree";
                 buttons(i++).text.text ="+tree+";
+                buttons(i++).text.text = "dynamic";
                 buttons(i++).text.text = "unbalanced";
                 buttons(i++).text.text = "red-black";
+                buttons(i++).text.text = "splay";
                 buttons(i++).text.text = "AVL";
                 buttons(i++).text.text = "pause";
                 buttons.front().on = true;
@@ -51,8 +58,13 @@ widget<TestSfxTrees>
             button.coord = xywh(0,y,w,h); y += h; }
             buttons.coord = xywh(W-w,0,w,H);
             canvas.coord = xywh(0,0,W,H);
-            tree.coord = xywh(0,0,W-w,H);
-            bst.coord = xywh(0,0,W-w,H);
+            auto r = xywh(0,0,W-w,H);
+            tree.coord = r;
+            dynamic.coord = r;
+            unbalanced.coord = r;
+            redblack.coord = r;
+            splay.coord = r;
+            avl.coord = r;
 
             zoom  .coord = xywh(W-w,H-4*h,w,h);
             zoom_ .coord = xywh(W-w,H-3*h,w,h);
@@ -93,13 +105,13 @@ widget<TestSfxTrees>
                 auto frame = image.crop();
                 frame.fill(rgba::black);
 
-                for (auto& node: tree.nodes())
+                for (auto& node: tree.post_order())
                 {
                     frame.blend(pix::line{
-                        {node->edge->x1.now,
-                         node->edge->y1.now},
-                        {node->edge->x2.now,
-                         node->edge->y2.now}},
+                        {node->edge.x1.now,
+                         node->edge.y1.now},
+                        {node->edge.x2.now,
+                         node->edge.y2.now}},
                         rgba::white, 2.0);
                     frame.crop(node->coord.now +
                     node->value.coord.now.origin).
@@ -112,28 +124,43 @@ widget<TestSfxTrees>
                         .crop());
                 }
             }
-            if (text == "unbalanced"
+
+            Image.show(text == "tree" or text == "+tree+");
+            tree .show(text == "tree" or text == "+tree+");
+
+            dynamic   .show(text == "pause" or text == "dynamic");
+            unbalanced.show(text == "pause" or text == "unbalanced");
+            redblack  .show(text == "pause" or text == "red-black");
+            splay     .show(text == "pause" or text == "splay");
+            avl       .show(text == "pause" or text == "AVL");
+
+            if (text == "dynamic"
+            or  text == "unbalanced"
             or  text == "red-black"
+            or  text == "splay"
             or  text == "AVL")
             {
-                bst.kind = text;
-                bst.pause = false;
+                bst = 
+                text == "dynamic" ? &dynamic:
+                text == "unbalanced" ? &unbalanced:
+                text == "red-black" ? &avl:
+                text == "splay" ? &splay:
+                text == "AVL" ? &avl:
+                nullptr;
+                bst->kind = text;
+                bst->pause = false;
             }
             if (text == "pause")
             {
-                bst.pause = true;
+                bst->pause = true;
             }
-
-            Image.show(text == "tree" or text == "+tree+");
-            tree.show(text == "tree" or text == "+tree+");
-            bst.show(text != "tree" && text != "+tree+");
         }
 
         int d = gui::metrics::text::height;
 
-        if (what == &zoom  ) bst.side  = min(bst.side+1, d*2);
-        if (what == &zoom_ ) bst.side  = max(bst.side-1, d/3);
-        if (what == &speed ) bst.speed = min(bst.speed*1.1, 10.0);
-        if (what == &speed_) bst.speed = max(bst.speed*0.9, 0.01);
+        if (what == &zoom  ) bst->side  = min(bst->side+1, d*2);
+        if (what == &zoom_ ) bst->side  = max(bst->side-1, d/3);
+        if (what == &speed ) bst->speed = min(bst->speed*1.1, 10.0);
+        if (what == &speed_) bst->speed = max(bst->speed*0.9, 0.01);
     }
 };

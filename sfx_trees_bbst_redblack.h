@@ -2,8 +2,8 @@
 #include "sfx_trees.h"
 namespace sfx::trees::binary
 {
-    struct bst:
-    widget<bst>
+    struct bbst:
+    widget<bbst>
     {
         queue queue;
         binary_property<str> kind;
@@ -11,17 +11,13 @@ namespace sfx::trees::binary
         property<double> speed = 0.1;//1.0;
         property<bool> pause = true;
         property<time> timer;
-        node* root = nullptr;
         node maverick;
         node balancer;
-        bool moving;
-
-        ~bst() { clear(); }
+        node* root;
 
         void clear ()
         {
             delete root;
-            root = nullptr;
             maverick.value.text = "";
             balancer.label.text = "";
         }
@@ -38,10 +34,6 @@ namespace sfx::trees::binary
             x->x.go(c, t);
             x->y.go(r.yl + d, t);
             x->r.go(d/2, t);
-
-            if (x->x.now != x->x.to
-            or  x->y.now != x->y.to)
-                moving = true;
 
             if (x->up) {
                 x->edge.x1 = x->x;
@@ -67,7 +59,6 @@ namespace sfx::trees::binary
         }
         void place ()
         {
-            moving = false;
             xyxy r = coord.now.local();
             r.x1 += side/2;
             r.x2 -= side/2;
@@ -118,8 +109,9 @@ namespace sfx::trees::binary
                     return;
                 }
 
-                node* target = maverick.up;
-                if (maverick.value.text != ""
+                if (node*& target =
+                    maverick.up; target
+                and maverick.value.text != ""
                 and maverick.x == target->x
                 and maverick.y == target->y)
                 {
@@ -132,7 +124,7 @@ namespace sfx::trees::binary
                              target->left,
                              target);
 
-                        maverick.up = target->left;
+                        target = target->left;
                     }
                     else
                     if (i > j)
@@ -141,7 +133,7 @@ namespace sfx::trees::binary
                              target->right,
                              target);
 
-                        maverick.up = target->right;
+                        target = target->right;
                     }
                     else
                     {
@@ -153,17 +145,12 @@ namespace sfx::trees::binary
                         target->inner.color.go(color, 300ms);
                         target->show();
                         target->edge.show();
-
-                        if (target->label.text == "just inserted") {
-                            target->label.text = "";
-                            new_leaf(target);
-                        }
+                        leaf(target);
                     }
                 }
 
+                tick();
                 place();
-                if (not moving)
-                    tick();
             }
         }
 
@@ -172,7 +159,7 @@ namespace sfx::trees::binary
         static int value (node* node) { return value(*node); }
         static int label (node* node) { return label(*node); }
 
-        virtual void insert (node*& x, node* up)
+        void insert (node*& x, node* up)
         {
             x = new node;
             children += x;
@@ -181,14 +168,136 @@ namespace sfx::trees::binary
             x->edge.parent = this;
             x->edge.color = rgba::white;
             x->value.text = maverick.value.text;
-            x->label.text = "just inserted";
             x->up = up;
             x->hide();
             x->edge.hide();
+
+            if (kind.now == "AVL")
+            x->label.text = "0";
         }
 
-        virtual void new_leaf (node* leaf) {}
+        void leaf (node* leaf)
+        {
+            if (kind.now == "AVL" && leaf->up)
+            {
+                balancer.up = leaf->up;
+                balancer.mimic(maverick);
+                balancer.value.hide();
+                balancer.inner.hide();
+                balancer.outer.hide();
+                balancer.outex.hide();
+                balancer.outey.hide();
+                balancer.label.show();
+                balancer.label.text =
+                leaf->up->left  == leaf ? "-1":
+                leaf->up->right == leaf ? "+1": "";
+                balancer.label.color = rgba::green;
+            }
+        }
 
-        virtual void tick () {}
+        void tick ()
+        {
+            if (kind.now == "AVL"
+            and balancer.label.text != ""
+            and balancer.x == balancer.up->x
+            and balancer.y == balancer.up->y)
+            {
+                node& balanced = *(balancer.up);
+
+                int z = label(balancer);
+                int x = label(balanced);
+                x += z;
+                str plus = x > 0 ? "+" : "";
+                balanced.label.text = plus + std::to_string(x);
+                balanced.label.color = -1 <= x and x <= 1 ?
+                rgba::green : rgba::red;
+
+                if (x == 0)
+                {
+                    balancer.label.text = "";
+                    balancer.label.hide();
+                }
+                else
+                if (x < -1)
+                {
+                    rotate_right(&balanced);
+                }
+                else
+                if (x > +1)
+                {
+                    rotate_left(&balanced);
+                }
+                else
+                if (balanced.up)
+                {
+                    balancer.label.text =
+                    balanced.up->left  == &balanced ? "-1":
+                    balanced.up->right == &balanced ? "+1": "";
+                    balancer.up =
+                    balanced.up;
+                }
+                else
+                {
+                    balancer.label.text = "";
+                    balancer.label.hide();
+                }
+            }
+        }
+
+        void rotate_left (node* l)
+        {
+            node* r = l->right;
+            node* m = r->left;
+
+            if (r->value.text == "-1") {
+                rotate_right(r);
+                return;
+            }
+            if (r->value.text == "+1") {
+                l->value.text =  "0";
+                r->value.text =  "0";
+            }
+            else {
+                l->value.text = "+1";
+                r->value.text = "-1";
+            }
+
+            if(!l->up) root  = r; else
+            if (l->up->left == l)
+                l->up->left  = r; else
+                l->up->right = r;
+
+            r->up = l->up;
+            l->up = r; r->left  = l; if (m)
+            m->up = l; l->right = m;
+        }
+
+        void rotate_right (node* r)
+        {
+            node* l = r->left;
+            node* m = l->right;
+
+            if (l->value.text == "-1") {
+                rotate_left(l);
+                return;
+            }
+            if (l->value.text == "+1") {
+                r->value.text =  "0";
+                l->value.text =  "0";
+            }
+            else {
+                r->value.text = "+1";
+                l->value.text = "-1";
+            }
+
+            if(!r->up) root  = l; else
+            if (r->up->left == r)
+                r->up->left  = l; else
+                r->up->right = l;
+
+            l->up = r->up;
+            r->up = l; l->right = r; if (m)
+            m->up = r; r->left  = m;
+        }
     };
 }

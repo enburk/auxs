@@ -84,6 +84,9 @@
     <ClInclude Include="sfx.h" />
     <ClInclude Include="sfx_trees.h" />
     <ClInclude Include="sfx_trees_bbst.h" />
+    <ClInclude Include="sfx_trees_bbst_avl.h" />
+    <ClInclude Include="sfx_trees_bbst_redblack.h" />
+    <ClInclude Include="sfx_trees_bbst_splay.h" />
     <ClInclude Include="sfx_trees_bst.h" />
     <ClInclude Include="sys_aux.h" />
     <ClInclude Include="sys_ui.h" />

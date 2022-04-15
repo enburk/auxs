@@ -285,6 +285,15 @@
     <ClInclude Include="test_sfx.h">
       <Filter>test</Filter>
     </ClInclude>
+    <ClInclude Include="sfx_trees_bbst_avl.h">
+      <Filter>sfx</Filter>
+    </ClInclude>
+    <ClInclude Include="sfx_trees_bbst_redblack.h">
+      <Filter>sfx</Filter>
+    </ClInclude>
+    <ClInclude Include="sfx_trees_bbst_splay.h">
+      <Filter>sfx</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="test.cpp">
