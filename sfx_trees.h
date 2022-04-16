@@ -9,7 +9,8 @@ namespace sfx::trees::binary
         node* right = nullptr;
         line  edge;
 
-        int height = 0;
+        int height  = 0;
+        int balance = 0;
 
         ~node()
         {
@@ -19,6 +20,10 @@ namespace sfx::trees::binary
 
         bool is_left  () { return up and up->left  == this; }
         bool is_right () { return up and up->right == this; }
+
+        bool moving () { return 
+            (x.now != x.to) or
+            (y.now != y.to); }
 
         generator<node*> pre_order ()
         {

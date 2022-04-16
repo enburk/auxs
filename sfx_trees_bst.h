@@ -6,7 +6,6 @@ namespace sfx::trees::binary
     widget<bst>
     {
         queue queue;
-        binary_property<str> kind;
         property<int> side = gui::metrics::text::height*12/7;
         property<double> speed = 0.1;//1.0;
         property<bool> pause = true;
@@ -39,15 +38,25 @@ namespace sfx::trees::binary
             x->y.go(r.yl + d, t);
             x->r.go(d/2, t);
 
-            if (x->x.now != x->x.to
-            or  x->y.now != x->y.to)
-                moving = true;
+            if (x->moving()) moving = true; //else
+            {
+                int lh = x->left  ? x->left ->height : -1;
+                int rh = x->right ? x->right->height : -1;
+                x->height = max(lh, rh) + 1;
+                x->balance = rh - lh;
+            }
 
             if (x->up) {
                 x->edge.x1 = x->x;
                 x->edge.y1 = x->y;
                 x->edge.x2 = x->up->x;
                 x->edge.y2 = x->up->y;
+            }
+            else {
+                x->edge.x1 = 0;
+                x->edge.y1 = 0;
+                x->edge.x2 = 0;
+                x->edge.y2 = 0;
             }
 
             place (x->left , xyxy(r.x1, r.y1+d+d/2, c, r.y2));
@@ -64,6 +73,9 @@ namespace sfx::trees::binary
                 balancer.y.go(x->y, ms);
                 balancer.r.go(x->r, ms);
             }
+
+            if (maverick.moving()) moving = true;
+            if (balancer.moving()) moving = true;
         }
         void place ()
         {
@@ -73,6 +85,8 @@ namespace sfx::trees::binary
             r.x2 -= side/2;
             r.y1 += side;
             place(root, r);
+            if (not moving)
+                tick();
         }
 
         void on_change (void* what) override
@@ -91,8 +105,6 @@ namespace sfx::trees::binary
                 place();
             }
 
-            if (what == &kind) clear();
-            
             if (what == &speed) queue.speed = speed.now;
             
             if (what == &timer and alpha.now == 255)
@@ -162,8 +174,6 @@ namespace sfx::trees::binary
                 }
 
                 place();
-                if (not moving)
-                    tick();
             }
         }
 

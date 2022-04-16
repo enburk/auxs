@@ -2,7 +2,7 @@
 #include "sfx_trees_bbst.h"
 namespace sfx::trees::binary
 {
-    struct unbalanced: bbst
+    struct unbalanced: bst
     {
         void new_leaf (node* leaf) override
         {
@@ -62,8 +62,27 @@ namespace sfx::trees::binary
         }
     };
 
-    struct avl: unbalanced
+    struct avl: bbst
     {
+        void new_leaf (node* leaf) override
+        {
+            leaf->label.text = "0";
+            if (leaf->up)
+            {
+                balancer.up = leaf->up;
+                balancer.mimic(maverick);
+                balancer.value.hide();
+                balancer.inner.hide();
+                balancer.outer.hide();
+                balancer.outex.hide();
+                balancer.outey.hide();
+                balancer.label.show();
+                set(balancer,
+                leaf->is_left() ?
+                -1: +1);
+            }
+        }
+
         void tick () override
         {
             if (balancer.label.text != ""
@@ -71,12 +90,10 @@ namespace sfx::trees::binary
             and balancer.y == balancer.up->y)
             {
                 node& balanced = *(balancer.up);
+                int balance = balanced.balance;
+                set(balanced, balance);
 
-                int z = label(balancer);
-                int x = label(balanced);
-                x += z; set(balanced, x);
-
-                if (-1 <= x and x <= +1)
+                if (-1 == balance or balance == +1)
                 {
                     if (not balanced.up)
                     {
@@ -97,70 +114,40 @@ namespace sfx::trees::binary
                 balancer.label.hide();
                 balancer.label.text = "";
 
-                if (x < -1)
+                if (balance < -1)
                 {
-                    if (label(balanced.left) > 0)
-                    {
+                    set(balancer, 0);
+                    if (balanced.left->balance > 0)
                         rotate_left(balanced.left);
-                        set(balancer, 0);
-                        return;
-                    }
-                    rotate_right(&balanced);
+                    else rotate_right(&balanced);
                 }
                 else
-                if (x > +1)
+                if (balance > +1)
                 {
-                    if (label(balanced.right) < 0)
-                    {
+                    set(balancer, 0);
+                    if (balanced.right->balance < 0)
                         rotate_right(balanced.right);
-                        set(balancer, 0);
-                        return;
-                    }
-                    rotate_left(&balanced);
+                    else rotate_left(&balanced);
                 }
+                else update_balance(root);
             }
         }
 
-        void rotate_left (node* l)
+        void set (node& node, int balance)
         {
-            node* r = l->right;
-
-            int lv = label(l);
-            int rv = label(r);
-            set(*l, lv - rv - 1);
-            set(*r, rv - 1);
-
-            //if (r->label.text == "+1") {
-            //    l->label.text =  "0";
-            //    r->label.text =  "0";
-            //}
-            //else {
-            //    l->label.text = "+1";
-            //    r->label.text = "-1";
-            //}
-
-            bbst::rotate_left(l);
+            auto plus = balance > 0 ? "+" : "";
+            node.label.text = plus + std::to_string(balance);
+            node.label.color = -1 <= balance and balance <= 1 ?
+            rgba::green : rgba::red;
         }
+        void set (node* node, int balance) { set(*node, balance); }
 
-        void rotate_right (node* r)
+        void update_balance(node* x)
         {
-            node* l = r->left;
-
-            int rv = label(r);
-            int lv = label(l);
-            set(*r, rv + lv + 1);
-            set(*l, lv + 1);
-
-            //if (l->label.text == "-1") {
-            //    r->label.text =  "0";
-            //    l->label.text =  "0";
-            //}
-            //else {
-            //    r->label.text = "-1";
-            //    l->label.text = "+1";
-            //}
-
-            bbst::rotate_right(r);
+            if (!x) return;
+            set(*x, x->balance);
+            update_balance(x->left);
+            update_balance(x->right);
         }
     };
 }

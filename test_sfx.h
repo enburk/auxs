@@ -25,7 +25,7 @@ widget<TestSfxTrees>
     sfx::trees::binary::avl redblack;
     sfx::trees::binary::avl splay;
     sfx::trees::binary::avl avl;
-    sfx::trees::binary::bst* bst = &dynamic;
+    sfx::trees::binary::bst* bst = nullptr;
 
     void on_change (void* what) override
     {
@@ -128,11 +128,17 @@ widget<TestSfxTrees>
             Image.show(text == "tree" or text == "+tree+");
             tree .show(text == "tree" or text == "+tree+");
 
-            dynamic   .show(text == "pause" or text == "dynamic");
-            unbalanced.show(text == "pause" or text == "unbalanced");
-            redblack  .show(text == "pause" or text == "red-black");
-            splay     .show(text == "pause" or text == "splay");
-            avl       .show(text == "pause" or text == "AVL");
+            if (text == "dynamic"   ) bst = &dynamic;
+            if (text == "unbalanced") bst = &unbalanced;
+            if (text == "red-black" ) bst = &redblack;
+            if (text == "splay"     ) bst = &splay;
+            if (text == "AVL"       ) bst = &avl;
+
+            dynamic   .show(bst == &dynamic);
+            unbalanced.show(bst == &unbalanced);
+            redblack  .show(bst == &redblack);
+            splay     .show(bst == &splay);
+            avl       .show(bst == &avl);
 
             if (text == "dynamic"
             or  text == "unbalanced"
@@ -140,17 +146,9 @@ widget<TestSfxTrees>
             or  text == "splay"
             or  text == "AVL")
             {
-                bst = 
-                text == "dynamic" ? &dynamic:
-                text == "unbalanced" ? &unbalanced:
-                text == "red-black" ? &avl:
-                text == "splay" ? &splay:
-                text == "AVL" ? &avl:
-                nullptr;
-                bst->kind = text;
                 bst->pause = false;
             }
-            if (text == "pause")
+            if (text == "pause" and bst)
             {
                 bst->pause = true;
             }
@@ -158,9 +156,9 @@ widget<TestSfxTrees>
 
         int d = gui::metrics::text::height;
 
-        if (what == &zoom  ) bst->side  = min(bst->side+1, d*2);
-        if (what == &zoom_ ) bst->side  = max(bst->side-1, d/3);
-        if (what == &speed ) bst->speed = min(bst->speed*1.1, 10.0);
-        if (what == &speed_) bst->speed = max(bst->speed*0.9, 0.01);
+        if (what == &zoom   and bst) bst->side  = min(bst->side+1, d*2);
+        if (what == &zoom_  and bst) bst->side  = max(bst->side-1, d/3);
+        if (what == &speed  and bst) bst->speed = min(bst->speed*1.1, 10.0);
+        if (what == &speed_ and bst) bst->speed = max(bst->speed*0.9, 0.01);
     }
 };
