@@ -130,6 +130,8 @@ widget<TestSfxTrees>
             Image.show(text == "tree" or text == "+tree+");
             tree .show(text == "tree" or text == "+tree+");
 
+            if (text == "tree"      ) bst = nullptr;
+            if (text == "+tree+"    ) bst = nullptr;
             if (text == "dynamic"   ) bst = &dynamic;
             if (text == "unbalanced") bst = &unbalanced;
             if (text == "red-black" ) bst = &redblack;

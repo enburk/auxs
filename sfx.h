@@ -69,8 +69,9 @@ namespace sfx
                 outex.y = d*3/2; outex.ry = r-1; outex.ry2 = r-1;
                 outey.x = d*3/2; outey.rx = r-2; outey.rx2 = r-2;
                 outey.y = d*3/2; outey.ry = r-2; outey.ry2 = r-2;
+                int l = str(value.text).size();
                 auto font = value.font.now;
-                font.size = (d*7+1)/12;
+                font.size = l <= 2 ? (d*7+1)/12 : (d*7+1)/14;
                 value.font = font;
                 label.font = font;
 
@@ -149,7 +150,7 @@ namespace sfx
                             extra.pop_front(); }
                         else
                             x = std::to_string(
-                            aux::random(0,99));
+                            aux::random(0,999));
 
                         q.value.text = x;
                         q.hide();
