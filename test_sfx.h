@@ -1,6 +1,8 @@
 #pragma once
 #include "sfx_trees_bst.h"
 #include "sfx_trees_bbst_avl.h"
+#include "sfx_trees_bbst_splay.h"
+#include "sfx_trees_bbst_redblack.h"
 using namespace std::literals::chrono_literals;
 using namespace pix;
 using gui::widget;
@@ -22,8 +24,8 @@ widget<TestSfxTrees>
     sfx::trees::binary::bst dynamic;
     sfx::trees::binary::static_bst tree;
     sfx::trees::binary::unbalanced unbalanced;
-    sfx::trees::binary::avl redblack;
-    sfx::trees::binary::avl splay;
+    sfx::trees::binary::redblack redblack;
+    sfx::trees::binary::splay splay;
     sfx::trees::binary::avl avl;
     sfx::trees::binary::bst* bst = nullptr;
 

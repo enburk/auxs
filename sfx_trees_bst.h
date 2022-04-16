@@ -7,7 +7,7 @@ namespace sfx::trees::binary
     {
         queue queue;
         property<int> side = gui::metrics::text::height*12/7;
-        property<double> speed = 0.1;//1.0;
+        property<double> speed = 1.0;
         property<bool> pause = true;
         property<time> timer;
         node* root = nullptr;
@@ -185,8 +185,12 @@ namespace sfx::trees::binary
         virtual void insert (node*& x, node* up)
         {
             x = new node;
-            children += x;
-            children += &x->edge;
+            children.insert(
+            children.end(), x);
+            children.insert(
+            children.begin(),
+                &x->edge);
+
             x->parent = this;
             x->edge.parent = this;
             x->edge.color = rgba::white;

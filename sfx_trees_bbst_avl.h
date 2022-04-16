@@ -7,49 +7,49 @@ namespace sfx::trees::binary
         void new_leaf (node* leaf) override
         {
             leaf->label.text = "0";
-            if (leaf->up)
-            {
-                balancer.up = leaf->up;
-                balancer.mimic(maverick);
-                balancer.value.hide();
-                balancer.inner.hide();
-                balancer.outer.hide();
-                balancer.outex.hide();
-                balancer.outey.hide();
-                balancer.label.show();
-                set(balancer,
-                leaf->is_left() ?
-                -1: +1);
-            }
+            if (not leaf->up)
+                return;
+
+            balancer.up = leaf->up;
+            balancer.mimic(maverick);
+            balancer.value.hide();
+            balancer.inner.hide();
+            balancer.outer.hide();
+            balancer.outex.hide();
+            balancer.outey.hide();
+            balancer.label.show();
+            set(balancer,
+            leaf->is_left() ?
+            -1: +1);
         }
 
         void tick () override
         {
-            if (balancer.label.text != ""
-            and balancer.x == balancer.up->x
-            and balancer.y == balancer.up->y)
+            if (balancer.label.text == ""
+            or  balancer.x != balancer.up->x
+            or  balancer.y != balancer.up->y)
+                return;
+
+            node& balanced = *(balancer.up);
+
+            int z = label(balancer);
+            int x = label(balanced);
+            x += z; set(balanced, x);
+
+            if (not balanced.up
+            or (z < 0 and x-z > 0)
+            or (z > 0 and x-z < 0))
             {
-                node& balanced = *(balancer.up);
-
-                int z = label(balancer);
-                int x = label(balanced);
-                x += z; set(balanced, x);
-
-                if (not balanced.up
-                or (z < 0 and x-z > 0)
-                or (z > 0 and x-z < 0))
-                {
-                    balancer.label.text = "";
-                    balancer.label.hide();
-                }
-                else
-                {
-                    set(
-                    balancer, 
-                    balanced.is_left() ? -1: +1);
-                    balancer.up =
-                    balanced.up;
-                }
+                balancer.label.text = "";
+                balancer.label.hide();
+            }
+            else
+            {
+                set(
+                balancer, 
+                balanced.is_left() ? -1: +1);
+                balancer.up =
+                balanced.up;
             }
         }
 
@@ -67,70 +67,70 @@ namespace sfx::trees::binary
         void new_leaf (node* leaf) override
         {
             leaf->label.text = "0";
-            if (leaf->up)
-            {
-                balancer.up = leaf->up;
-                balancer.mimic(maverick);
-                balancer.value.hide();
-                balancer.inner.hide();
-                balancer.outer.hide();
-                balancer.outex.hide();
-                balancer.outey.hide();
-                balancer.label.show();
-                set(balancer,
-                leaf->is_left() ?
-                -1: +1);
-            }
+            if (not leaf->up)
+                return;
+
+            balancer.up = leaf->up;
+            balancer.mimic(maverick);
+            balancer.value.hide();
+            balancer.inner.hide();
+            balancer.outer.hide();
+            balancer.outex.hide();
+            balancer.outey.hide();
+            balancer.label.show();
+            set(balancer,
+            leaf->is_left() ?
+            -1: +1);
         }
 
         void tick () override
         {
-            if (balancer.label.text != ""
-            and balancer.x == balancer.up->x
-            and balancer.y == balancer.up->y)
+            if (balancer.label.text == ""
+            or  balancer.x != balancer.up->x
+            or  balancer.y != balancer.up->y)
+                return;
+
+            node& balanced = *(balancer.up);
+            int balance = balanced.balance;
+            set(balanced, balance);
+
+            if (-1 == balance or balance == +1)
             {
-                node& balanced = *(balancer.up);
-                int balance = balanced.balance;
-                set(balanced, balance);
-
-                if (-1 == balance or balance == +1)
+                if (not balanced.up)
                 {
-                    if (not balanced.up)
-                    {
-                        balancer.label.text = "";
-                        balancer.label.hide();
-                    }
-                    else
-                    {
-                        set(
-                        balancer, 
-                        balanced.is_left() ? -1: +1);
-                        balancer.up =
-                        balanced.up;
-                    }
-                    return;
-                }
-
-                balancer.label.hide();
-                balancer.label.text = "";
-
-                if (balance < -1)
-                {
-                    set(balancer, 0);
-                    if (balanced.left->balance > 0)
-                        rotate_left(balanced.left);
-                    else rotate_right(&balanced);
+                    balancer.label.text = "";
+                    balancer.label.hide();
                 }
                 else
-                if (balance > +1)
                 {
-                    set(balancer, 0);
-                    if (balanced.right->balance < 0)
-                        rotate_right(balanced.right);
-                    else rotate_left(&balanced);
+                    set(
+                    balancer, 
+                    balanced.is_left() ? -1: +1);
+                    balancer.up =
+                    balanced.up;
                 }
-                else update_balance(root);
+                return;
             }
+
+            balancer.label.hide();
+            balancer.label.text = "";
+
+            if (balance < -1)
+            {
+                set(balancer, 0);
+                if (balanced.left->balance > 0)
+                    rotate_left(balanced.left);
+                else rotate_right(&balanced);
+            }
+            else
+            if (balance > +1)
+            {
+                set(balancer, 0);
+                if (balanced.right->balance < 0)
+                    rotate_right(balanced.right);
+                else rotate_left(&balanced);
+            }
+            else update_balance(root);
         }
 
         void set (node& node, int balance)

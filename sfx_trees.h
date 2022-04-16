@@ -58,8 +58,12 @@ namespace sfx::trees::binary
             if (!x)
             {
                 x = new node;
-                children += x;
-                children += &x->edge;
+                children.insert(
+                children.end(), x);
+                children.insert(
+                children.begin(),
+                    &x->edge);
+
                 x->parent = this;
                 x->edge.parent = this;
                 x->edge.color = rgba::white;
@@ -106,9 +110,7 @@ namespace sfx::trees::binary
         void on_change (void* what) override
         {
             if (what == &coord)
-            {
                 place();
-            }
         }
 
         generator<node*> post_order ()
