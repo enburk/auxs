@@ -4,6 +4,8 @@ namespace sfx::trees::binary
 {
     struct redblack: bbst
     {
+        redblack () { title.text = "red-black tree"; }
+
         void new_leaf (node* leaf) override
         {
             leaf->value.color = rgba::white;

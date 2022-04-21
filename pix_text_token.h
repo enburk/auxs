@@ -34,20 +34,18 @@ namespace pix::text
                 descent = max(descent, g.descent);
                 glyphs += glyph{g, xy{}};
             }
-
-            if (glyphs.size() > 0) {
-                lpadding = glyphs.front().lpadding;
-                rpadding = glyphs.back ().rpadding;
+            if (glyphs.size() > 0)
+            {
+                lborder = glyphs.front().lborder;
+                rborder = glyphs.back ().rborder;
             }
-
             for (auto& g: glyphs)
             {
                 g.offset.x = advance;
                 g.offset.y = Ascent - g.Ascent;
                 advance += g.advance;
             }
-
-            bearing = style.style().shift.x;
+            xoffset = style.style().offset.x;
         }
 
         void render (frame<rgba> frame, xy shift=xy{}, uint8_t alpha=255)

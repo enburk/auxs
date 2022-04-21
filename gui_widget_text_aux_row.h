@@ -66,8 +66,8 @@ namespace gui::text
             Descent = max(Descent, solid.Descent);
             descent = max(descent, solid.descent);
             solid.offset.x = advance;
+            rborder = advance + solid.rborder;
             advance += solid.advance;
-            rpadding = solid.rpadding;
             solids += std::move(solid);
             return true;
         }
@@ -143,6 +143,7 @@ namespace gui::text
                 d*i + (i >= n-e ? 1 : 0);
 
             advance = Width;
+            rborder = Width;
         }
 
         xywh bar (int place)

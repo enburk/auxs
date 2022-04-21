@@ -43,6 +43,10 @@
     <ClInclude Include="doc_text_repo.h" />
     <ClInclude Include="doc_text_text.h" />
     <ClInclude Include="doc_view.h" />
+    <ClInclude Include="dox_cpp_lexica.h" />
+    <ClInclude Include="dox_cpp_model.h" />
+    <ClInclude Include="dox_cpp_syntax.h" />
+    <ClInclude Include="dox_cpp_syntax_preprocessor.h" />
     <ClInclude Include="gui_colors.h" />
     <ClInclude Include="gui_effect.h" />
     <ClInclude Include="gui_widget.h" />

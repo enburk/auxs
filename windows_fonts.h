@@ -176,19 +176,19 @@ pix::glyph::glyph (aux::unicode::glyph text, text::style_index i) : text(text), 
                     goto d;
         d:
 
-        ascent   = Ascent - r.yl;
-        descent  = Descent - (image.size.y - r.yh);
-        lpadding = r.xl;
-        rpadding = advance - r.xh; // negative for italic
+        ascent  = Ascent - r.yl;
+        descent = Descent - (image.size.y - r.yh);
+        lborder = r.xl;
+        rborder = r.xh;
 
         cache_metrics.emplace(key, *this);
     }
 
-    Ascent  -= style.shift.y;
-    ascent  -= style.shift.y;
-    Descent += style.shift.y;
-    descent += style.shift.y;
-    bearing += style.shift.x;
+    Ascent  -= style.offset.y;
+    ascent  -= style.offset.y;
+    Descent += style.offset.y;
+    descent += style.offset.y;
+    xoffset += style.offset.x;
 
     // adapt metrics for style.outline/undeline/shadow here
 }

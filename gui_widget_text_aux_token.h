@@ -43,8 +43,8 @@ namespace gui::text
             }
             if (glyphs.size() > 0)
             {
-                lpadding = glyphs.front().lpadding;
-                rpadding = glyphs.back ().rpadding;
+                lborder = glyphs.front().lborder;
+                rborder = glyphs.back ().rborder;
             }
             for (auto& g: glyphs)
             {
@@ -53,7 +53,7 @@ namespace gui::text
                 advance += g.advance;
             }
 
-            bearing = style.style().shift.x;
+            xoffset = style.style().offset.x;
 
             resize(xy(Width(), Height()));
 

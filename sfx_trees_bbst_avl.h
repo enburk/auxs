@@ -4,6 +4,8 @@ namespace sfx::trees::binary
 {
     struct unbalanced: bst
     {
+        unbalanced () { title.text = "unbalanced BST"; }
+
         void new_leaf (node* leaf) override
         {
             leaf->label.text = "0";
@@ -64,6 +66,8 @@ namespace sfx::trees::binary
 
     struct avl: bbst
     {
+        avl () { title.text = "AVL tree"; }
+
         void new_leaf (node* leaf) override
         {
             leaf->label.text = "0";

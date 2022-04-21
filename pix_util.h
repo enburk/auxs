@@ -18,7 +18,7 @@ namespace pix::util
         frame.copy(circle{{r+1,r+1}, double(r-0)}, outer, 2.0);
         frame.copy(circle{{r+1,r+1}, double(r-1)}, outer, 2.0);
         frame.copy(circle{{r+1,r+1}, double(r-2)}, outer, 2.0);
-        int dx = t.lpadding;
+        int dx = t.lborder;
         int dy = t.Ascent - t.ascent;
         t.render(frame, xy(r+1-w/2-dx, r+1-h/2-dy));
         return image;

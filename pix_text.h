@@ -41,7 +41,7 @@ namespace pix
             line underline;  // "solid", "double", "dahsed", "dotted", "wavy"
             line strikeout;
             line outline;
-            xy   shift;
+            xy   offset; // e.g. subscript/superscript
 
             bool operator == (style const&) const = default;
             bool operator != (style const&) const = default;
@@ -66,17 +66,17 @@ namespace pix
 
         struct metrics
         {
-            int Ascent   = 0; // pixels above the base line (font based)
-            int ascent   = 0; // pixels above the base line (actual)
-            int Descent  = 0; // pixels below the base line (font based)
-            int descent  = 0; // pixels below the base line (actual)
-            int bearing  = 0; // horizontal displacement
-            int advance  = 0; // pen position increment
-            int lpadding = 0; // from begin to first pixel
-            int rpadding = 0; // from last pixel to advance (negative for italic)
+            int Ascent  = 0; // pixels above the base line (font based)
+            int ascent  = 0; // pixels above the base line (actual)
+            int Descent = 0; // pixels below the base line (font based)
+            int descent = 0; // pixels below the base line (actual)
+            int advance = 0; // pen position increment
+            int xoffset = 0; // horizontal displacement
+            int lborder = 0; // from begin to first pixel
+            int rborder = 0; // from begin to last pixel
 
-            int Width  () const { return max(advance, advance - rpadding); }
-            int width  () const { return advance - lpadding - rpadding; }
+            int Width  () const { return max(advance, rborder); }
+            int width  () const { return rborder - lborder; }
             int Height () const { return Ascent + Descent; }
             int height () const { return ascent + descent; }
 

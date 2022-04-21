@@ -27,6 +27,15 @@ namespace aux
         thread_local std::mt19937 generator(seed());
         return std::uniform_int_distribution(l,u)(generator);
     }
+    template <typename Int = int>
+    Int normal (Int l = min<Int>(), Int u = max<Int>())
+    {
+        thread_local std::random_device seed;
+        thread_local std::mt19937 generator(seed());
+        while (true) { auto x = Int(std::round(
+        std::normal_distribution<>((l+u)/2,(u-l)/6)(generator)));
+        if (l <= x and x <= u) return x; }
+    }
 
     auto sum (auto... xs) { return (xs + ...); }
 

@@ -11,39 +11,39 @@ namespace pix::text
         int length = 0;
         xy offset;
 
-        solid(token_range tokens, int max_width=max<int>()) : tokens(tokens)
-        {
-            for (auto& token: tokens)
-            {
-                Ascent  = max(Ascent,  token.Ascent);
-                ascent  = max(ascent,  token.ascent);
-                Descent = max(Descent, token.Descent);
-                descent = max(descent, token.descent);
-                bearing = min(bearing, advance + token.bearing);
-                advance += token.bearing + token.advance;
-            }
-
-            advance = 0;
-
-            for (auto& token: tokens)
-            {
-                int y = Ascent - token.Ascent;
-                int x = advance + token.bearing - bearing;
-                advance += token.bearing + token.advance;
-                length += token.glyphs.size();
-                token.offset = xy(x, y);
-
-                // do not increase width if
-                // there is space-like symbol at the very end
-                // and it's not the sole symbol in the row
-                if (token.rpadding != token.advance or
-                    tokens.size() == 1)
-                    advance = max(advance,
-                      x + token.advance);
-            }
-
-            bearing = 0;
-        }
+        //solid(token_range tokens, int max_width=max<int>()) : tokens(tokens)
+        //{
+        //    for (auto& token: tokens)
+        //    {
+        //        Ascent  = max(Ascent,  token.Ascent);
+        //        ascent  = max(ascent,  token.ascent);
+        //        Descent = max(Descent, token.Descent);
+        //        descent = max(descent, token.descent);
+        //        bearing = min(bearing, advance + token.bearing);
+        //        advance += token.bearing + token.advance;
+        //    }
+        //
+        //    advance = 0;
+        //
+        //    for (auto& token: tokens)
+        //    {
+        //        int y = Ascent - token.Ascent;
+        //        int x = advance + token.bearing - bearing;
+        //        advance += token.bearing + token.advance;
+        //        length += token.glyphs.size();
+        //        token.offset = xy(x, y);
+        //
+        //        // do not increase width if
+        //        // there is space-like symbol at the very end
+        //        // and it's not the sole symbol in the row
+        //        if (token.rpadding != token.advance or
+        //            tokens.size() == 1)
+        //            advance = max(advance,
+        //              x + token.advance);
+        //    }
+        //
+        //    bearing = 0;
+        //}
 
         //void ellipt(int max_width, token& last)
         //{

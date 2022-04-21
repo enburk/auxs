@@ -22,6 +22,9 @@
     <Filter Include="sfx">
       <UniqueIdentifier>{28e81e7e-cfab-4768-9448-4a98d7ef397a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="dox">
+      <UniqueIdentifier>{21185133-986c-40e1-92df-33203934d93e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="aux_abc.h">
@@ -293,6 +296,18 @@
     </ClInclude>
     <ClInclude Include="sfx_trees_bbst_splay.h">
       <Filter>sfx</Filter>
+    </ClInclude>
+    <ClInclude Include="dox_cpp_lexica.h">
+      <Filter>dox</Filter>
+    </ClInclude>
+    <ClInclude Include="dox_cpp_model.h">
+      <Filter>dox</Filter>
+    </ClInclude>
+    <ClInclude Include="dox_cpp_syntax.h">
+      <Filter>dox</Filter>
+    </ClInclude>
+    <ClInclude Include="dox_cpp_syntax_preprocessor.h">
+      <Filter>dox</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -113,18 +113,18 @@ namespace doc::html
             else
             if (entity.name == "sub") {
                 style.font.size = height * 77/100;
-                style.shift.y   = height * 30/100;
+                style.offset.y  = height * 30/100;
                 for (auto [key, val] : attr_style)
                     if (key == "margin-left")
-                        style.shift.x = heights(val);
+                        style.offset.x = heights(val);
             }
             else
             if (entity.name == "sup") {
                 style.font.size = height * 77/100;
-                style.shift.y  = -height * 30/100;
+                style.offset.y  = -height * 30/100;
                 for (auto [key, val] : attr_style)
                     if (key == "margin-left")
-                        style.shift.x = heights(val);
+                        style.offset.x = heights(val);
             }
             else
             if (entity.name == "code") {

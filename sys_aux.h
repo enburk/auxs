@@ -8,13 +8,16 @@
 namespace sys
 {
     using byte = uint8_t;
+    using pix::frame;
+    using pix::image;
+    using pix::rgba;
 
     namespace clipboard
     {
         void set (str);
-        void set (pix::frame<rgba>);
+        void set (frame<rgba>);
         namespace get {
-            pix::image<rgba> image ();
+            image<rgba> image ();
             str string ();
         }
     }

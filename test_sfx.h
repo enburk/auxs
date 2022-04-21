@@ -19,6 +19,11 @@ widget<TestSfxTrees>
     gui::radio::group buttons;
     gui::button zoom , speed ;
     gui::button zoom_, speed_;
+    gui::button x_0_99;
+    gui::button x_0_999;
+    gui::button uniform;
+    gui::button gaussian;
+    gui::button clear;
     gui::image Image;
     pix::image<rgba> image;
     sfx::trees::binary::bst dynamic;
@@ -68,22 +73,32 @@ widget<TestSfxTrees>
             splay.coord = r;
             avl.coord = r;
 
-            zoom  .coord = xywh(W-w,H-4*h,w,h);
-            zoom_ .coord = xywh(W-w,H-3*h,w,h);
-            speed .coord = xywh(W-w,H-2*h,w,h);
-            speed_.coord = xywh(W-w,H-1*h,w,h);
-            zoom  .text.text = "zoom+";
-            zoom_ .text.text = "zoom-";
-            speed .text.text = "speed+";
-            speed_.text.text = "speed-";
-            zoom  .repeat_lapse = 0ms;
-            zoom_ .repeat_lapse = 0ms;
-            speed .repeat_lapse = 0ms;
-            speed_.repeat_lapse = 0ms;
-            zoom  .repeating = true;
-            zoom_ .repeating = true;
-            speed .repeating = true;
-            speed_.repeating = true;
+            clear   .coord = xywh(W-w,H-9*h,w,h);
+            uniform .coord = xywh(W-w,H-8*h,w,h);
+            gaussian.coord = xywh(W-w,H-7*h,w,h);
+            x_0_99  .coord = xywh(W-w,H-6*h,w,h);
+            x_0_999 .coord = xywh(W-w,H-5*h,w,h);
+            zoom    .coord = xywh(W-w,H-4*h,w,h);
+            zoom_   .coord = xywh(W-w,H-3*h,w,h);
+            speed   .coord = xywh(W-w,H-2*h,w,h);
+            speed_  .coord = xywh(W-w,H-1*h,w,h);
+            clear   .text.text = "clear";
+            uniform .text.text = "uniform";
+            gaussian.text.text = "gaussian";
+            x_0_99  .text.text = "0 - 99";
+            x_0_999 .text.text = "0 - 999";
+            zoom    .text.text = "zoom+";
+            zoom_   .text.text = "zoom-";
+            speed   .text.text = "speed+";
+            speed_  .text.text = "speed-";
+            zoom    .repeat_lapse = 0ms;
+            zoom_   .repeat_lapse = 0ms;
+            speed   .repeat_lapse = 0ms;
+            speed_  .repeat_lapse = 0ms;
+            zoom    .repeating = true;
+            zoom_   .repeating = true;
+            speed   .repeating = true;
+            speed_  .repeating = true;
         }
 
         if (what == &buttons)
@@ -158,11 +173,18 @@ widget<TestSfxTrees>
             }
         }
 
-        int d = gui::metrics::text::height;
-
-        if (what == &zoom   and bst) bst->side  = min(bst->side+1, d*2);
-        if (what == &zoom_  and bst) bst->side  = max(bst->side-1, d/3);
-        if (what == &speed  and bst) bst->speed = min(bst->speed*1.1, 10.0);
-        if (what == &speed_ and bst) bst->speed = max(bst->speed*0.9, 0.01);
+        if (bst)
+        {
+            int d = gui::metrics::text::height;
+            if (what == &zoom    ) bst->side  = min(bst->side+1, d*2);
+            if (what == &zoom_   ) bst->side  = max(bst->side-1, d/3);
+            if (what == &speed   ) bst->speed = min(bst->speed*1.1, 10.0);
+            if (what == &speed_  ) bst->speed = max(bst->speed*0.9, 0.01);
+            if (what == &uniform ) bst->queue.distribution = "random";
+            if (what == &gaussian) bst->queue.distribution = "normal";
+            if (what == &x_0_99  ) bst->queue.upper = 99;
+            if (what == &x_0_999 ) bst->queue.upper = 999;
+            if (what == &clear   ) bst->clear();
+        }
     }
 };

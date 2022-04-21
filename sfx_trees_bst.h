@@ -6,6 +6,8 @@ namespace sfx::trees::binary
     widget<bst>
     {
         queue queue;
+        gui::text::view title;
+        gui::text::view counter;
         property<int> side = gui::metrics::text::height*12/7;
         property<double> speed = 1.0;
         property<bool> pause = true;
@@ -23,6 +25,7 @@ namespace sfx::trees::binary
             root = nullptr;
             maverick.value.text = "";
             balancer.label.text = "";
+            counter.text = "0";
         }
 
         void place (node* x, xyxy r)
@@ -103,6 +106,22 @@ namespace sfx::trees::binary
                 r.y2 = side.now;
                 queue.coord = r;
                 place();
+
+                r.x2 = r.x1 - side.now/2;
+                r.x1 = r.x1 - side.now*5;
+                counter.coord = r;
+                counter.color = rgba::gray;
+                counter.alignment = xy{pix::right, pix::center};
+                counter.font = pix::font("", (side.now*7+1)/12);
+
+                r.x2 = r.x1;
+                r.x1 = side.now/2;
+                r.y2 = 2*r.y2;
+                title.coord = r;
+                title.color = rgba::white;
+                title.alignment = xy{pix::left, pix::top};
+                title.font = pix::font("", max(side.now*7/8,
+                    gui::metrics::text::height));
             }
 
             if (what == &speed) queue.speed = speed.now;
@@ -124,6 +143,11 @@ namespace sfx::trees::binary
                         if (!root)
                         insert(root, nullptr);
                         maverick.up = root;
+
+                        str s = counter.text;
+                        if (s == "") s = "0";
+                        counter.text = std::to_string
+                        (std::stoi(s)+1);
                     }
                     else maverick.hide();
                     place();
@@ -170,6 +194,7 @@ namespace sfx::trees::binary
                             target->label.text = "";
                             new_leaf(target);
                         }
+                        else hit(target);
                     }
                 }
 
@@ -201,8 +226,8 @@ namespace sfx::trees::binary
             x->edge.hide();
         }
 
+        virtual void tick     () {}
         virtual void new_leaf (node* leaf) {}
-
-        virtual void tick () {}
+        virtual void hit      (node* leaf) {}
     };
 }

@@ -96,6 +96,9 @@ namespace sfx
     widget<queue>
     {
         widgetarium<node> nodes;
+        property<int> lower = 0;
+        property<int> upper = 99;
+        binary_property<str> distribution;
         property<double> speed = 1.0;
         property<time> timer;
         deque<str> extra;
@@ -150,7 +153,9 @@ namespace sfx
                             extra.pop_front(); }
                         else
                             x = std::to_string(
-                            aux::random(0,999));
+                            distribution.now == "normal"?
+                            aux::normal(lower.now, upper.now):
+                            aux::random(lower.now, upper.now));
 
                         q.value.text = x;
                         q.hide();
@@ -163,6 +168,13 @@ namespace sfx
                 extra.push_front(
                 nodes.back().value.text);
                 nodes.truncate(); }
+            }
+
+            if (what == &lower
+            or  what == &upper
+            or  what == &distribution)
+            {
+                clear();
             }
         }
     };

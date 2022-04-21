@@ -17,32 +17,30 @@ namespace gui::text
                 ascent  = max(ascent,  token.ascent);
                 Descent = max(Descent, token.Descent);
                 descent = max(descent, token.descent);
-                bearing = min(bearing, advance + token.bearing);
-                advance += token.bearing + token.advance;
+                xoffset = min(xoffset, token.xoffset + advance);
+                advance += token.xoffset + token.advance;
             }
 
-            advance = 0; int width = 0;
+            advance = 0;
 
             for (auto& token: tokens)
             {
                 int y = Ascent - token.Ascent;
-                int x = advance + token.bearing - bearing;
-                advance += token.bearing + token.advance;
+                int x = advance + token.xoffset - xoffset;
+                advance += token.xoffset + token.advance;
                 length += token.size();
                 token.offset = xy(x, y);
 
                 // do not increase width if
                 // there is space-like symbol at the very end
                 // and it's not the sole symbol in the row
-                if (token.rpadding != token.advance or
+                if (token.width() > 0 or
                     tokens.size() == 1)
-                    width = max(width,
+                    rborder = max(rborder,
                       x + token.Width());
             }
 
-            rpadding = advance - width;
-
-            bearing = 0;
+            xoffset = 0;
         }
 
         void ellipt(int max_width, token& token)

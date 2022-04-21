@@ -112,7 +112,7 @@ namespace gui::text
                 row.offset.x += row.elpadding(row.Height());
                 width = max (width,
                     row.offset.x +
-                    row.Width());
+                    row.width());
 
                 for (auto& solid: row.solids)
                 for (auto& token: solid.tokens)
