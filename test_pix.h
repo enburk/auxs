@@ -31,12 +31,12 @@ widget<TestPixDraw>
 
         int w = image.size.x;
         int h = image.size.y/4;
-
         auto frame1 = image.crop(xywh(0,0,w,h));
         auto frame2 = plane.crop(xywh(0,h,w,h));
 
         int n = 32;
         int r = h/2;
+        array<std::jthread> threads;
         for (double a = 0; a < 2*pi-0.001; a += 2*pi/n)
         {
             auto w1 = 0.1 + 1.9*a/2/pi;
@@ -51,16 +51,19 @@ widget<TestPixDraw>
                 vector{r,0}.rotated(-a) +
                 vector{r,r}}, rgba::white, w2);
 
+            threads += std::jthread([&frame1,&frame2,r,rr,w1,w2](){
             frame1.blend(circle{{3*r,r}, rr},
                 rgba::white, w1);
             frame2.copy (circle{{3*r,r}, rr},
                 rgba::white, w2);
+            });
 
             frame1.blend(circle{{5*r,r}, rr},
                 rgba(cc,0,0));
             frame2.copy (circle{{5*r,r}, rr},
                 rgba(255 - cc,0,0));
         }
+        for (auto& t: threads) t.join();
         image.crop().blend_from(
         plane.crop());
     }
@@ -96,46 +99,49 @@ widget<TestPixDrawX>
 
         int q = h/2; int c = q/2;
         int r = q/3; int e = q-r;
+        rgba cc[3] = {
+        rgba(255,0,0,128),
+        rgba(0,255,0,128),
+        rgba(0,0,255,128)};
+        aux::vector<2> oo[3] = {{c,r},{r,e},{e,e}};
         auto frame1a = frame1.crop(xywh(0,0,q,q));
         auto frame1b = frame1.crop(xywh(0,q,q,q));
         auto frame2a = frame2.crop(xywh(0,0,q,q));
         auto frame2b = frame2.crop(xywh(0,q,q,q));
         frame1a.fill(rgba::white);
         frame2a.fill(rgba::white);
-        frame1a.blend(circle{{c,r},double(r)}, rgba(255,0,0,128));
-        frame1b.blend(circle{{c,r},double(r)}, rgba(255,0,0,128));
-        frame2a.copy (circle{{c,r},double(r)}, rgba(255,0,0,128));
-        frame2b.copy (circle{{c,r},double(r)}, rgba(255,0,0,128));
-        frame1a.blend(circle{{r,e},double(r)}, rgba(0,255,0,128));
-        frame1b.blend(circle{{r,e},double(r)}, rgba(0,255,0,128));
-        frame2a.copy (circle{{r,e},double(r)}, rgba(0,255,0,128));
-        frame2b.copy (circle{{r,e},double(r)}, rgba(0,255,0,128));
-        frame1a.blend(circle{{e,e},double(r)}, rgba(0,0,255,128));
-        frame1b.blend(circle{{e,e},double(r)}, rgba(0,0,255,128));
-        frame2a.copy (circle{{e,e},double(r)}, rgba(0,0,255,128));
-        frame2b.copy (circle{{e,e},double(r)}, rgba(0,0,255,128));
-        for (int i = 1; i <= 4; i++) {
-        frame1a = frame1.crop(xywh(i*q,0,q,q));
-        frame1b = frame1.crop(xywh(i*q,q,q,q));
-        frame2a = frame2.crop(xywh(i*q,0,q,q));
-        frame2b = frame2.crop(xywh(i*q,q,q,q));
-        frame1a.fill(rgba::white);
-        frame2a.fill(rgba::white);
-        for (int R = r; R > 0; R -= 1 << (i-1)) {
-        frame1a.blend(circle{{c,r},double(R)}, rgba(255,0,0,128), 2.0);
-        frame1b.blend(circle{{c,r},double(R)}, rgba(255,0,0,128), 2.0);
-        frame2a.copy (circle{{c,r},double(R)}, rgba(255,0,0,128), 2.0);
-        frame2b.copy (circle{{c,r},double(R)}, rgba(255,0,0,128), 2.0);
-        frame1a.blend(circle{{r,e},double(R)}, rgba(0,255,0,128), 2.0);
-        frame1b.blend(circle{{r,e},double(R)}, rgba(0,255,0,128), 2.0);
-        frame2a.copy (circle{{r,e},double(R)}, rgba(0,255,0,128), 2.0);
-        frame2b.copy (circle{{r,e},double(R)}, rgba(0,255,0,128), 2.0);
-        frame1a.blend(circle{{e,e},double(R)}, rgba(0,0,255,128), 2.0);
-        frame1b.blend(circle{{e,e},double(R)}, rgba(0,0,255,128), 2.0);
-        frame2a.copy (circle{{e,e},double(R)}, rgba(0,0,255,128), 2.0);
-        frame2b.copy (circle{{e,e},double(R)}, rgba(0,0,255,128), 2.0);
-        }}
-
+        frame1a.blend(circle{oo[0],double(r)}, cc[0]);
+        frame1b.blend(circle{oo[0],double(r)}, cc[0]);
+        frame2a.copy (circle{oo[0],double(r)}, cc[0]);
+        frame2b.copy (circle{oo[0],double(r)}, cc[0]);
+        frame1a.blend(circle{oo[1],double(r)}, cc[1]);
+        frame1b.blend(circle{oo[1],double(r)}, cc[1]);
+        frame2a.copy (circle{oo[1],double(r)}, cc[1]);
+        frame2b.copy (circle{oo[1],double(r)}, cc[1]);
+        frame1a.blend(circle{oo[2],double(r)}, cc[2]);
+        frame1b.blend(circle{oo[2],double(r)}, cc[2]);
+        frame2a.copy (circle{oo[2],double(r)}, cc[2]);
+        frame2b.copy (circle{oo[2],double(r)}, cc[2]);
+        for (int k=0; k<3; k++)
+        {
+            array<std::jthread> threads;
+            for (int i = 1; i <= 4; i++) {
+            for (int j = 1; j <= 4; j++) {
+                threads += std::jthread([frame1,frame2,i,j,k,q,r,oo,cc](){
+                    auto f = 
+                    j == 1 ? frame1.crop(xywh(i*q,0,q,q)):
+                    j == 2 ? frame1.crop(xywh(i*q,q,q,q)):
+                    j == 3 ? frame2.crop(xywh(i*q,0,q,q)):
+                    j == 4 ? frame2.crop(xywh(i*q,q,q,q)):
+                    frame1;
+                    if (k == 0) if (j == 1 or j == 3) f.fill(rgba::white);
+                    for (int R = r; R > 0; R -= 1 << (i-1)) if (j == 1 or j == 2)
+                    f.blend(circle{oo[k],double(R)}, cc[k], 2.0); else
+                    f.copy (circle{oo[k],double(R)}, cc[k], 2.0);
+                });
+            }}
+            for (auto& t: threads) t.join();
+        }
         image.crop().blend_from(
         plane.crop());
     }

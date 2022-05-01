@@ -80,6 +80,7 @@
     <ClInclude Include="pix_sampling.h" />
     <ClInclude Include="pix_text.h" />
     <ClInclude Include="pix_text_block.h" />
+    <ClInclude Include="pix_text_column.h" />
     <ClInclude Include="pix_text_line.h" />
     <ClInclude Include="pix_text_row.h" />
     <ClInclude Include="pix_text_solid.h" />

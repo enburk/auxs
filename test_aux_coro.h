@@ -129,12 +129,6 @@ namespace aux::unittest
         std::to_string(ms) + " ms");
         co_return nothing{}; }
 
-    auto launch (task<>&& t) {
-        return std::async(
-        std::launch::async,
-        [t=std::move(t)]()
-        { t(); }); }
-
     task<> await (task<>&& a, task<>&& b) {
         auto future1 = launch(std::move(a));
         auto future2 = launch(std::move(b));
@@ -163,6 +157,22 @@ namespace aux::unittest
                 "A awaken after 100 ms",
                 "B awaken after 200 ms",
                 "waited for 200 ms" };
+
+            array<task<>> t;
+            t.emplace_back(sleep("A", 100));
+            t.emplace_back(sleep("B", 200));
+            t.emplace_back(sleep("a", 150));
+            t.emplace_back(sleep("b", 250));
+            using std::move; oops(await(
+            await(move(t[0]), move(t[1])),
+            await(move(t[2]), move(t[3])))()) {
+                "A awaken after 100 ms",
+                "a awaken after 150 ms",
+                "B awaken after 200 ms",
+                "waited for 200 ms" ,
+                "b awaken after 250 ms",
+                "waited for 250 ms" ,
+                "waited for 250 ms" };
         }
     }
     catch(assertion_failed){}

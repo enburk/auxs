@@ -8,10 +8,9 @@ namespace doc::cpp
 
     struct model : doc::text::model
     {
-        using base = doc::text::model;
-        
         report log_;
-        report log () override { return log_; }
+        report log () override {
+        return log_; }
         
         void tokenize () override
         {

@@ -82,6 +82,51 @@ namespace pix
 
             bool operator == (metrics const&) const = default;
             bool operator != (metrics const&) const = default;
+            void operator += (metrics const& m)
+            {
+                Ascent  = max(Ascent,  m.Ascent);
+                ascent  = max(ascent,  m.ascent);
+                Descent = max(Descent, m.Descent);
+                descent = max(descent, m.descent);
+                lborder = min(lborder, m.lborder + advance + m.xoffset);
+                rborder = max(rborder, m.rborder + advance + m.xoffset);
+                advance += m.advance;
+            }
+        };
+
+        struct format
+        {
+            int width  = max<int>();
+            int height = max<int>();
+
+            xy alignment = xy{center, center};
+
+            array<xy> lwrap;
+            array<xy> rwrap;
+
+            int columns = 1;
+            int gutter  = 1;
+
+            bool wordwrap = true;
+            bool ellipsis = false;
+
+            bool operator == (format const&) const = default;
+            bool operator != (format const&) const = default;
+        };
+
+        struct place
+        {
+            int line = 0;
+            int offset = 0;
+            auto operator <=> (const place & p) const = default;
+        };
+
+        struct range
+        {
+            place from, upto;
+            bool empty () const { return from == upto; }
+            bool operator == (const range & r) const = default;
+            bool operator != (const range & r) const = default;
         };
     }
 
@@ -89,6 +134,7 @@ namespace pix
     {
         aux::unicode::glyph text;
         text::style_index style_index;
+        xy offset; // for external formatting
 
         glyph () = default;
         glyph (aux::unicode::glyph text, text::style_index);

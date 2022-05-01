@@ -4,48 +4,27 @@ namespace pix::text
 {
     struct token: metrics
     {
-        struct glyph: pix::glyph
-        {
-            xy offset;
-            xywh coords() const {
-                return xywh(
-                    offset.x,
-                    offset.y,
-                    Width (),
-                    Height()
-                );
-            }
-        };
+        str text;
+        style_index style;
         array<glyph> glyphs;
-
-        str text; style_index style;
-
-        xy offset; // for external formatting
+        xy offset;
 
         token () = default;
         token (str text, style_index style) : text(text), style(style)
         {
             for (auto text: aux::unicode::glyphs(text))
             {
-                auto g = pix::glyph(text, style);
-                Ascent  = max(Ascent,  g.Ascent);
-                ascent  = max(ascent,  g.ascent);
-                Descent = max(Descent, g.Descent);
-                descent = max(descent, g.descent);
-                glyphs += glyph{g, xy{}};
+                auto g = glyph(text, style);
+                metrics::operator += (g);
+                glyphs += g;
             }
-            if (glyphs.size() > 0)
-            {
-                lborder = glyphs.front().lborder;
-                rborder = glyphs.back ().rborder;
-            }
+            int x = 0;
             for (auto& g: glyphs)
             {
-                g.offset.x = advance;
+                g.offset.x = x;
                 g.offset.y = Ascent - g.Ascent;
-                advance += g.advance;
+                x += g.advance;
             }
-            xoffset = style.style().offset.x;
         }
 
         void render (frame<rgba> frame, xy shift=xy{}, uint8_t alpha=255)
@@ -65,14 +44,14 @@ namespace pix::text
             from = max(from, 0);
             upto = min(upto, glyphs.size());
             if (from >= upto) return xywh{}; upto--;
-            xyxy r1 = glyphs[from].coords();
-            xyxy r2 = glyphs[upto].coords();
             return xyxy(
-                r1.x1, r1.y1,
-                r2.x2, r2.y2);
+            glyphs[from].offset.x,
+            glyphs[from].offset.y,
+            glyphs[upto].offset.x + glyphs[upto].Width(),
+            glyphs[upto].offset.y + glyphs[upto].Height());
         }
 
-        int point (int x)
+        int pointed (int x)
         {
             int i = 0;
             for (auto g : glyphs)

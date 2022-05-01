@@ -309,6 +309,9 @@
     <ClInclude Include="dox_cpp_syntax_preprocessor.h">
       <Filter>dox</Filter>
     </ClInclude>
+    <ClInclude Include="pix_text_column.h">
+      <Filter>pix</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="test.cpp">

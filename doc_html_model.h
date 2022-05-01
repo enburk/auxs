@@ -68,7 +68,7 @@ namespace doc::html
                 return int(h);
                 val.truncate();
                 val.truncate();
-                return int(h * std::atof(val.c_str()));
+                return int(h * std::round(std::stof(val)));
             };
 
             if (entity.kind == "text")

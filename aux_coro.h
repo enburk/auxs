@@ -100,4 +100,10 @@ namespace aux
             std::rethrow_exception(std::get<2>(r));
         }
     };
+
+    auto launch (task<>&& t) {
+        return std::async(
+        std::launch::async,
+        [t=std::move(t)]()
+        { t(); }); }
 }
