@@ -33,7 +33,7 @@ namespace pix::text
             {
                 auto w = g.Width();
                 auto h = g.Height();
-                auto p = offset + shift + g.offset;
+                auto p = shift + offset + g.offset;
                 auto f = frame.crop(xywh(p.x, p.y, w, h));
                 g.render(f, xy{}, alpha);
             }

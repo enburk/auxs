@@ -15,14 +15,14 @@ widget<Test>
     TestAuxMath    aux_math;
     TestAuxCoro    aux_coro;
     TestAuxHask    aux_hask;
-    TestDoc        doc;
-    TestDocHtml    doc_html;
     TestPix        pix;
     TestPixDraw    pix_draw;
     TestPixDrawX   pix_drawx;
     TestPixFonts   pix_fonts;
     TestPixText    pix_text;
     TestPixUtil    pix_util;
+    TestDoc        doc;
+    TestDocHtml    doc_html;
     TestGui        gui;
     TestGuiColors  gui_colors;
     TestGuiColorsX gui_colorsx;
@@ -42,15 +42,15 @@ widget<Test>
         tests += {&aux_coro,    "coroutines"};
         tests += {&aux_hask,    "haskell"};
 
-        tests += {&doc,         "doc"};
-        tests += {&doc_html,    "html"};
-
         tests += {&pix,         "pix"};
         tests += {&pix_draw,    "draw"};
         tests += {&pix_drawx,  "+draw+"};
         tests += {&pix_fonts,   "fonts"};
         tests += {&pix_text,    "text"};
         tests += {&pix_util,    "util"};
+
+        tests += {&doc,         "doc"};
+        tests += {&doc_html,    "html"};
 
         tests += {&gui,         "gui"};
         tests += {&gui_colors,  "colors"};

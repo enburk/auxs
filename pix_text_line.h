@@ -16,7 +16,7 @@ namespace pix::text
         bool modified = true;
         int number = -1;
 
-        generator<row*> rows (pix::text::format f)
+        generator<row*> ptrrows (pix::text::format f)
         {
             if (modified
             or  format != f) {
@@ -88,10 +88,11 @@ namespace pix::text
                 .rpadding = rpadding};
             }
 
-            if (rows.back().solids.empty()) {
+            auto& r = rows.back();
+            if (r.solids.empty()) {
                 auto m = pix::metrics(style.style().font);
-                rows.back().Ascent  = m.ascent;
-                rows.back().Descent = m.descent;
+                r.Ascent  = m.ascent;
+                r.Descent = m.descent;
             }
         }
 

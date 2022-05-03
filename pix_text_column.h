@@ -16,18 +16,25 @@ namespace pix::text
             size = xy{};
         }
 
-        bool add (row row, bool force = false)
-        {
-        }
-
         void align ()
         {
+            size = xy{};
+            for (auto row: rows)
+            {
+                row->align();
+                row->offset.y = size.y;
+                size.y += row->Height();
+                size.x = max(
+                size.x, row->Width());
+            }
         }
 
         void render (frame<rgba> frame, xy shift=xy{}, uint8_t alpha=255)
         {
-            for (auto& x: rows)
-                x->render(frame, shift + x->offset, alpha);
+            for (auto& r: rows)
+            {
+                r->render(frame, shift + offset, alpha);
+            }
         }
     };
 }

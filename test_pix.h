@@ -203,6 +203,14 @@ widget<TestPixFonts>
     }
 };
 
+str lorem = 
+"Lorem ipsum dolor sit amet, consectetur "
+"adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n"
+"Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip "
+"ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit "
+"esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non "
+"proident, sunt in culpa qui officia deserunt mollit anim id est laborum.";
+
 struct TestPixText:
 widget<TestPixText>
 {
@@ -218,19 +226,60 @@ widget<TestPixText>
         image.resize(coord.now.size);
         Image.coord = coord.now.local();
         Image.source = image.crop();
-        image.fill(rgba::white);
-        auto frame = image.crop();
 
-        int w = image.size.x;
-        int h = image.size.y/2;
+        const int n = 3;
+        int W = image.size.x;
+        int H = image.size.y;
         int u = gui::metrics::text::height;
+        int w = W / 4;
+        int h = H / 2 / n;
 
-        pix::text::style style;
-        style.color = rgba::black;
-        pix::text::style_index s(style);
-        auto frame1 = frame.crop(xywh(u,u,u*5,u*2));
-        frame1.blend(rgba::red, 200);
-        pix::text::token("abc", s).render(frame1, xy{}, 200);
+        pix::text::style style {.color = rgba::black};
+        pix::text::style_index index(style);
+        pix::text::block text;
+        auto& format = text.format;
+
+        for (str line: lorem.split_by("\n")) {
+            text.lines += pix::text::line{};
+            for (str word: line.split_by(" ")) {
+                text.lines.back().tokens +=
+                pix::text::token(word, index);
+                text.lines.back().tokens +=
+                pix::text::token(" ", index);
+            }
+        }
+
+        for (int i=0; i<2; i++)
+        for (int j=0; j<n; j++)
+        for (int k=0; k<4; k++)
+        {
+            xywh r(w*k, i*h*n+j*h, w, h); r.deflate(1);
+            auto frame = image.crop(r);
+            frame.fill(rgba::white);
+
+            format.alignment =
+            k == 0? xy{pix::left,         pix::top}:
+            k == 1? xy{pix::center,       pix::top}:
+            k == 2? xy{pix::justify_left, pix::top}:
+            k == 3? xy{pix::right,        pix::top}: xy{};
+            format.ellipsis = true;
+            format.width    = frame.size.x;
+            format.height   = frame.size.y;
+            format.columns  = j+1;
+            format.gutter   = u;
+
+            if (i == 1)
+            {
+                int v = w/(j+1);
+                frame.crop(xywh(0, h/2,   v/4, h/4)).fill(rgba::red);
+                frame.crop(xywh(w-v/4, 0, v/4, h/4)).fill(rgba::red);
+                format.lwrap = array<xy>{xy(0, h/2), xy(v/4, h/4)};
+                format.rwrap = array<xy>{xy(v/4, h/4)};
+            }
+
+            text.layout();
+            text.render(frame);
+        }
     }
 };
 

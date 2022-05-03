@@ -7,43 +7,41 @@ namespace pix::text
     struct solid : metrics
     {
         token_range tokens;
+        token ellipted;
         glyph ellipsis;
         int length = 0;
         xy offset;
 
         solid(token_range tokens) : tokens(tokens)
         {
-            //for (auto& token: tokens)
-            //{
-            //    Ascent  = max(Ascent,  token.Ascent);
-            //    ascent  = max(ascent,  token.ascent);
-            //    Descent = max(Descent, token.Descent);
-            //    descent = max(descent, token.descent);
-            //    bearing = min(bearing, advance + token.bearing);
-            //    advance += token.bearing + token.advance;
-            //}
-            //
-            //advance = 0;
-            //
-            //for (auto& token: tokens)
-            //{
-            //    int y = Ascent - token.Ascent;
-            //    int x = advance + token.bearing - bearing;
-            //    advance += token.bearing + token.advance;
-            //    length += token.glyphs.size();
-            //    token.offset = xy(x, y);
-            //
-            //    // do not increase width if
-            //    // there is space-like symbol at the very end
-            //    // and it's not the sole symbol in the row
-            //    if (token.rpadding != token.advance or
-            //        tokens.size() == 1)
-            //        advance = max(advance,
-            //          x + token.advance);
-            //}
-            //
-            //bearing = 0;
+            measure();
+            int x = 0;
+            for (auto& t: tokens)
+            {
+                t.offset.x = x;
+                t.offset.y = Ascent - t.Ascent;
+                x += t.advance;
+            }
         }
+
+        void measure ()
+        {
+            metrics::operator = (metrics{});
+            for (auto& token: tokens)
+            metrics::operator += (token);
+            if (ellipted.text != "")
+            metrics::operator += (ellipted);
+            if (ellipsis.text != "")
+            metrics::operator += (ellipsis);
+
+            length = 0;
+            for (auto& token: tokens)
+            length += token.glyphs.size();
+            if (ellipted.text != "")
+            length += ellipted.glyphs.size();
+        }
+
+
 
         //void ellipt(int max_width, token& last)
         //{
@@ -85,8 +83,10 @@ namespace pix::text
 
         void render (frame<rgba> frame, xy shift=xy{}, uint8_t alpha=255)
         {
-            for (auto& x: tokens)
-                x.render(frame, shift + x.offset, alpha);
+            for (auto& t: tokens)
+            {
+                t.render(frame, shift + offset, alpha);
+            }
         }
 
         //xywh bar (int place)

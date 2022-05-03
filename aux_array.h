@@ -138,6 +138,9 @@ namespace aux
             auto operator [] (int i) const -> type const& { return *(begin()+i); }
             auto operator () (int i) { return *(begin()+i); }
 
+            void operator >>= (int n) { begin_ = min(begin_+n, end_); }
+            void operator <<= (int n) { end_   = max(begin_, end_-n); }
+
             bool starts_with (random_access_range auto r) const
             {
                 if (size() < r.size()) return false;

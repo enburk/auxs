@@ -1,6 +1,7 @@
 #pragma once
 #include <filesystem>
 #include "doc_view.h"
+#include "pix_text_block.h"
 #include "doc_text_model_b.h"
 namespace doc::text
 {
