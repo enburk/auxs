@@ -9,6 +9,12 @@ namespace aux::unicode
 
         glyph() = default;
         glyph(char c) { cc[0] = c; }
+        glyph(char8_t u[4]) {
+            cc[0] = u[0];
+            cc[1] = u[1];
+            cc[2] = u[2];
+            cc[3] = u[3];
+        }
 
         template<int N> glyph(const char(&CC)[N]) {
             static_assert(0 <= N and N <= 4, "wrong glyph size");

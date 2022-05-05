@@ -20,6 +20,7 @@ widget<Test>
     TestPixDrawX   pix_drawx;
     TestPixFonts   pix_fonts;
     TestPixText    pix_text;
+    TestPixTextX   pix_textx;
     TestPixUtil    pix_util;
     TestDoc        doc;
     TestDocHtml    doc_html;
@@ -47,6 +48,7 @@ widget<Test>
         tests += {&pix_drawx,  "+draw+"};
         tests += {&pix_fonts,   "fonts"};
         tests += {&pix_text,    "text"};
+        tests += {&pix_textx,  "+text+"};
         tests += {&pix_util,    "util"};
 
         tests += {&doc,         "doc"};

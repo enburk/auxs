@@ -40,7 +40,6 @@ namespace pix::text
             solid s(tokens);
             metrics m = *this; m += s;
             int w = max_width(m.Height());
-            s.offset.x = advance;
 
             if (m.rborder > w
             and format.wordwrap
@@ -48,23 +47,48 @@ namespace pix::text
                 last = false;
                 return; }
 
-            if (m.rborder <= w or
-            not format.wordwrap) {
-                tokens >>= tokens.size();
-                metrics::operator = (m);
-                solids += s;
-                return; }
-
-            last = false;
             tokens >>= tokens.size();
-            while (s.tokens.size() > 1)
-            {
-                tokens >>= -1;
-                s.tokens <<= 1;
-                s.measure();
-            }
-            metrics::operator += (s);
+            metrics::operator = (m);
             solids += s;
+
+            if (m.rborder > w
+            and format.ellipsis
+            and solids.size() == 1)
+                ellipt();
+        }
+
+        void layout ()
+        {
+            metrics::operator = (metrics{});
+            for (auto& s: solids)
+            metrics::operator += (s);
+
+            advance = 0;
+            for (auto& s: solids)
+            {
+                s.offset.x = advance;
+                s.offset.y = Ascent - s.Ascent;
+                advance += s.advance;
+            }
+        }
+
+        void ellipt()
+        {
+            last = true;
+
+            int W = max_width(Height());
+
+            while (solids.size() >= 2)
+            {
+                solids.back().ellipt(max<int>());
+                layout(); if (rborder <= W) return;
+                solids.truncate();
+            }
+
+            if (solids.size() > 0) {
+                solids.back().ellipt(W);
+                layout();
+            }
         }
 
         void align ()
@@ -72,8 +96,7 @@ namespace pix::text
             length = 0;
             indent = -1;
             for (auto& solid: solids)
-            for (auto& token: solid.tokens)
-            for (auto& glyph: token.glyphs)
+            for (auto& glyph: solid.glyphs)
             {
                 if (glyph.text != " "
                 and indent == -1)
@@ -86,16 +109,26 @@ namespace pix::text
                 indent =
                 length;
 
-            for (auto& solid: solids)
-                solid.offset.y = Ascent -
-                solid.Ascent;
+            int x = 0;
+            int h = Height();
+            for (auto bar: format.lwrap) {
+                x = aux::max(x, bar.x);
+                h -= bar.y;
+                if (h <= 0)
+                    break;
+            }
+            for (auto& s: solids) {
+                s.offset.x = x;
+                s.offset.y = Ascent - s.Ascent;
+                x += s.advance;
+            }
 
             int align = format.alignment.x;
             int W = max_width(Height());
             int w = width();
 
             if (align == left or
-               (align == justify_left and last))
+               (align <= justify_left and last))
                 return;
 
             if (align == center and W > w) {
@@ -104,7 +137,7 @@ namespace pix::text
                 return; }
 
             if (align == right or
-               (align == justify_right and last)) {
+               (align >= justify_right and last)) {
                 for (auto& s: solids)
                 s.offset.x += W - w;
                 return; }

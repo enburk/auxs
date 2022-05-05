@@ -5,6 +5,8 @@ namespace pix::text
     struct token: metrics
     {
         str text;
+        str link;
+        str info;
         style_index style;
         array<glyph> glyphs;
         xy offset;

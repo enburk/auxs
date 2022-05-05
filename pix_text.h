@@ -82,16 +82,14 @@ namespace pix
 
             bool operator == (metrics const&) const = default;
             bool operator != (metrics const&) const = default;
-            void operator += (metrics const& m)
-            {
-                Ascent  = max(Ascent,  m.Ascent);
-                ascent  = max(ascent,  m.ascent);
-                Descent = max(Descent, m.Descent);
-                descent = max(descent, m.descent);
-                lborder = min(lborder, m.lborder + advance + m.xoffset);
-                rborder = max(rborder, m.rborder + advance + m.xoffset);
-                advance += m.advance;
-            }
+            void operator += (metrics const& m) {
+            Ascent  = max(Ascent,  m.Ascent);
+            ascent  = max(ascent,  m.ascent);
+            Descent = max(Descent, m.Descent);
+            descent = max(descent, m.descent);
+            lborder = min(lborder, m.lborder + advance + m.xoffset);
+            rborder = max(rborder, m.rborder + advance + m.xoffset);
+            advance += m.advance; }
         };
 
         struct format

@@ -6,86 +6,62 @@ namespace pix::text
 
     struct solid : metrics
     {
-        token_range tokens;
-        token ellipted;
-        glyph ellipsis;
-        int length = 0;
+        str text;
+        array<glyph> glyphs;
         xy offset;
 
-        solid(token_range tokens) : tokens(tokens)
+        solid(token_range tokens)
         {
-            measure();
-            int x = 0;
-            for (auto& t: tokens)
+            for (auto& token: tokens)
+            for (auto& glyph: token.glyphs)
             {
-                t.offset.x = x;
-                t.offset.y = Ascent - t.Ascent;
-                x += t.advance;
+                text += glyph.text;
+                glyphs += glyph;
+            }
+            layout();
+        }
+
+        void layout ()
+        {
+            metrics::operator = (metrics{});
+            for (auto& g: glyphs)
+            metrics::operator += (g);
+
+            advance = 0;
+            for (auto& g: glyphs)
+            {
+                g.offset.x = advance;
+                g.offset.y = Ascent - g.Ascent;
+                advance += g.advance;
             }
         }
 
-        void measure ()
+        void ellipt(int max_width)
         {
-            metrics::operator = (metrics{});
-            for (auto& token: tokens)
-            metrics::operator += (token);
-            if (ellipted.text != "")
-            metrics::operator += (ellipted);
-            if (ellipsis.text != "")
-            metrics::operator += (ellipsis);
+            while (not glyphs.empty())
+            {
+                auto ellipsis = glyph(u8"…",
+                    glyphs.back().style_index);
 
-            length = 0;
-            for (auto& token: tokens)
-            length += token.glyphs.size();
-            if (ellipted.text != "")
-            length += ellipted.glyphs.size();
+                if (glyphs.back().text == " ")
+                    glyphs.truncate();
+
+                glyphs += ellipsis; layout();
+                if (rborder < max_width) return;
+                glyphs.truncate();
+                glyphs.truncate();
+            }
         }
-
-
-
-        //void ellipt(int max_width, token& last)
-        //{
-        //    advance -= last.advance;
-        //
-        //    token t = last;
-        //
-        //    str text = t.text;
-        //
-        //    do
-        //    {
-        //        text.trimr();
-        //        t.text = text + (char*)(u8"…");
-        //        text.truncate();
-        //        last = t;
-        //    }
-        //    while (advance + last.width > max_width
-        //        and t.text != (char*)(u8"…"));
-        //
-        //    width = advance + last.width;
-        //
-        //    advance += last.advance;
-        //}
-        //
-        //void ellipt(int max_width)
-        //{
-        //    while (tokens.size() > 0)
-        //    {
-        //        auto& token = tokens.last();
-        //        ellipt(max_width, token);
-        //        if (width <= max_width)
-        //            return;
-        //
-        //        tokens.truncate();
-        //        solid s {tokens};
-        //        metrics::operator=(s);
-        //    }
-        //}
 
         void render (frame<rgba> frame, xy shift=xy{}, uint8_t alpha=255)
         {
-            for (auto& t: tokens)
+            for (auto& g: glyphs)
             {
-                t.render(frame, shift + offset, alpha);
+                auto w = g.Width();
+                auto h = g.Height();
+                auto p = shift + offset + g.offset;
+                auto f = frame.crop(xywh(p.x, p.y, w, h));
+                g.render(f, xy{}, alpha);
             }
         }
 

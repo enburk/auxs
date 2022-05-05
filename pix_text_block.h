@@ -29,7 +29,6 @@ namespace pix::text
             {
                 c.clear();
                 c.format = format;
-                c.format.ellipsis = false;
                 c.format.lwrap.clear();
                 c.format.rwrap.clear();
                 c.format.width = w;
@@ -37,26 +36,14 @@ namespace pix::text
                 size.x += w + g;
             }
             size.x -= g;
-            columns.back ().format.ellipsis = format.ellipsis;
             columns.front().format.lwrap = format.lwrap;
             columns.back ().format.rwrap = format.rwrap;
 
-            for (auto& line: lines)
-            for (auto row: line.ptrrows(
-                columns.front().format))
-                columns.front().rows += row;
-
-            int R = columns.front().rows.size();
-            int r = (R + n - 1) / n;
-            for (int i=1; i<n; i++)
-            for (int j=0; j<r; j++)
-            {
-                int k = i*r + j;
-                if (k >= R) break;
-                columns[i].rows += 
-                columns.front().rows[k];
-            }
-            columns.front().rows.resize(r);
+            if (format.columns > 1 and
+               (format.lwrap.size() > 0 or
+                format.rwrap.size() > 0))
+                format_dynamic(); else
+                format_eager();
 
             for (auto& c: columns)
             {
@@ -64,6 +51,44 @@ namespace pix::text
                 size.y, c.size.y);
                 c.align();
             }
+        }
+
+        void format_eager ()
+        {
+            int H = 0;
+            for (auto& line: lines)
+            for (auto row: line.ptrrows(
+                columns.front().format)) {
+                columns.front().rows += row;
+                H += row->Height();
+            }
+
+            int cc = format.columns;
+            H = min(H/cc, format.height);
+
+            for (int c=0; c<cc; c++)
+            {
+                int h = 0;
+                for (int r=0; r<columns[c].rows.size(); r++)
+                {
+                    h += columns[c].rows[r]->Height();
+                    if (r == 0 or h <= H) continue;
+
+                    if (c+1 < cc) 
+                    columns[c+1].rows = 
+                    columns[c].rows.from(r);
+                    columns[c].rows.resize(r);
+
+                    if (c+1 == cc and format.ellipsis)
+                    columns[c].rows.back()->ellipt();
+                    break;
+                }
+            }
+        }
+
+        void format_dynamic ()
+        {
+            format_eager();
         }
 
         void render (frame<rgba> frame, xy shift=xy{}, uint8_t alpha=255)

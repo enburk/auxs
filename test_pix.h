@@ -16,8 +16,8 @@ widget<TestPixDraw>
 
     void on_change (void* what) override
     {
-        if (coord.now.size == image.size or
-            coord.now.size == xy())
+        if (coord.now.size == xy{} or
+            image.size != xy{})
             return;
 
         image.resize(coord.now.size);
@@ -77,8 +77,8 @@ widget<TestPixDrawX>
 
     void on_change (void* what) override
     {
-        if (coord.now.size == image.size or
-            coord.now.size == xy())
+        if (coord.now.size == xy{} or
+            image.size != xy{})
             return;
 
         image.resize(coord.now.size);
@@ -155,8 +155,8 @@ widget<TestPixFonts>
 
     void on_change (void* what) override
     {
-        if (coord.now.size == image.size or
-            coord.now.size == xy())
+        if (coord.now.size == xy{} or
+            image.size != xy{})
             return;
 
         image.resize(coord.now.size);
@@ -219,8 +219,8 @@ widget<TestPixText>
 
     void on_change (void* what) override
     {
-        if (coord.now.size == image.size or
-            coord.now.size == xy())
+        if (coord.now.size == xy{} or
+            image.size != xy{})
             return;
 
         image.resize(coord.now.size);
@@ -231,7 +231,7 @@ widget<TestPixText>
         int W = image.size.x;
         int H = image.size.y;
         int u = gui::metrics::text::height;
-        int w = W / 4;
+        int w = W / 5;
         int h = H / 2 / n;
 
         pix::text::style style {.color = rgba::black};
@@ -251,22 +251,101 @@ widget<TestPixText>
 
         for (int i=0; i<2; i++)
         for (int j=0; j<n; j++)
-        for (int k=0; k<4; k++)
+        for (int k=0; k<5; k++)
         {
             xywh r(w*k, i*h*n+j*h, w, h); r.deflate(1);
             auto frame = image.crop(r);
             frame.fill(rgba::white);
 
             format.alignment =
-            k == 0? xy{pix::left,         pix::top}:
-            k == 1? xy{pix::center,       pix::top}:
-            k == 2? xy{pix::justify_left, pix::top}:
-            k == 3? xy{pix::right,        pix::top}: xy{};
+            k == 0? xy{pix::left,           pix::top}:
+            k == 1? xy{pix::center,         pix::top}:
+            k == 2? xy{pix::justify_left-1, pix::top}:
+            k == 3? xy{pix::justify_left,   pix::top}:
+            k == 4? xy{pix::right,          pix::top}: xy{};
             format.ellipsis = true;
             format.width    = frame.size.x;
             format.height   = frame.size.y;
             format.columns  = j+1;
             format.gutter   = u;
+            format.lwrap.clear();
+            format.rwrap.clear();
+
+            if (i == 1)
+            {
+                int v = w/(j+1);
+                frame.crop(xywh(0, h/2,   v/4, h/4)).fill(rgba::red);
+                frame.crop(xywh(w-v/4, 0, v/4, h/4)).fill(rgba::red);
+                format.lwrap = array<xy>{xy(0, h/2), xy(v/4, h/4)};
+                format.rwrap = array<xy>{xy(v/4, h/4)};
+            }
+
+            text.layout();
+            text.render(frame);
+        }
+    }
+};
+
+struct TestPixTextX:
+widget<TestPixTextX>
+{
+    gui::image Image;
+    pix::image<rgba> image;
+
+    void on_change (void* what) override
+    {
+        if (coord.now.size == xy{} or
+            image.size != xy{})
+            return;
+
+        image.resize(coord.now.size);
+        Image.coord = coord.now.local();
+        Image.source = image.crop();
+
+        const int n = 3;
+        int W = image.size.x;
+        int H = image.size.y;
+        int u = gui::metrics::text::height;
+        int w = W / 8;
+        int h = H / 2 / n;
+
+        pix::text::style style {.color = rgba::black};
+        pix::text::style_index index(style);
+        pix::text::block text;
+        auto& format = text.format;
+
+        for (str line: lorem.split_by("\n")) {
+            text.lines += pix::text::line{};
+            for (str word: line.split_by(" ")) {
+                text.lines.back().tokens +=
+                pix::text::token(word, index);
+                text.lines.back().tokens +=
+                pix::text::token(" ", index);
+            }
+        }
+
+        int x = 0;
+        for (int a=0; a<4; a++, x += 4*w, w /= 2)
+        for (int i=0; i<2; i++)
+        for (int j=0; j<n; j++)
+        for (int k=0; k<4; k++)
+        {
+            xywh r(x + w*k, i*h*n+j*h, w, h); r.deflate(1);
+            auto frame = image.crop(r);
+            frame.fill(rgba::white);
+
+            format.alignment =
+            k == 0? xy{pix::left,           pix::top}:
+            k == 1? xy{pix::center,         pix::top}:
+            k == 2? xy{pix::justify_left,   pix::top}:
+            k == 3? xy{pix::right,          pix::top}: xy{};
+            format.ellipsis = true;
+            format.width    = frame.size.x;
+            format.height   = frame.size.y;
+            format.columns  = j+1;
+            format.gutter   = u;
+            format.lwrap.clear();
+            format.rwrap.clear();
 
             if (i == 1)
             {
@@ -291,8 +370,8 @@ widget<TestPixUtil>
 
     void on_change (void* what) override
     {
-        if (coord.now.size == image.size or
-            coord.now.size == xy())
+        if (coord.now.size == xy{} or
+            image.size != xy{})
             return;
 
         image.resize(coord.now.size);
