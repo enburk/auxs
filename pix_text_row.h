@@ -109,6 +109,8 @@ namespace pix::text
                 indent =
                 length;
 
+            layout();
+
             int x = 0;
             int h = Height();
             for (auto bar: format.lwrap) {
@@ -117,11 +119,7 @@ namespace pix::text
                 if (h <= 0)
                     break;
             }
-            for (auto& s: solids) {
-                s.offset.x = x;
-                s.offset.y = Ascent - s.Ascent;
-                x += s.advance;
-            }
+            offset.x = x + lpadding;
 
             int align = format.alignment.x;
             int W = max_width(Height());
@@ -132,14 +130,12 @@ namespace pix::text
                 return;
 
             if (align == center and W > w) {
-                for (auto& s: solids)
-                s.offset.x += W/2 - w/2;
+                offset.x += W/2 - w/2;
                 return; }
 
             if (align == right or
                (align >= justify_right and last)) {
-                for (auto& s: solids)
-                s.offset.x += W - w;
+                offset.x += W - w;
                 return; }
 
             int n = solids.size();

@@ -56,11 +56,15 @@ namespace pix::text
         void format_eager ()
         {
             int H = 0;
+            auto f = columns.front().format;
             for (auto& line: lines)
-            for (auto row: line.ptrrows(
-                columns.front().format)) {
+            for (auto row: line.ptrrows(f)) {
                 columns.front().rows += row;
-                H += row->Height();
+                int h = row->Height();
+                line::skip(f.lwrap, h);
+                line::skip(f.rwrap, h);
+                f.height -= h;
+                H += h;
             }
 
             int cc = format.columns;

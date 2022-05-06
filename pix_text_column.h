@@ -24,8 +24,9 @@ namespace pix::text
                 row->align();
                 row->offset.y = size.y;
                 size.y += row->Height();
-                size.x = max(
-                size.x, row->Width());
+                size.x = max(size.x,
+                row->offset.x +
+                row->Width());
             }
         }
 
