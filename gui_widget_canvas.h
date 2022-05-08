@@ -117,7 +117,7 @@ namespace gui
 
         bool mouse_sensible (xy p) override { return true; }
 
-        void on_mouse_press (xy p, str button, bool down) override
+        void on_mouse_click (xy p, str button, bool down) override
         {
             if (button != "left") return;
             if (down && !touched) touch_point = p;

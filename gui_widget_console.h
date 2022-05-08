@@ -67,10 +67,10 @@ namespace gui
             }
         }
 
-        void on_mouse_press (xy p, str button, bool down) override
+        void on_mouse_click (xy p, str button, bool down) override
         {
             if (parent)
-                parent->on_mouse_press (
+                parent->on_mouse_click (
                     p + coord.now.origin,
                     button, down);
         }

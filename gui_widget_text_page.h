@@ -305,7 +305,7 @@ namespace gui::text
 
         bool mouse_sensible (xy p) override { return true; }
 
-        void on_mouse_press (xy p, str button, bool down) override
+        void on_mouse_click (xy p, str button, bool down) override
         {
             if (button == "right") return;
             if (button != "left") return;

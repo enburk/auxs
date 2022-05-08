@@ -11,7 +11,7 @@ namespace gui
         binary_property<bool> on = false;
         binary_property<bool> enabled = true;
         binary_property<bool> mouse_hover = false;
-        binary_property<bool> mouse_pressed = false;
+        binary_property<bool> mouse_clicked = false;
         binary_property<bool> enter_pressed = false;
         enum {normal, toggle, sticky} kind = normal;
         bool notify_hover = false;
@@ -37,7 +37,7 @@ namespace gui
 
             auto colors = // order important
             not enabled  .now? style.disabled:
-            mouse_pressed.now? style.touched:
+            mouse_clicked.now? style.touched:
             enter_pressed.now? style.touched:
             mouse_hover  .now? style.hovered:
             on           .now? style.active:
@@ -58,7 +58,7 @@ namespace gui
         void on_change (void* what) override
         {
             if (what == &enter_pressed
-            or  what == &mouse_pressed
+            or  what == &mouse_clicked
             or  what == &mouse_hover
             or  what == &focus_on
             or  what == &enabled
@@ -78,18 +78,18 @@ namespace gui
             if (what == &timer)
             if (repeat_notch < time::now) {
                 repeat_notch = time::now + repeat_lapse;
-                if (mouse_pressed.now) notify();
+                if (mouse_clicked.now) notify();
             }
         }
 
         bool mouse_sensible (xy) override { return enabled.now; }
         void on_mouse_hover (xy) override { mouse_hover = true; }
         void on_mouse_leave (  ) override { mouse_hover = false;}
-        void on_mouse_press (xy, str button, bool down) override
+        void on_mouse_click (xy, str button, bool down) override
         {
             if (button != "left") return;
             
-            mouse_pressed = down;
+            mouse_clicked = down;
             
             if (enabled.now) {
                 switch(kind) {

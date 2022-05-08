@@ -110,7 +110,7 @@ namespace sys
              on_timing();
         }
         void mouse_on_press(xy p, str button, bool down) override {
-             widget.mouse_press(p, button, down);
+             widget.mouse_click(p, button, down);
              on_timing();
         }
         void mouse_on_wheel(xy p, int delta) override {

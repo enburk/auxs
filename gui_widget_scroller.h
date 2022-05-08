@@ -18,10 +18,10 @@ namespace gui
             parent->on_mouse_hover(p +
                 coord.now.origin);
         }
-        void on_mouse_press (xy p, str button, bool down) override
+        void on_mouse_click (xy p, str button, bool down) override
         {
-            button::on_mouse_press(p, button, down);
-            parent->on_mouse_press(p + 
+            button::on_mouse_click(p, button, down);
+            parent->on_mouse_click(p + 
                 coord.now.origin,
                 button, down);
         }
@@ -118,7 +118,7 @@ namespace gui
             runner.enabled = up.enabled.now or down.enabled.now;
         }
 
-        void on_mouse_press (xy p, str button, bool down) override
+        void on_mouse_click (xy p, str button, bool down) override
         {
             if (button != "left") return;
             if (down && !touch) touch_point = p.y;
@@ -226,7 +226,7 @@ namespace gui
             runner.enabled = left.enabled.now or right.enabled.now;
         }
 
-        void on_mouse_press (xy p, str button, bool down) override
+        void on_mouse_click (xy p, str button, bool down) override
         {
             if (button != "left") return;
             if (down && !touch) touch_point = p.x;

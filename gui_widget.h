@@ -126,18 +126,18 @@ namespace gui::base
 
         ////////////////////////////////////////////////////////////////////////
 
-        widget* mouse_press_child = nullptr;
+        widget* mouse_click_child = nullptr;
         widget* mouse_hover_child = nullptr;
         double  mouse_wheel_speed = 1.0;
         unary_property<str> mouse_image;
 
         virtual bool mouse_sensible (xy p) { return false; }
-        virtual void on_mouse_press (xy, str button, bool down) {}
+        virtual void on_mouse_click (xy, str button, bool down) {}
         virtual bool on_mouse_wheel (xy, int) { return false; }
         virtual void on_mouse_hover (xy) {}
         virtual void on_mouse_leave () {}
 
-        virtual void on_mouse_press_child (xy, str, bool) {}
+        virtual void on_mouse_click_child (xy, str, bool) {}
         virtual void on_mouse_hover_child (xy) {}
 
         bool mouse_sense (xy p)
@@ -150,44 +150,44 @@ namespace gui::base
             return mouse_sensible(p);
         }
 
-        void mouse_press (xy p, str button, bool down)
+        void mouse_click (xy p, str button, bool down)
         {
             // button ?
             if (down)
             {
-                mouse_press_child = nullptr;
+                mouse_click_child = nullptr;
                 for (auto w : children)
                     if (w->mouse_sense (p - w->coord.now.origin))
-                        mouse_press_child = w; // last sibling wins
+                        mouse_click_child = w; // last sibling wins
 
-                if (mouse_press_child and
-                    mouse_press_child->focusable_now())
-                    focus = mouse_press_child;
+                if (mouse_click_child and
+                    mouse_click_child->focusable_now())
+                    focus = mouse_click_child;
 
-                if (mouse_press_child) {
-                    mouse_press_child->mouse_press (p -
-                    mouse_press_child->coord.now.origin, button, true);
-                    on_mouse_press_child(p, button, down);
+                if (mouse_click_child) {
+                    mouse_click_child->mouse_click (p -
+                    mouse_click_child->coord.now.origin, button, true);
+                    on_mouse_click_child(p, button, down);
                     return; }
             }
             else
             { 
-                if (mouse_press_child) {
-                    mouse_press_child->mouse_press (p - 
-                    mouse_press_child->coord.now.origin, button, false);
-                    mouse_press_child = nullptr;
-                    on_mouse_press_child(p, button, down);
+                if (mouse_click_child) {
+                    mouse_click_child->mouse_click (p - 
+                    mouse_click_child->coord.now.origin, button, false);
+                    mouse_click_child = nullptr;
+                    on_mouse_click_child(p, button, down);
                     return; }
             }
-            on_mouse_press(p, button, down);
+            on_mouse_click(p, button, down);
             sys::mouse::image(mouse_image.now);
         }
 
         void mouse_move(xy p)
         {
-            if (mouse_press_child) {
-                mouse_press_child->mouse_move(p -
-                    mouse_press_child->coord.now.origin);
+            if (mouse_click_child) {
+                mouse_click_child->mouse_move(p -
+                    mouse_click_child->coord.now.origin);
                 return;
             }
             widget* hover = nullptr;
