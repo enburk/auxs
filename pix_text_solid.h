@@ -2,21 +2,19 @@
 #include "pix_text_token.h"
 namespace pix::text
 {
-    using token_range = array<token>::range_type;
-
     struct solid : metrics
     {
         str text;
-        array<glyph> glyphs;
+        array<token> tokens;
+        int length = 0;
         xy offset;
 
-        solid(token_range tokens)
+        solid(array<token>::range_type range)
         {
-            for (auto& token: tokens)
-            for (auto& glyph: token.glyphs)
+            for (auto token: range)
             {
-                text += glyph.text;
-                glyphs += glyph;
+                text += token.text;
+                tokens += token;
             }
             layout();
         }
@@ -24,93 +22,74 @@ namespace pix::text
         void layout ()
         {
             metrics::operator = (metrics{});
-            for (auto& g: glyphs)
-            metrics::operator += (g);
+            for (auto& t: tokens)
+            metrics::operator += (t);
 
+            length = 0;
             advance = 0;
-            for (auto& g: glyphs)
+            for (auto& t: tokens)
             {
-                g.offset.x = advance;
-                g.offset.y = Ascent - g.Ascent;
-                advance += g.advance;
+                t.offset.x = advance;
+                t.offset.y = Ascent - t.Ascent;
+                advance += t.advance;
+                length += t.glyphs.size();
             }
         }
 
         void ellipt(int max_width)
         {
-            while (not glyphs.empty())
+            while (not tokens.empty())
             {
-                auto ellipsis = glyph(u8"…",
-                    glyphs.back().style_index);
-
-                if (glyphs.back().text == " ")
-                    glyphs.truncate();
-
-                glyphs += ellipsis; layout();
-                if (rborder < max_width) return;
-                glyphs.truncate();
-                glyphs.truncate();
+                tokens.back().ellipt(max_width);
+                layout(); if (rborder <= max_width and not
+                tokens.back().glyphs.empty()) return;
+                tokens.truncate();
+                layout();
             }
         }
 
         void render (frame<rgba> frame, xy shift=xy{}, uint8_t alpha=255)
         {
-            for (auto& g: glyphs)
+            for (auto& t: tokens)
             {
-                auto w = g.Width();
-                auto h = g.Height();
-                auto p = shift + offset + g.offset;
-                auto f = frame.crop(xywh(p.x, p.y, w, h));
-                g.render(f, xy{}, alpha);
+                t.render(frame, shift + offset, alpha);
             }
         }
 
-        //xywh bar (int place)
-        //{
-        //    if (place < 0 or
-        //        place >= length)
-        //        return xywh{};
-        //
-        //    for (auto& token : tokens) {
-        //        xywh r = token.bar(place, place+1);
-        //        if (r != xywh{}) return r + token.offset;
-        //        place -= token.glyphs.size(); }
-        //
-        //    return xywh{};
-        //}
-        //
-        //array<xywh> bars (int from, int upto)
-        //{
-        //    array<xywh> bars;
-        //    from = max(0, from);
-        //    for (auto& token : tokens)
-        //    {
-        //        xywh r = token.bar(from, upto) + token.offset;
-        //        from -= token.glyphs.size();
-        //        upto -= token.glyphs.size();
-        //        if (r.w == 0 or
-        //            r.h == 0)
-        //            continue;
-        //        if (bars.size() > 0
-        //        and bars.back().y == r.y
-        //        and bars.back().h == r.h)
-        //            bars.back() |= r; else
-        //            bars += r;
-        //    }
-        //    return bars;
-        //}
-        //
-        //int point (int x)
-        //{
-        //    int i = 0;
-        //    for (auto& token: tokens)
-        //        if (token.offset.x +
-        //            token.Width() > x) return
-        //            i + token.point(
-        //            x - token.offset.x);
-        //        else i += token.glyphs.size();
-        //
-        //    return length-1;
-        //}
+        array<xywh> bars (int from, int upto)
+        {
+            array<xywh> bars;
+            from = max(0, from);
+            for (auto& token : tokens)
+            {
+                xywh
+                r = token.bar(from, upto);
+                r += token.offset;
+                from -= token.glyphs.size();
+                upto -= token.glyphs.size();
+                if (r.w == 0 or
+                    r.h == 0)
+                    continue;
+                if (bars.size() > 0
+                and bars.back().y == r.y
+                and bars.back().h == r.h)
+                    bars.back() |= r; else
+                    bars += r;
+            }
+            return bars;
+        }
+        
+        int pointed (int x)
+        {
+            int i = 0;
+            for (auto& token: tokens)
+                if (token.offset.x +
+                    token.Width() > x) return
+                    i + token.pointed(
+                    x - token.offset.x);
+                else i += token.glyphs.size();
+        
+            return length-1;
+        }
     };
 } 

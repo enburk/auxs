@@ -205,7 +205,7 @@ widget<TestPixFonts>
 
 str lorem = 
 "Lorem ipsum dolor sit amet, consectetur "
-"adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n"
+"adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n\n"
 "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip "
 "ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit "
 "esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non "
@@ -276,12 +276,26 @@ widget<TestPixText>
                 int v = w/(j+1);
                 frame.crop(xywh(0, h/2,   v/4, h/4)).fill(rgba::red);
                 frame.crop(xywh(w-v/4, 0, v/4, h/4)).fill(rgba::red);
-                format.lwrap = array<xy>{xy(0, h/2), xy(v/4, h/4)};
-                format.rwrap = array<xy>{xy(v/4, h/4)};
+                format.lwrap = array<xy>{{0, h/2}, {v/4, h/4}};
+                format.rwrap = array<xy>{{v/4, h/4}};
             }
 
             text.layout();
             text.render(frame);
+
+            aux::vector<2> p1, p2;
+            p1.x = aux::random(0, frame.size.x-1);
+            p1.y = aux::random(0, frame.size.y-1);
+            p2.x = aux::random(0, frame.size.x-1);
+            p2.y = aux::random(0, frame.size.y-1);
+            auto t1 = text.pointed({int(p1.x),int(p1.y)}, false);
+            auto t2 = text.pointed({int(p2.x),int(p2.y)}, false);
+            for (xyxy r: text.bars({t1,t2}, false))
+            frame.crop(r).blend(rgba(0,128,128,64));
+            frame.blend(aux::circle(p1,2), rgba::blue);
+            frame.blend(aux::circle(p2,2), rgba::blue);
+            frame.blend(aux::circle(p1,3), rgba::blue, 2);
+            frame.blend(aux::circle(p2,3), rgba::blue, 2);
         }
     }
 };

@@ -57,14 +57,21 @@ namespace pix::text
         {
             int H = 0;
             auto f = columns.front().format;
+            f.height = max<int>();
+            int n = 0;
+
             for (auto& line: lines)
-            for (auto row: line.ptrrows(f)) {
-                columns.front().rows += row;
-                int h = row->Height();
-                line::skip(f.lwrap, h);
-                line::skip(f.rwrap, h);
-                f.height -= h;
-                H += h;
+            {
+                for (auto row: line.ptrrows(f))
+                {
+                    row->from.line = n;
+                    columns.front().rows += row;
+                    int h = row->Height();
+                    line::skip(f.lwrap, h);
+                    line::skip(f.rwrap, h);
+                    H += h;
+                }
+                n++;
             }
 
             int cc = format.columns;
@@ -101,6 +108,116 @@ namespace pix::text
             {
                 c.render(frame, shift + offset, alpha);
             }
+        }
+
+        auto bars (range range, bool virtual_space)
+        {
+            array<xywh> bars;
+ 
+            auto[from, upto] = range;
+            if  (from> upto) std::swap
+                (from, upto);
+
+            if (from.line < 0) from = place{};
+            if (upto.line >= lines.size()) {
+                upto.line  = lines.size()-1;
+                upto.offset = max<int>(); }
+        
+            for (;
+            from.line <= upto.line;
+            from.line++, from.offset = 0)
+            {
+                for (xywh r: lines[from.line].bars(
+                from.offset, from.line == upto.line ?
+                upto.offset : max<int>(), virtual_space))
+                {
+                    if (bars.size() > 0
+                    and bars.back().x == r.x
+                    and bars.back().w == r.w)
+                        bars.back() |= r; else
+                        bars += r;
+                }
+            }
+            return bars;
+        }
+        
+        place pointed (xy p, bool virtual_space)
+        {
+            if (p.x < 0) p.x = 0;
+        
+            for (auto& c: reverse(columns))
+                if (not c.rows.empty() and
+                    p.x >= c.offset.x) return
+                    c.pointed(p - c.offset,
+                        virtual_space);
+        
+            return {};
+        }
+
+        struct row_data
+        {
+            int length = 0;
+            int indent = 0;
+        };
+
+        auto rows()
+        {
+            int n = 0;
+            for (auto& line: lines)
+            n += line.rows.size();
+            return n;
+        }
+
+        auto row(int n)
+        {
+            for (auto& line: lines)
+            if (n >= line.rows.size())
+                n -= line.rows.size();
+            else return row_data{
+                line.rows[n].length,
+                line.rows[n].indent};
+            return row_data{};
+        }
+
+        place lines2rows(place p)
+        {
+            int r = 0;
+            int l = p.line;
+            int o = p.offset;
+
+            if (l > lines.size()-1)
+                l = lines.size()-1;
+            if (l < 0) return place{};
+
+            for (int i=0; i<l; i++)
+            r += lines[i].rows.size();
+
+            for (auto& row: lines[l].rows)
+                if (not row.last and
+                    o >= row.length) {
+                    o -= row.length;
+                    r++; }
+                else break;
+
+            return {r,o};
+        }
+
+        place rows2lines(place p)
+        {
+            int l = 0;
+            int r = p.line;
+            int o = p.offset;
+            for (auto& line: lines)
+            if (r >= line.rows.size()) {
+                r -= line.rows.size();
+                l++; }
+            else
+            {
+                for (int i=0; i<r; i++)
+                o += line.rows[i].length;
+                break;
+            }
+            return {l,o};
         }
     };
 }

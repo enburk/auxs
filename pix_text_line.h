@@ -67,9 +67,13 @@ namespace pix::text
         void format_eager ()
         {
             auto f = format;
-            rows += row{.format = f,
+            rows += row{
+            .style = style,
+            .format = f,
             .lpadding = lpadding + indent,
             .rpadding = rpadding};
+
+            int length = 0;
 
             for (auto solid: solids())
             while (not solid.empty())
@@ -83,22 +87,46 @@ namespace pix::text
                 skip(f.rwrap, h);
                 f.height -= h;
 
-                rows += row{.format = f,
+                length += rows.back().length;
+
+                rows += row{
+                .style = style,
+                .format = f,
                 .lpadding = lpadding,
-                .rpadding = rpadding};
+                .rpadding = rpadding,
+                .from = {0, length}};
             }
 
-            auto& r = rows.back();
-            if (r.solids.empty()) {
-                auto m = pix::metrics(style.style().font);
-                r.Ascent  = m.ascent;
-                r.Descent = m.descent;
-            }
+            auto m = pix::metrics(style.style().font);
+            if (rows.back().solids.empty()) {
+                rows.back().Ascent  = m.ascent;
+                rows.back().Descent = m.descent; }
         }
 
         void format_dynamic ()
         {
             format_eager();
+        }
+
+        auto bars (int from, int upto, bool virtual_space)
+        {
+            array<xywh> bars;
+            from = max(0, from);
+            for (auto& row : rows)
+            {
+                for (xywh r: row.bars(
+                from, upto, virtual_space))
+                {
+                    if (bars.size() > 0
+                    and bars.back().x == r.x
+                    and bars.back().w == r.w)
+                        bars.back() |= r; else
+                        bars += r;
+                }
+                from -= row.length;
+                upto -= row.length;
+            }
+            return bars;
         }
     };
 }

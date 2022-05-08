@@ -15,17 +15,37 @@ namespace pix::text
         token (str text, style_index style) : text(text), style(style)
         {
             for (auto text: aux::unicode::glyphs(text))
-            {
-                auto g = glyph(text, style);
-                metrics::operator += (g);
-                glyphs += g;
-            }
-            int x = 0;
+            glyphs += glyph(text, style);
+            layout();
+        }
+
+        void layout ()
+        {
+            metrics::operator = (metrics{});
+            for (auto& g: glyphs)
+            metrics::operator += (g);
+
+            advance = 0;
             for (auto& g: glyphs)
             {
-                g.offset.x = x;
+                g.offset.x = advance;
                 g.offset.y = Ascent - g.Ascent;
-                x += g.advance;
+                advance += g.advance;
+            }
+        }
+
+        void ellipt(int max_width)
+        {
+            while (not glyphs.empty())
+            {
+                while (
+                glyphs.back().text == " ")
+                glyphs.truncate();
+                glyphs += glyph(u8"…", style);
+                layout(); if (rborder <= max_width) return;
+                glyphs.truncate();
+                glyphs.truncate();
+                layout();
             }
         }
 

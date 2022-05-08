@@ -5,14 +5,16 @@ namespace pix::text
     struct row: metrics
     {
         array<solid> solids;
+        style_index style;
         format format;
         int lpadding = 0;
         int rpadding = 0;
         xy offset;
 
-        bool last = true;
+        place from;
         int length = 0;
         int indent = 0;
+        bool last = true;
 
         int max_width (int height)
         {
@@ -35,7 +37,7 @@ namespace pix::text
                 - r - rpadding;
         }
 
-        void add (token_range& tokens)
+        void add (array<token>::range_type& tokens)
         {
             solid s(tokens);
             metrics m = *this; m += s;
@@ -49,6 +51,7 @@ namespace pix::text
 
             tokens >>= tokens.size();
             metrics::operator = (m);
+            length += s.length;
             solids += s;
 
             if (m.rborder > w
@@ -96,7 +99,8 @@ namespace pix::text
             length = 0;
             indent = -1;
             for (auto& solid: solids)
-            for (auto& glyph: solid.glyphs)
+            for (auto& token: solid.tokens)
+            for (auto& glyph: token.glyphs)
             {
                 if (glyph.text != " "
                 and indent == -1)
@@ -159,6 +163,68 @@ namespace pix::text
             {
                 s.render(frame, shift + offset, alpha);
             }
+        }
+
+        array<xywh> bars (int from, int upto, bool virtual_space)
+        {
+            if (from <= 0
+            and upto == max<int>()
+            and last and virtual_space)
+            return array<xywh>{xywh(0,0,
+                max<int>(), Height())};
+
+            array<xywh> bars;
+            from = max(0, from);
+            for (auto& solid : solids)
+            {
+                for (xywh r: solid.bars(from, upto))
+                {
+                    r += solid.offset;
+                    if (bars.size() > 0
+                    and bars.back().x == r.x
+                    and bars.back().w == r.w)
+                        bars.back() |= r; else
+                        bars += r;
+                }
+                from -= solid.length;
+                upto -= solid.length;
+            }
+            if (upto > 0 and last and virtual_space)
+            {
+                if (from < 0) from = 0;
+                int n = min(upto - from, 10000);
+                glyph space(" ", style);
+                bars += xywh(advance, 0,
+                    space.advance * n,
+                    space.Height());
+            }
+            for (auto& bar: bars)
+            bar += offset;
+            return bars;
+        }
+
+        place pointed (int x, bool virtual_space)
+        {
+            int i = 0;
+            for (auto& solid: solids)
+                if (solid.offset.x +
+                    solid.Width() > x)
+                    return {
+                    from.line,
+                    from.offset +
+                    i + solid.pointed(
+                    x - solid.offset.x)};
+                else i += solid.length;
+
+            if (last and virtual_space)
+            {
+                pix::glyph space(" ", style);
+                int dx = x - advance;
+                int nx = dx/space.advance;
+                i += nx;
+            }
+
+            return {from.line, from.offset + i};
         }
     };
 }
