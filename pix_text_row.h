@@ -16,6 +16,11 @@ namespace pix::text
         int indent = 0;
         bool last = true;
 
+        row (style_index style = {}) : style(style)
+        {
+            layout();
+        }
+
         int max_width (int height)
         {
             int l = 0; int h = height;
@@ -63,6 +68,10 @@ namespace pix::text
         void layout ()
         {
             metrics::operator = (metrics{});
+            auto m = pix::metrics(style.style().font);
+            Ascent  = m.ascent;
+            Descent = m.descent;
+
             for (auto& s: solids)
             metrics::operator += (s);
 
@@ -123,23 +132,29 @@ namespace pix::text
                 if (h <= 0)
                     break;
             }
-            offset.x = x + lpadding;
+            for (auto& s: solids)
+            s.offset.x += x + lpadding;
 
             int align = format.alignment.x;
             int W = max_width(Height());
-            int w = width();
+            int w = rborder;
 
             if (align == left or
                (align <= justify_left and last))
                 return;
 
+            advance = W;
+            rborder = W;
+
             if (align == center and W > w) {
-                offset.x += W/2 - w/2;
+                for (auto& s: solids)
+                s.offset.x += W/2 - w/2;
                 return; }
 
             if (align == right or
                (align >= justify_right and last)) {
-                offset.x += W - w;
+                for (auto& s: solids)
+                s.offset.x += W - w;
                 return; }
 
             int n = solids.size();
@@ -150,11 +165,9 @@ namespace pix::text
             int e = (W - w) % (n-1);
 
             for (int i=0; i<n; i++)
-                solids[i].offset.x +=
-                d*i + (i >= n-e ? 1 : 0);
-
-            advance = W;
-            rborder = W;
+            solids[i].offset.x += d*i;
+            for (int i=0; i<e; i++)
+            solids[n-e+i].offset.x += i;
         }
 
         void render (frame<rgba> frame, xy shift=xy{}, uint8_t alpha=255)

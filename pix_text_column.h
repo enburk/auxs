@@ -22,11 +22,10 @@ namespace pix::text
             for (auto row: rows)
             {
                 row->align();
-                row->offset.x += offset.x; // !!!
+                row->offset.x = offset.x; // !!!
                 row->offset.y = size.y;
                 size.y += row->Height();
                 size.x = max(size.x,
-                row->offset.x +
                 row->Width());
             }
         }
@@ -43,18 +42,27 @@ namespace pix::text
         {
             if (rows.empty()) return {};
 
-            row r{.offset=xy{0,p.y}};
-            auto i = rows.lower_bound(&r,
-                [](auto a, auto b){ return
-                a->offset.y <
-                b->offset.y; });
+            int first = 0;
+            int len = rows.size();
+            while (len > 0) {
+                int half = len / 2;
+                int middle = first + half;
+                if (rows[middle]->offset.y +
+                    rows[middle]->Height() < p.y) {
+                    first = middle + 1;
+                    len = len - half - 1;
+                } else
+                    len = half;
+            }
+            
+            if (p.y < 0) p.x = 0;
 
-            if (i == rows.end()) {
+            if (first == rows.size()) {
                 p.x = max<int>();
-                i--; }
+                first--; }
 
-            return (*i)->pointed(p.x,
-                virtual_space);
+            return rows[first]->pointed(
+                p.x, virtual_space);
         }
     };
 }

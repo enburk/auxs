@@ -372,6 +372,15 @@ widget<TestPixTextX>
 
             text.layout();
             text.render(frame);
+
+            auto t1 = pix::text::place{0, j+1};
+            auto t2 = pix::text::place{0, j+1+j+1};
+            for (xyxy r: text.bars({t1,t2}, false))
+            frame.crop(r).blend(rgba(0,128,128,64));
+            auto t3 = pix::text::place{2, j+1};
+            auto t4 = pix::text::place{2, j+1+j+1};
+            for (xyxy r: text.bars({t3,t4}, false))
+            frame.crop(r).blend(rgba(0,128,128,64));
         }
     }
 };

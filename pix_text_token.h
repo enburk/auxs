@@ -78,7 +78,7 @@ namespace pix::text
             int i = 0;
             for (auto g : glyphs)
                 if (g.offset.x +
-                    g.Width() > x)
+                    g.Width()/2 > x)
                     return i;
                     else i++;
 

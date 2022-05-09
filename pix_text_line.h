@@ -67,11 +67,10 @@ namespace pix::text
         void format_eager ()
         {
             auto f = format;
-            rows += row{
-            .style = style,
-            .format = f,
-            .lpadding = lpadding + indent,
-            .rpadding = rpadding};
+            rows += row(style);
+            rows.back().format = f;
+            rows.back().lpadding = lpadding + indent;
+            rows.back().rpadding = rpadding;
 
             int length = 0;
 
@@ -89,18 +88,12 @@ namespace pix::text
 
                 length += rows.back().length;
 
-                rows += row{
-                .style = style,
-                .format = f,
-                .lpadding = lpadding,
-                .rpadding = rpadding,
-                .from = {0, length}};
+                rows += row(style);
+                rows.back().format = f;
+                rows.back().lpadding = lpadding;
+                rows.back().rpadding = rpadding;
+                rows.back().from = {0, length};
             }
-
-            auto m = pix::metrics(style.style().font);
-            if (rows.back().solids.empty()) {
-                rows.back().Ascent  = m.ascent;
-                rows.back().Descent = m.descent; }
         }
 
         void format_dynamic ()
