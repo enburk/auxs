@@ -1,15 +1,13 @@
 #pragma once
-#include "doc.h"
-#include "doc_view.h"
 #include "doc_html_utils.h"
 namespace doc::html
 {
-    using namespace doc::view;
     struct model : doc::model
     {
         str source;
         array<entity> entities;
-        array<line>& lines = view_lines;
+        array<pix::text::line>& lines = block.lines;
+        typedef struct pix::text::line::padding padding;
 
         str  get_text () override { return untagged(source); }
         str  get_html () override { return source; }
@@ -30,14 +28,14 @@ namespace doc::html
         void add_text (str text) override { set_html(source + encoded(text)); }
         void add_html (str html) override { set_html(source + html); }
 
-        void set (style s, format f) override
+        void set (style s) override
         {
             lines.clear();
             for (auto entity : entities)
-                proceed(entity, s, f, "");
+                proceed(entity, s, padding{}, "");
         }
 
-        void proceed (entity const& entity, style style, format format, str link)
+        void proceed (entity const& entity, style style, padding padding, str link)
         {
             std::map<str,str> attr_style;
 
@@ -74,21 +72,23 @@ namespace doc::html
             if (entity.kind == "text")
             {
                 if (lines.size() == 0 or
-                    lines.back().format != format)
-                    lines += line{format, style_index(style)};
+                    lines.back().padding != padding)
+                    lines += pix::text::line{
+                    style_index(style), padding};
 
                 for (auto token : entity.head)
                     lines.back().tokens +=
-                        doc::view::token{token.text,
+                        pix::text::token{token.text,
                             style_index(style),
-                            "", link};
+                            link, token.info};
             }
             else
             if (entity.name == "br")
             {
                 if (lines.size() == 0)
-                lines += line{format, style_index(style)};
-                lines += line{format, style_index(style)};
+                lines += pix::text::line{style_index(style), padding};
+                lines.back().style = style_index(style); // could be empty
+                lines += pix::text::line{style_index(style), padding};
             }
             else
             if (entity.name == "h4") {
@@ -175,7 +175,7 @@ namespace doc::html
             else
             if (entity.name == "blockquote")
             {
-                format.lpadding += 3*height;
+                padding.left += 3*height;
             }
             else
             if (entity.name == "div")
@@ -183,7 +183,7 @@ namespace doc::html
                 for (auto [key, val] : attr_style)
                 {
                     if (key == "margin-left") {
-                        format.lpadding = heights(val);
+                        padding.left = heights(val);
                     }
 
                     if (key == "line-height")
@@ -217,13 +217,13 @@ namespace doc::html
             }
 
             for (auto e : entity.body)
-                proceed(e, style, format, link);
+                proceed(e, style, padding, link);
 
             if (entity.name == "h4") {
                 if (lines.size() > 0 and
                     lines.back().tokens.size() > 0)
-                    lines += line{format,
-                    style_index(style)};
+                    lines += pix::text::line{
+                    style_index(style), padding};
             }
         }
     };

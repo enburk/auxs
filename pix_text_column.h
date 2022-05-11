@@ -28,6 +28,22 @@ namespace pix::text
                 size.x = max(size.x,
                 row->Width());
             }
+
+            if (format.alignment.y == center
+            and format.height > size.y ) { int d = 
+                format.height - size.y;
+                size.y = format.height;
+                for (auto row: rows)
+                row->offset.y += d/2;
+            }
+            else
+            if (format.alignment.y == bottom
+            and format.height > size.y ) { int d = 
+                format.height - size.y;
+                size.y = format.height;
+                for (auto row: rows)
+                row->offset.y += d;
+            }
         }
 
         void render (frame<rgba> frame, xy shift=xy{}, uint8_t alpha=255)

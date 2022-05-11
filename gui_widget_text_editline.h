@@ -7,8 +7,8 @@ namespace gui::text
     {
         editor editor;
         canvas& canvas = editor.canvas;
-        view::text_type& text = editor.text;
-        view::html_type& html = editor.html;
+        box::text_type& text = editor.text;
+        box::html_type& html = editor.html;
         property<rgba>& color = editor.color;
         binary_property<font>& font = editor.font;
         binary_property<style>& style = editor.style;

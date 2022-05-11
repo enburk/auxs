@@ -42,7 +42,6 @@
     <ClInclude Include="doc_text_model_b.h" />
     <ClInclude Include="doc_text_repo.h" />
     <ClInclude Include="doc_text_text.h" />
-    <ClInclude Include="doc_view.h" />
     <ClInclude Include="dox_cpp_lexica.h" />
     <ClInclude Include="dox_cpp_model.h" />
     <ClInclude Include="dox_cpp_syntax.h" />
@@ -59,11 +58,7 @@
     <ClInclude Include="gui_widget_player.h" />
     <ClInclude Include="gui_widget_scroller.h" />
     <ClInclude Include="gui_widget_text_aux.h" />
-    <ClInclude Include="gui_widget_text_aux_line.h" />
-    <ClInclude Include="gui_widget_text_aux_lines.h" />
-    <ClInclude Include="gui_widget_text_aux_row.h" />
-    <ClInclude Include="gui_widget_text_aux_solid.h" />
-    <ClInclude Include="gui_widget_text_aux_token.h" />
+    <ClInclude Include="gui_widget_text_box.h" />
     <ClInclude Include="gui_widget_text_cell.h" />
     <ClInclude Include="gui_widget_text_editline.h" />
     <ClInclude Include="gui_widget_text_editor.h" />

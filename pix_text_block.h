@@ -13,9 +13,19 @@ namespace pix::text
 
         void layout ()
         {
+            if (format.width  < 0)
+                format.width  = 0;
+            if (format.height < 0)
+                format.height = 0;
+
             if (format.width == max<int>() and
                (format.alignment.x != left or
                 format.columns > 1)) throw
+                std::out_of_range(
+                "bad text format");
+
+            if (format.height == max<int>() and
+                format.alignment.y != top) throw
                 std::out_of_range(
                 "bad text format");
 
@@ -45,11 +55,12 @@ namespace pix::text
                 format_dynamic(); else
                 format_eager();
 
+            size = xy{};
             for (auto& c: columns)
             {
-                size.y = max(
-                size.y, c.size.y);
                 c.align();
+                size.x = max(size.x, c.size.x + c.offset.x);
+                size.y = max(size.y, c.size.y + c.offset.y);
             }
         }
 
@@ -139,6 +150,14 @@ namespace pix::text
                 }
             }
             return bars;
+        }
+
+        xywh bar (place place)
+        {
+            auto from = place;
+            auto upto = place; upto.offset++;
+            auto rr = bars({from, upto}, true);
+            return rr.empty() ? xywh{} : rr.front();
         }
         
         place pointed (xy p, bool virtual_space)

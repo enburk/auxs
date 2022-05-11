@@ -1,6 +1,5 @@
 #pragma once
 #include <filesystem>
-#include "doc_view.h"
 #include "pix_text_block.h"
 #include "doc_text_model_b.h"
 namespace doc::text
@@ -89,17 +88,20 @@ namespace doc::text
         void add_text (str s) override { lines += base{s}.lines; tokenize(); }
         void add_html (str s) override { throw std::runtime_error("unsupported"); }
 
-        void set (doc::view::style s, doc::view::format f) override
+        void set (style s) override
         {
-            auto i = pix::text::style_index(s);
+            auto i = style_index(s);
         
-            view_lines = {doc::view::line{f, i}};
+            block.lines.clear();
+            block.lines += pix::text::line{};
+            block.lines.back().style = i;
 
             for (const auto & t : tokens)
             {
                 if (t.text == "\n")
                 {
-                    view_lines += {doc::view::line{f, i}};
+                    block.lines += pix::text::line{};
+                    block.lines.back().style = i;
                 }
                 else
                 {
@@ -108,8 +110,9 @@ namespace doc::text
                     if (it != styles.end())
                         style = it->second;
             
-                    view_lines.back().tokens +=
-                        doc::view::token{t.text, style, t.info};
+                    block.lines.back().tokens +=
+                    pix::text::token{t.text, style};
+                    block.lines.back().tokens.back().info = t.info;
                 }
             }
         }

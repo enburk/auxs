@@ -11,8 +11,8 @@ namespace gui::text
         view& view = page.view;
         scroll& scroll = page.scroll;
         canvas& canvas = page.canvas;
-        view::text_type& text = page.text;
-        view::html_type& html = page.html;
+        box::text_type& text = page.text;
+        box::html_type& html = page.html;
         property<rgba>& color = page.color;
         binary_property<font>& font = page.font;
         binary_property<style>& style = page.style;
@@ -32,7 +32,7 @@ namespace gui::text
         property<bool>& update_layout = page.update_layout;
         property<bool> read_only = false;
 
-        doc::model*& model = view.model;
+        doc::model*& model = view.cell.box.model;
         doc::text::model model_;
 
         editor ()
@@ -131,7 +131,7 @@ namespace gui::text
                 else
                 if (n >= 1) {
                     auto [from, upto] = ss[n-1];
-                    if (upto.line >= view.cell.lines.size()-1) return;
+                    if (upto.line >= view.cell.rows()-1) return;
                     ss += range{{from.line+1, from.offset},
                                 {upto.line+1, upto.offset}};
                 }

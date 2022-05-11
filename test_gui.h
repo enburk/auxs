@@ -45,19 +45,19 @@ widget<TestGui>
             {
                 test("widgets.size");
                 {
-                    auto canvas = gui::canvas{};
-                    auto glyph1 = gui::text::glyph{};
-                    auto token1 = gui::text::token{};
-                    auto token2 = gui::text::token{};
-                    token2 = doc::view::token{ "0123456789", pix::text::style_index{}, "", ""};
-                    oops(out(sizeof canvas)) { "432" };
-                    oops(out(sizeof glyph1)) { "440" };
-                    oops(out(sizeof token1)) { "520" };
-                    oops(out(sizeof token2)) { "520" };
+                    //auto canvas = gui::canvas{};
+                    //auto glyph1 = gui::text::glyph{};
+                    //auto token1 = gui::text::token{};
+                    //auto token2 = gui::text::token{};
+                    //token2 = doc::view::token{ "0123456789", pix::text::style_index{}, "", ""};
+                    //oops(out(sizeof canvas)) { "432" };
+                    //oops(out(sizeof glyph1)) { "440" };
+                    //oops(out(sizeof token1)) { "520" };
+                    //oops(out(sizeof token2)) { "520" };
                     oops(out(gui::metrics::text::height)) { "24" };
                     oops(out(gui::metrics::line::width)) { "1" };
-                    oops(out(token2.coord.now.w/10)) { "13" };
-                    oops(out(token2.coord.now.h)) { "32" };
+                    //oops(out(token2.coord.now.w/10)) { "13" };
+                    //oops(out(token2.coord.now.h)) { "32" };
                     oops(out(coord.now.w)) { "3594" };
                     oops(out(coord.now.h)) { "1972" };
                 }

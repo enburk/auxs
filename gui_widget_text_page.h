@@ -19,8 +19,8 @@ namespace gui::text
         page() { focusable.now = true; }
 
         canvas& canvas = view.canvas;
-        view::text_type& text = view.text;
-        view::html_type& html = view.html;
+        box::text_type& text = view.text;
+        box::html_type& html = view.html;
         property<rgba>& color = view.color;
         binary_property<font>& font = view.font;
         binary_property<style>& style = view.style;
@@ -323,7 +323,7 @@ namespace gui::text
                 else
                 {
                     select_point = p;
-                    touch_place = view.point(p);
+                    touch_place = view.pointed(p);
                 }
                 touch_point = p;
                 touch_time = time::now;
@@ -351,7 +351,7 @@ namespace gui::text
                     select_point = p;
                     range selection;
                     selection.from = touch_place;
-                    selection.upto = view.point(p);
+                    selection.upto = view.pointed(p);
                     selections = array<range>{selection};
                     //info.hide();
                 }

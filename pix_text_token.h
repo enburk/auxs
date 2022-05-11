@@ -12,12 +12,15 @@ namespace pix::text
         xy offset;
 
         token () = default;
-        token (str text, style_index style) : text(text), style(style)
+        token (str text, style_index style, str link="", str info="")
+            : text(text), style(style), link(link), info(info)
         {
             for (auto text: aux::unicode::glyphs(text))
             glyphs += glyph(text, style);
             layout();
         }
+
+        int size () { return glyphs.size(); }
 
         void layout ()
         {
@@ -39,6 +42,7 @@ namespace pix::text
             while (not glyphs.empty())
             {
                 while (
+                glyphs.size() > 0 and
                 glyphs.back().text == " ")
                 glyphs.truncate();
                 glyphs += glyph(u8"…", style);

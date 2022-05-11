@@ -32,7 +32,7 @@ namespace pix::text
                 t.offset.x = advance;
                 t.offset.y = Ascent - t.Ascent;
                 advance += t.advance;
-                length += t.glyphs.size();
+                length += t.size();
             }
         }
 
@@ -65,8 +65,8 @@ namespace pix::text
                 xywh
                 r = token.bar(from, upto);
                 r += token.offset;
-                from -= token.glyphs.size();
-                upto -= token.glyphs.size();
+                from -= token.size();
+                upto -= token.size();
                 if (r.w == 0 or
                     r.h == 0)
                     continue;
@@ -87,7 +87,7 @@ namespace pix::text
                     token.Width() > x) return
                     i + token.pointed(
                     x - token.offset.x);
-                else i += token.glyphs.size();
+                else i += token.size();
         
             return length-1;
         }

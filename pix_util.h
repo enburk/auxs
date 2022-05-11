@@ -1,6 +1,6 @@
 #pragma once
-#include "pix_text.h"
 #include "pix_draw.h"
+#include "pix_text_block.h"
 namespace pix::util
 {
     auto node (str s, rgba outer, rgba inner, rgba text, int d = 0, font f=font{})

@@ -1,20 +1,43 @@
 #pragma once
-#include "aux_abc.h"
+#include <map>
+#include "pix_abc.h"
 namespace doc
 {
-    struct place
-    {
-        int line = 0;
-        int offset = 0;
-        auto operator <=> (const place & p) const = default;
-    };
+    using pix::font;
+    using pix::text::place;
+    using pix::text::range;
+    using pix::text::style;
+    using pix::text::style_index;
 
-    struct range
+    struct model : polymorphic
     {
-        place from, upto;
-        bool empty () const { return from == upto; }
-        bool operator == (const range & r) const = default;
-        bool operator != (const range & r) const = default;
+        pix::text::block block;
+        //array<pix::text::block> blocks;
+        array<range> selections;
+
+        static inline
+            std::map<str,
+            style_index>
+            styles;
+
+        virtual void set_text (str) {}
+        virtual void set_html (str) {}
+        virtual void add_text (str) {}
+        virtual void add_html (str) {}
+        virtual str  get_text () { return ""; }
+        virtual str  get_html () { return ""; }
+
+        virtual place front () const { return place{}; }
+        virtual place back  () const { return place{}; }
+
+        virtual void set (pix::text::style) {}
+
+        virtual bool undo        () { return false; }
+        virtual bool redo        () { return false; }
+        virtual bool erase       () { return false; }
+        virtual bool backspace   () { return false; }
+        virtual bool insert (str s) { return false; }
+        virtual bool ready       () { return false; }
     };
 }
   

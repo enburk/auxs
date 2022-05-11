@@ -259,10 +259,10 @@ widget<TestPixText>
 
             format.alignment =
             k == 0? xy{pix::left,           pix::top}:
-            k == 1? xy{pix::center,         pix::top}:
+            k == 1? xy{pix::center,         pix::center}:
             k == 2? xy{pix::justify_left-1, pix::top}:
             k == 3? xy{pix::justify_left,   pix::top}:
-            k == 4? xy{pix::right,          pix::top}: xy{};
+            k == 4? xy{pix::right,          pix::bottom}: xy{};
             format.ellipsis = true;
             format.width    = frame.size.x;
             format.height   = frame.size.y;
@@ -350,9 +350,9 @@ widget<TestPixTextX>
 
             format.alignment =
             k == 0? xy{pix::left,           pix::top}:
-            k == 1? xy{pix::center,         pix::top}:
+            k == 1? xy{pix::center,         pix::center}:
             k == 2? xy{pix::justify_left,   pix::top}:
-            k == 3? xy{pix::right,          pix::top}: xy{};
+            k == 3? xy{pix::right,          pix::bottom}: xy{};
             format.ellipsis = true;
             format.width    = frame.size.x;
             format.height   = frame.size.y;

@@ -96,9 +96,6 @@
     <ClInclude Include="doc_text_text.h">
       <Filter>doc</Filter>
     </ClInclude>
-    <ClInclude Include="doc_view.h">
-      <Filter>doc</Filter>
-    </ClInclude>
     <ClInclude Include="gui_colors.h">
       <Filter>gui</Filter>
     </ClInclude>
@@ -127,12 +124,6 @@
       <Filter>gui</Filter>
     </ClInclude>
     <ClInclude Include="gui_widget_text_aux.h">
-      <Filter>gui</Filter>
-    </ClInclude>
-    <ClInclude Include="gui_widget_text_aux_line.h">
-      <Filter>gui</Filter>
-    </ClInclude>
-    <ClInclude Include="gui_widget_text_aux_lines.h">
       <Filter>gui</Filter>
     </ClInclude>
     <ClInclude Include="gui_widget_text_cell.h">
@@ -203,15 +194,6 @@
     </ClInclude>
     <ClInclude Include="test_pix.h">
       <Filter>test</Filter>
-    </ClInclude>
-    <ClInclude Include="gui_widget_text_aux_row.h">
-      <Filter>gui</Filter>
-    </ClInclude>
-    <ClInclude Include="gui_widget_text_aux_solid.h">
-      <Filter>gui</Filter>
-    </ClInclude>
-    <ClInclude Include="gui_widget_text_aux_token.h">
-      <Filter>gui</Filter>
     </ClInclude>
     <ClInclude Include="test.h">
       <Filter>test</Filter>
@@ -311,6 +293,9 @@
     </ClInclude>
     <ClInclude Include="pix_text_column.h">
       <Filter>pix</Filter>
+    </ClInclude>
+    <ClInclude Include="gui_widget_text_box.h">
+      <Filter>gui</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

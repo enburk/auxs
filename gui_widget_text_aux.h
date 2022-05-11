@@ -1,5 +1,4 @@
 #pragma once
-#include "doc_view.h"
 #include "gui_widgetarium.h"
 #include "gui_widget_canvas.h"
 namespace gui::text
@@ -8,9 +7,9 @@ namespace gui::text
     using pix::text::style;
     using pix::text::style_index;
     using pix::text::metrics;
-    using doc::view::format;
-    using doc::place;
-    using doc::range;
+    using pix::text::format;
+    using pix::text::place;
+    using pix::text::range;
 
     struct glyph:
     widget<glyph>

@@ -4,17 +4,24 @@ namespace pix::text
 {
     struct line
     {
+        style_index style;
+        struct padding
+        {
+            int left  = 0;
+            int right = 0;
+            int first = 0;
+            bool operator == (padding const&) const = default;
+            bool operator != (padding const&) const = default;
+        };
+        padding padding;
+
         array<token> tokens;
         array<row> rows;
-
-        style_index style;
-        int lpadding = 0;
-        int rpadding = 0;
-        int indent   = 0;
 
         format format;
         bool modified = true;
         int number = -1;
+        int length = 0;
 
         generator<row*> ptrrows (pix::text::format f)
         {
@@ -69,10 +76,10 @@ namespace pix::text
             auto f = format;
             rows += row(style);
             rows.back().format = f;
-            rows.back().lpadding = lpadding + indent;
-            rows.back().rpadding = rpadding;
+            rows.back().lpadding = padding.left + padding.first;
+            rows.back().rpadding = padding.right;
 
-            int length = 0;
+            length = 0;
 
             for (auto solid: solids())
             while (not solid.empty())
@@ -90,8 +97,8 @@ namespace pix::text
 
                 rows += row(style);
                 rows.back().format = f;
-                rows.back().lpadding = lpadding;
-                rows.back().rpadding = rpadding;
+                rows.back().lpadding = padding.left;
+                rows.back().rpadding = padding.right;
                 rows.back().from = {0, length};
             }
         }

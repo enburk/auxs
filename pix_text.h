@@ -97,7 +97,7 @@ namespace pix
             int width  = max<int>();
             int height = max<int>();
 
-            xy alignment = xy{center, center};
+            xy alignment = xy{left, top};
 
             array<xy> lwrap;
             array<xy> rwrap;

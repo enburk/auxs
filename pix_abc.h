@@ -6,8 +6,6 @@
 #include "pix_process.h"
 #include "pix_draw.h"
 #include "pix_text.h"
-#include "pix_text_token.h"
-#include "pix_text_solid.h"
 #include "pix_util.h"
 
 using pix::xy;

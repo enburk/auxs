@@ -1,6 +1,5 @@
 #pragma once
-#include "doc_html_model.h"
-#include "gui_widget_text_aux_lines.h"
+#include "gui_widget_text_box.h"
 namespace gui::text
 {
     struct cell:
@@ -10,7 +9,7 @@ namespace gui::text
         using color_bars = widgetarium<canvas>;
 
         color_bars highlight_bars;
-        color_bars selection_bars; lines lines;
+        color_bars selection_bars; box box;
         widgetarium<caret> carets;
 
         unary_property<array<range>> highlights;
@@ -19,13 +18,15 @@ namespace gui::text
         binary_property<bool> virtual_space = false;
         binary_property<bool> insert_mode = true;
 
-        void fill(array<doc::view::line> data)
-        {
-            lines.fill(std::move(data));
-            resize(xy(virtual_space.now? max<int>()/2:
-                lines.coord.now.size.x,
-                lines.coord.now.size.y));
-        }
+        box::text_type& text = box.text;
+        box::html_type& html = box.html;
+        property<rgba>& color = box.color;
+        binary_property<font>& font = box.font;
+        binary_property<style>& style = box.style;
+        binary_property<format>& format = box.format;
+        property<bool>& update_text   = box.update_text;
+        property<bool>& update_colors = box.update_colors;
+        property<bool>& update_layout = box.update_layout;
 
         void on_change (void* what) override
         {
@@ -39,11 +40,22 @@ namespace gui::text
                 carets.coord = r;
             }
 
+            if (what == &update_text
+            or  what == &update_layout)
+            {
+                resize(xy(virtual_space.now? max<int>()/2:
+                box.coord.now.size.x,
+                box.coord.now.size.y));
+
+                highlights = array<range>{};
+                selections = box.model->selections;
+            }
+
             if (what == &highlights)
             {
                 int n = 0;
                 for (auto range: highlights.now)
-                for (xywh r: lines.bars(range, virtual_space)) {
+                for (xywh r: bars(range)) {
                     auto& bar = highlight_bars(n++);
                     bar.color = skins[skin.now].highlight.first;
                     bar.coord = r; }
@@ -55,7 +67,7 @@ namespace gui::text
             {
                 int n = 0;
                 for (auto range: selections.now)
-                for (xywh r: lines.bars(range, virtual_space)) {
+                for (xywh r: bars(range)) {
                     auto& bar = selection_bars(n++);
                     bar.color = skins[skin.now].selection.first;
                     bar.coord = r; }
@@ -67,10 +79,12 @@ namespace gui::text
             or  what == &insert_mode
             or  what == &focus_on)
             {
+                box.model->selections = selections.now;
+
                 int n = 0;
                 for (auto range: selections.now)
-                    carets(n++).coord = lines.bar(
-                        range.upto, true); // could be after end of line
+                    carets(n++).coord = box.model->block.bar(
+                        range.upto); // could be after the end of line
 
                 carets.truncate(n);
 
@@ -85,7 +99,7 @@ namespace gui::text
 
         str selected () const
         {
-            str s;
+            str s; auto& lines = box.model->block.lines;
 
             for (auto [from, upto] : selections.now)
             {
@@ -96,12 +110,12 @@ namespace gui::text
                     if (from.line >= lines.size()) break;
                     int from_offset = from.offset;
                     int upto_offset = from.line == upto.line ?
-                        upto.offset : lines(from.line).length;
+                        upto.offset : lines[from.line].length;
                     if (from_offset >= upto_offset) continue;
 
                     int offset = 0;
 
-                    for (auto & token : lines(from.line))
+                    for (auto & token : lines[from.line].tokens)
                     {
                         if (upto_offset <= offset) break;
                         if (from_offset <= offset + token.size() - 1)
@@ -122,20 +136,17 @@ namespace gui::text
             return s;
         }
 
-        xywh bar(place place) {
-            return lines.bar(place,
-                virtual_space.now); }
-
         generator<xywh> bars(range range) {
-            for (xywh bar: lines.bars(range, virtual_space))
+            for (xywh bar: box.model->block.
+                bars(range, virtual_space))
                 co_yield bar; }
 
-        place point (xy p) { return lines.
-            point(p, virtual_space.now); }
+        place pointed (xy p) { return box.model->block.
+            pointed(p, virtual_space.now); }
 
-        auto rows() { return lines.rows(); }
-        auto row(int n) { return lines.row(n); }
-        place lines2rows(place p) { return lines.lines2rows(p); }
-        place rows2lines(place p) { return lines.rows2lines(p); }
+        auto rows() { return box.model->block.rows(); }
+        auto row(int n) { return box.model->block.row(n); }
+        place lines2rows(place p) { return box.model->block.lines2rows(p); }
+        place rows2lines(place p) { return box.model->block.rows2lines(p); }
     };
 }
