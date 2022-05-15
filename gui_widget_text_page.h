@@ -18,6 +18,11 @@ namespace gui::text
 
         page() { focusable.now = true; }
 
+        binary_property<bool> infotip = false;
+
+        binary_property<str> link;
+        binary_property<rgba> link_color;
+
         canvas& canvas = view.canvas;
         box::text_type& text = view.text;
         box::html_type& html = view.html;
@@ -38,8 +43,6 @@ namespace gui::text
         property<bool>& update_text = view.update_text;
         property<bool>& update_colors = view.update_colors;
         property<bool>& update_layout = view.update_layout;
-
-        binary_property<bool> infotip = false;
 
         void on_change (void* what) override
         {

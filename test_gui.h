@@ -96,7 +96,7 @@ widget<TestGuiColors>
             {
                 int nn = gui::palettes_names.size()/2;
                 int nny = H / h / 10; if (nny == 0) nny = 1;
-                int nnx = nn / nny;
+                int nnx = (nn+nny-1) / nny;
                 int w = W / nnx;
                 int n = 0;
 
