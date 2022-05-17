@@ -1,11 +1,13 @@
 #pragma once
+#include "aux_unittest.h"
 #include "gui_widget_console.h"
 #include "gui_widget_geometry.h"
 using namespace std::literals::chrono_literals;
 using namespace pix;
 using gui::widget;
 
-str Lorem = "<b>Lorem ipsum</b><br>"
+str Lorem =
+"<b><a href=\"lorem\">Lorem</a> <a href=\"ipsum\">ipsum</a></b><br>"
 "Lorem ipsum dolor sit amet, <font color=#008000>consectetur</font> "
 "<font color=#000080>adipiscing</font> <i>elit</i>, sed do eiusmod tempor incididunt "
 "<font color=#800000>ut labore et dolore</font> <b>magna <i>aliqua.</i></b> "

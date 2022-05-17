@@ -1,5 +1,6 @@
 #pragma once
 #include <numbers>
+#include <optional>
 #include "aux_aux.h"
 namespace aux
 {

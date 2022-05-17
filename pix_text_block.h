@@ -173,6 +173,82 @@ namespace pix::text
             return {};
         }
 
+        token* hovered_token (xy p)
+        {
+            for (auto& column: columns)
+            if (xywh(column.offset, column.size).includes(p))
+            {
+                int first = 0;
+                int len = column.rows.size();
+                while (len > 0) {
+                    int half = len / 2;
+                    int middle = first + half;
+                    if (column.rows[middle]->offset.y +
+                        column.rows[middle]->Height() < p.y) {
+                        first = middle + 1;
+                        len = len - half - 1;
+                    } else
+                        len = half;
+                }
+
+                if (first == column.rows.size())
+                    return nullptr;
+
+                auto& row = column.rows[first];
+                if (p.y < row->offset.y)
+                    return nullptr;
+
+                int x = p.x - row->offset.x;
+                if (x < 0 or x >= row->Width())
+                    return nullptr;
+
+                for (auto& solid: row->solids)
+                for (auto& token: solid.tokens)
+                if (x >= solid.offset.x + token.offset.x
+                and x <= solid.offset.x + token.offset.x + token.rborder)
+                return &token;
+            }
+
+            return nullptr;
+        }
+
+        str link (xy p)
+        {
+            if (not hovered_token(p)) return "";
+            auto [l, o] = pointed(p, false);
+            if (l < 0 or l >= lines.size())
+                return "";
+
+            auto& line = lines[l];
+            for (auto [i, token]: enumerate(line.tokens))
+            if  (o <  token.size()) return token.link;
+            else o -= token.size();
+            return "";
+        }
+
+        str info (xy p)
+        {
+            if (not hovered_token(p)) return "";
+            auto [l, o] = pointed(p, false);
+            if (l < 0 or l >= lines.size())
+                return "";
+
+            auto& line = lines[l];
+            for (auto [i, token]: enumerate(line.tokens))
+            if  (o <  token.size()) return token.info;
+            else o -= token.size();
+            return "";
+        }
+
+        generator<token*> tokens ()
+        {
+            for (auto& column: columns)
+            for (auto& row: column.rows)
+            for (auto& solid: row->solids)
+            for (auto& token: solid.tokens)
+            co_yield & token;
+        }
+
         struct row_data
         {
             int length = 0;

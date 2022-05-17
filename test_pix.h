@@ -1,4 +1,5 @@
 #pragma once
+#include "aux_unittest.h"
 #include "gui_widget_console.h"
 using namespace pix;
 using gui::widget;

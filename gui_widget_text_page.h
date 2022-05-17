@@ -15,13 +15,12 @@ namespace gui::text
     {
         view view;
         scroll scroll;
+        str link;
 
         page() { focusable.now = true; }
 
-        binary_property<bool> infotip = false;
 
-        binary_property<str> link;
-        binary_property<rgba> link_color;
+        binary_property<bool> infotip = false;
 
         canvas& canvas = view.canvas;
         box::text_type& text = view.text;
@@ -312,7 +311,7 @@ namespace gui::text
         {
             if (button == "right") return;
             if (button != "left") return;
-            if (down && !touch)
+            if (down and not touch)
             {
                 if (touch_point == p and time::now -
                     touch_time < 1000ms) // double click
@@ -327,6 +326,9 @@ namespace gui::text
                 {
                     select_point = p;
                     touch_place = view.pointed(p);
+                    auto& block = view.cell.box.model->block;
+                    link = block.link(p - view.shift);
+                    if (link != "") notify(&link);
                 }
                 touch_point = p;
                 touch_time = time::now;
@@ -347,35 +349,79 @@ namespace gui::text
             inside_selection ? "noway" : "arrow" :
             inside_selection ? "arrow" : "editor";
 
-            if (!drag_and_drop)
+            if (drag_and_drop)
             {
-                if (touch)
-                {
-                    select_point = p;
-                    range selection;
-                    selection.from = touch_place;
-                    selection.upto = view.pointed(p);
-                    selections = array<range>{selection};
-                    //info.hide();
-                }
-                else if (infotip.now)
-                {
-                    //if (auto token = view.target(p); token && token->info != "")
-                    //{
-                    //    xywh r = view.cell.bar(view.point(p).from);
-                    //    info.hide(); r.w = r.h*100;
-                    //    info.alignment = xy{pix::left, pix::top};
-                    //    info.coord = r;
-                    //    info.html = token->info;
-                    //    r.w = info.cell.coord.now.w + r.h*2; r.y += r.h;
-                    //    r.h = info.cell.coord.now.h + r.h/2;
-                    //    info.coord = r;
-                    //    info.alignment = xy{pix::center, pix::center};
-                    //    info.see();
-                    //}
-                    //else info.hide();
-                }
+                return;
             }
+
+            if (touch)
+            {
+                select_point = p;
+                range selection;
+                selection.from = touch_place;
+                selection.upto = view.pointed(p);
+                selections = array<range>{selection};
+                //info.hide();
+                return;
+            }
+
+            if (infotip.now)
+            {
+                //if (auto token = view.target(p); token && token->info != "")
+                //{
+                //    xywh r = view.cell.bar(view.point(p).from);
+                //    info.hide(); r.w = r.h*100;
+                //    info.alignment = xy{pix::left, pix::top};
+                //    info.coord = r;
+                //    info.html = token->info;
+                //    r.w = info.cell.coord.now.w + r.h*2; r.y += r.h;
+                //    r.h = info.cell.coord.now.h + r.h/2;
+                //    info.coord = r;
+                //    info.alignment = xy{pix::center, pix::center};
+                //    info.see();
+                //}
+                //else info.hide();
+            }
+
+            if (sys::keyboard::ctrl)
+            {
+                link = "";
+                for (auto token: view.cell.box.model->block.tokens())
+                for (auto& glyph: token->glyphs)
+                glyph.style_index = token->style;
+                update();
+                return;
+            }
+
+            auto& block = view.cell.box.model->block;
+            auto* token = block.hovered_token(p - view.shift);
+            link = block.link(p - view.shift);
+
+            mouse_image = link != "" ? "hand" :
+            token or virtual_space ? "editor" : "arrow";
+
+            for (auto token: block.tokens())
+            {
+                auto style_index = token->style;
+                if (link != "" and token->link == link)
+                {
+                    auto style = style_index.style();
+                    style.color = skins[skin].link.first;
+                    style_index = pix::text::style_index(style);
+                }
+                for (auto& glyph: token->glyphs)
+                glyph.style_index = style_index;
+            }
+            update();
+        }
+
+        void on_mouse_leave () override
+        {
+            link = "";
+            for (auto token: view.cell.box.model->block.tokens())
+            for (auto& glyph: token->glyphs)
+            glyph.style_index = token->style;
+            update();
         }
 
 

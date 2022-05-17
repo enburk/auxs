@@ -1,4 +1,5 @@
 #pragma once
+#include "aux_unittest.h"
 #include "sfx_trees_bst.h"
 #include "sfx_trees_bbst_avl.h"
 #include "sfx_trees_bbst_splay.h"

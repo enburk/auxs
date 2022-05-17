@@ -1,4 +1,5 @@
 #pragma once
+#include "aux_unittest.h"
 #include "gui_widget_console.h"
 #include "test_aux_array.h"
 #include "test_aux_coro.h"

@@ -43,6 +43,7 @@ namespace pix::coord
 
         xyxy (                  ) : l(0), t(0), r(0), b(0) {}
         xyxy (T l, T t, T r, T b) : l(l), t(t), r(r), b(b) {}
+        xyxy (xy<T> p1, xy<T> p2) : p1(p1), p2(p2) {}
         xyxy (xywh<T>);
 
         explicit operator bool () { return l < r and t < b; }
@@ -102,6 +103,7 @@ namespace pix::coord
 
         xywh (                  ) : x(0), y(0), w(0), h(0) {}
         xywh (T x, T y, T w, T h) : x(x), y(y), w(w), h(h) {}
+        xywh (xy<T> oo, xy<T> wh) : origin(oo), size(wh) {}
         xywh (xyxy<T>);
 
         explicit operator bool () { return w > 0 and h > 0; }
