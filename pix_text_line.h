@@ -101,6 +101,8 @@ namespace pix::text
                 rows.back().rpadding = padding.right;
                 rows.back().from = {0, length};
             }
+
+            length += rows.back().length;
         }
 
         void format_dynamic ()

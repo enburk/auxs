@@ -101,6 +101,7 @@
     <ClInclude Include="test_doc_text_a.h" />
     <ClInclude Include="test_doc_text_b.h" />
     <ClInclude Include="test_gui.h" />
+    <ClInclude Include="test_gui_edit.h" />
     <ClInclude Include="test_pix.h" />
     <ClInclude Include="test_sfx.h" />
     <ClInclude Include="windows_aux.h" />
@@ -229,7 +230,7 @@
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpplatest</LanguageStandard>
-      <Optimization>MaxSpeed</Optimization>
+      <Optimization>Disabled</Optimization>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

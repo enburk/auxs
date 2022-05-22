@@ -23,22 +23,23 @@ namespace gui::text
         binary_property<array<xy>>& rwrap = page.rwrap;
         unary_property<array<range>>& highlights = page.highlights;
         unary_property<array<range>>& selections = page.selections;
-        binary_property<bool>& wordwrap = page.wordwrap;
-        binary_property<bool>& ellipsis = page.ellipsis;
-        binary_property<bool>& virtual_space = page.virtual_space;
-        binary_property<bool>& insert_mode = page.insert_mode;
-        property<bool>& update_text = page.update_text;
+        property<bool>& wordwrap = page.wordwrap;
+        property<bool>& ellipsis = page.ellipsis;
+        property<bool>& update_text   = page.update_text;
         property<bool>& update_colors = page.update_colors;
         property<bool>& update_layout = page.update_layout;
-        property<bool> read_only = false;
+        property<bool>& virtual_space = page.virtual_space;
+        property<bool>& insert_mode = page.insert_mode;
+        property<bool>& read_only = page.read_only;
 
-        doc::model*& model = view.cell.box.model;
+        doc::model*& model = view.model;
         doc::text::model model_;
 
         editor ()
         {
             model = &model_;
             alignment.now = xy{pix::left, pix::top};
+            read_only.now = false;
             focusable.now = true;
         }
 

@@ -2,6 +2,7 @@
 #include "aux_unittest.h"
 #include "gui_widget_console.h"
 #include "gui_widget_geometry.h"
+#include "test_gui_edit.h"
 using namespace std::literals::chrono_literals;
 using namespace pix;
 using gui::widget;
@@ -25,53 +26,79 @@ widget<TestGui>
     bool done = false;
     gui::canvas canvas;
     gui::area<gui::console> console;
+    gui::widgetarium<gui::canvas> bars[6*3];
+    gui::text::box cols[6*3];
+
     void on_change(void* what) override
     {
-        if (what == &coord and
-            coord.was.size !=
-            coord.now.size)
+        if (what == &coord)
         {
-            int h = gui::metrics::text::height * 12 / 7;
-            int W = coord.now.w; if (W <= 0) return; int w = W / 3;
+            int W = coord.now.w; if (W <= 0) return;
             int H = coord.now.h; if (H <= 0) return;
-            console.coord = xywh(w * 0, 0, w, H);
+            int h = gui::metrics::text::height;
+            int w = W / 3;
+            int d = 5;
+
+            console.coord = xywh(0, 0, w, H);
+
+            for (int x=0; x<6; x++)
+            for (int y=0; y<3; y++)
+            {
+                int i = x*3 + y;
+                cols[i].coord = xywh(w+x*w/6, y*H/3+d, w/6, (H-d)/3);
+                bars[i].coord = xywh(w+x*w/6, y*H/3+d, w/6, (H-d)/3);
+                array<str> fonts = { "", "Consolas", "Tahoma"};
+                array<int> sizes = { 0, -9, h*10/9, -10, h*8/9, -8 };
+                str font = fonts[y];
+                int size = sizes[x];
+
+                cols[i].style = pix::text::style{font, size};
+
+                str s;
+                int hh = x == 0 and y == 0 ? h : size > 0 ? size :
+                pix::metrics(pix::font(font, size)).ascent +
+                pix::metrics(pix::font(font, size)).descent;
+
+                for (int l=0; l<15; l++)
+                {
+                    s += " " + font + " " + std::to_string(size) + "\n";
+                    bars[i](l).color = l%2 == 0 ? rgba::white : rgba::red;
+                    bars[i](l).coord = xywh(d, hh*l, w/4-d, hh);
+                }
+
+                cols[i].text = s;
+            }
 
             if (done) return; done = true;
-
+            using namespace aux::unittest;
             auto style = pix::text::style{
             pix::font{"Consolas"}, rgba::black };
             console.object.page.style = style;
-
-            using namespace aux::unittest;
             try
             {
                 test("widgets.size");
                 {
-                    //auto canvas = gui::canvas{};
-                    //auto glyph1 = gui::text::glyph{};
-                    //auto token1 = gui::text::token{};
-                    //auto token2 = gui::text::token{};
-                    //token2 = doc::view::token{ "0123456789", pix::text::style_index{}, "", ""};
-                    //oops(out(sizeof canvas)) { "432" };
-                    //oops(out(sizeof glyph1)) { "440" };
-                    //oops(out(sizeof token1)) { "520" };
-                    //oops(out(sizeof token2)) { "520" };
-                    oops(out(gui::metrics::text::height)) { "24" };
-                    oops(out(gui::metrics::line::width)) { "1" };
-                    //oops(out(token2.coord.now.w/10)) { "13" };
-                    //oops(out(token2.coord.now.h)) { "32" };
                     oops(out(coord.now.w)) { "3594" };
                     oops(out(coord.now.h)) { "1972" };
+                    oops(out(gui::metrics::text::height)) { "24" };
+                    oops(out(gui::metrics::line::width)) { "1" };
+                    oops(out(sizeof gui::canvas)) { "" };
+                    oops(out(sizeof gui::button)) { "" };
+                    oops(out(sizeof gui::text::box)) { "" };
+                    oops(out(sizeof gui::text::cell)) { "" };
+                    oops(out(sizeof gui::text::view)) { "" };
+                    oops(out(sizeof gui::text::page)) { "" };
+                    oops(out(sizeof gui::text::editor)) { "" };
                 }
             }
             catch (assertion_failed) {}
-
             aux::unittest::test("");
             console.object.page.html =
-                aux::unittest::results; ok &=
-                aux::unittest::all_ok;
-
-            console.object.page.scroll.y.top = max<int>();
+            aux::unittest::results; ok &=
+            aux::unittest::all_ok;
+            console.object.page.
+            scroll.y.top =
+            max<int>();
         }
     }
 };
@@ -88,7 +115,7 @@ widget<TestGuiColors>
         {
             int W = coord.now.w; if (W <= 0) return;
             int H = coord.now.h; if (H <= 0) return;
-            int h = gui::metrics::text::height*24/7;
+            int h = gui::metrics::text::height*2;
 
             canvas.color = rgba::black;
             canvas.coord = coord.now.local();
@@ -113,14 +140,13 @@ widget<TestGuiColors>
                         int i = n * 10 + j;
                         samples(i).coord = xywh(nx*w, ny*h*10 + j*h, w, h);
                         samples(i).color = palette[j].first;
-                        samples(i).font = pix::font("Tahoma", h*7/12);
+                        samples(i).font = pix::font("Tahoma", h);
                         samples(i).text = name + " " +
                             std::to_string(j);
                     }
                     n++;
                 }
             }
-
         }
     }
 };
@@ -345,9 +371,7 @@ widget<TestGuiConsole>
             console1.object.canvas.color = rgba::white;
             console2.object.canvas.color = rgba::white;
         }
-        if (what == &coord and
-            coord.was.size !=
-            coord.now.size)
+        if (what == &coord)
         {
             int W = coord.now.w; if (W <= 0) return;
             int H = coord.now.h; if (H <= 0) return;
@@ -362,78 +386,18 @@ widget<TestGuiConsole>
             splitter.lower = 20'00 * w / 100'00;
             splitter.upper = 80'00 * w / 100'00;
         }
-        if (what == &doubling)
-        {
-            doubling.text.text = "double text";
-            console1.object.page.html += text;
-            console2.object.page.html += text;
-            text += text;
-        }
         if (what == &splitter)
         {
             int w = gui::metrics::text::height*xx;
             x = 100'00 * splitter.middle / w;
             on_change(&coord);
         }
-    }
-};
-
-struct TestGuiEditor:
-widget<TestGuiEditor>
-{
-    gui::area<gui::text::editor> editor1; 
-    gui::area<gui::text::editor> editor2; 
-    gui::area<gui::text::editor> editor3; 
-    gui::splitter splitt1;
-    gui::splitter splitt2;
-    int x1 = 33'00;
-    int x2 = 66'00;
-
-    void on_change (void* what) override
-    {
-        if (what == &skin)
+        if (what == &doubling)
         {
-            editor1.show_focus = true;
-            editor2.show_focus = true;
-            editor3.show_focus = true;
-            auto& e1 = editor1.object;
-            auto& e2 = editor2.object;
-            auto& e3 = editor3.object;
-            e1.canvas.color = rgba::white;
-            e2.canvas.color = rgba::white;
-            e3.canvas.color = rgba::white;
-            e1.text = Lorem;
-            e2.text = Lorem;
-            e3.text = Lorem;
-        }
-        if (what == &coord and
-            coord.was.size !=
-            coord.now.size)
-        {
-            int W = coord.now.w; if (W <= 0) return;
-            int H = coord.now.h; if (H <= 0) return;
-            int d = gui::metrics::line::width * 6;
-            int l = W * x1 / 100'00;
-            int r = W * x2 / 100'00;
-            editor1.coord = xyxy(0-0, 0, l+0, H);
-            editor2.coord = xyxy(l-0, 0, r+0, H);
-            editor3.coord = xyxy(r-0, 0, W+0, H);
-            splitt1.coord = xyxy(l-d, 0, l+d, H);
-            splitt2.coord = xyxy(r-d, 0, r+d, H);
-            splitt1.lower = 10'00 * W / 100'00;
-            splitt1.upper = 40'00 * W / 100'00;
-            splitt2.lower = 60'00 * W / 100'00;
-            splitt2.upper = 90'00 * W / 100'00;
-        }
-        if (what == &splitt1)
-        {
-            x1 = 100'00 * splitt1.middle / coord.now.w;
-            on_change(&coord);
-        }
-        if (what == &splitt2)
-        {
-            x2 = 100'00 * splitt2.middle / coord.now.w;
-            on_change(&coord);
+            doubling.text.text = "double text";
+            console1.object.page.html += text;
+            console2.object.page.html += text;
+            text += text;
         }
     }
 };

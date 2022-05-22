@@ -83,8 +83,8 @@ namespace gui::base
 
         ////////////////////////////////////////////////////////////////////////
 
-        unary_property<bool> focus_on = false;
-        unary_property<bool> focusable = false;
+        property<bool> focus_on = false;
+        property<bool> focusable = false;
         binary_property<widget*> focus = nullptr;
 
         virtual bool focusable_now ()

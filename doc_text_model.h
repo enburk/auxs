@@ -116,5 +116,20 @@ namespace doc::text
                 }
             }
         }
+
+        str brief () override
+        {
+            str s;
+            for (const auto & line : lines) {
+                s += aux::unicode::string(line) + "\n";
+                if (s.size() > 100) {
+                    s.resize(100);
+                    s += "...\n";
+                    break;
+                }
+            }
+            if (s != "") s.pop_back();
+            return s;
+        }
     };
 }

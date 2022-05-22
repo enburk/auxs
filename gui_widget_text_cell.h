@@ -15,8 +15,9 @@ namespace gui::text
         unary_property<array<range>> highlights;
         unary_property<array<range>> selections;
 
-        binary_property<bool> virtual_space = false;
-        binary_property<bool> insert_mode = true;
+        property<bool> read_only = true;
+        property<bool> insert_mode = true;
+        property<bool> virtual_space = false;
 
         box::text_type& text = box.text;
         box::html_type& html = box.html;
@@ -41,11 +42,13 @@ namespace gui::text
             }
 
             if (what == &update_text
-            or  what == &update_layout)
+            or  what == &update_layout
+            or  what == &read_only)
             {
-                resize(xy(virtual_space.now? max<int>()/2:
-                box.coord.now.size.x,
-                box.coord.now.size.y));
+                xy size = box.coord.now.size;
+                if (not read_only.now) size.x += // for caret
+                2*gui::metrics::line::width;
+                resize(size);
 
                 highlights = array<range>{};
                 selections = box.model->selections;
@@ -77,6 +80,7 @@ namespace gui::text
 
             if (what == &selections
             or  what == &insert_mode
+            or  what == &read_only
             or  what == &focus_on)
             {
                 box.model->selections = selections.now;
@@ -89,9 +93,9 @@ namespace gui::text
                 carets.truncate(n);
 
                 for (auto& caret: carets) {
-                    caret.insert_mode = insert_mode.now;
-                    caret.show(focus_on.now);
-                }
+                caret.insert_mode = insert_mode.now;
+                caret.show(not read_only
+                    and focus_on.now); }
             }
 
             notify(what);
@@ -105,7 +109,9 @@ namespace gui::text
             {
                 if (from > upto) std::swap (from, upto);
 
-                for (; from.line <= upto.line; from.line++, from.offset = 0)
+                for (;
+                from.line <= upto.line;
+                from.line++, from.offset = 0, s += "\n")
                 {
                     if (from.line >= lines.size()) break;
                     int from_offset = from.offset;
@@ -133,6 +139,7 @@ namespace gui::text
                 }
             }
 
+            if (s != "") s.pop_back(); // last \n
             return s;
         }
 

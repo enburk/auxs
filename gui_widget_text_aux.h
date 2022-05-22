@@ -38,15 +38,18 @@ namespace gui::text
         canvas image;
         property<time> timer;
         property<double> breadth = 0.15;
-        binary_property<bool> insert_mode = true;
+        property<bool> insert_mode = true;
         static inline time time_moved;
 
         void on_change (void* what) override
         {
-            if (timer.now == time())
-                timer.go (time::infinity,
-                          time::infinity);
-
+            if (what == &skin
+            or  what == &alpha)
+            {
+                time t = alpha.now == 0 ?
+                time{} : time::infinity;
+                timer.go(t,t);
+            }
             if (what == &timer)
             {
                 if (time::now - time_moved < 200ms) {

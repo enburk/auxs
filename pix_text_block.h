@@ -240,15 +240,6 @@ namespace pix::text
             return "";
         }
 
-        generator<token*> tokens ()
-        {
-            for (auto& column: columns)
-            for (auto& row: column.rows)
-            for (auto& solid: row->solids)
-            for (auto& token: solid.tokens)
-            co_yield & token;
-        }
-
         struct row_data
         {
             int length = 0;

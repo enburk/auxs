@@ -20,7 +20,7 @@ namespace gui::text
         page() { focusable.now = true; }
 
 
-        binary_property<bool> infotip = false;
+        property<bool> infotip = false;
 
         canvas& canvas = view.canvas;
         box::text_type& text = view.text;
@@ -33,15 +33,16 @@ namespace gui::text
         binary_property<int>& rpadding = view.rpadding;
         binary_property<array<xy>>& lwrap = view.lwrap;
         binary_property<array<xy>>& rwrap = view.rwrap;
-        unary_property<array<range>>& highlights = view.highlights;
-        unary_property<array<range>>& selections = view.selections;
-        binary_property<bool>& wordwrap = view.wordwrap;
-        binary_property<bool>& ellipsis = view.ellipsis;
-        binary_property<bool>& virtual_space = view.virtual_space;
-        binary_property<bool>& insert_mode = view.insert_mode;
-        property<bool>& update_text = view.update_text;
+        property<bool>& wordwrap = view.wordwrap;
+        property<bool>& ellipsis = view.ellipsis;
+        property<bool>& update_text   = view.update_text;
         property<bool>& update_colors = view.update_colors;
         property<bool>& update_layout = view.update_layout;
+        unary_property<array<range>>& highlights = view.highlights;
+        unary_property<array<range>>& selections = view.selections;
+        property<bool>& virtual_space = view.virtual_space;
+        property<bool>& insert_mode = view.insert_mode;
+        property<bool>& read_only = view.read_only;
 
         void on_change (void* what) override
         {
@@ -89,7 +90,7 @@ namespace gui::text
 
                 view.resize(size);
             }
-            if (what == &selections and not selections.now.empty())
+            if (what == &selections and not view.cell.carets.empty())
             {
                 xyxy r = view.cell.carets.back().coord.now +
                          view.shift.now;
@@ -140,19 +141,30 @@ namespace gui::text
 
         void go (int where, bool selective = false)
         {
-            auto ss = selections.now;
+            auto ss =
+            selections.now;
             int n = ss.size();
-            if (n >= 2 and not selective) {
-                auto b = ss[0].from; // begin of multiline caret
-                auto e = ss[n-1].from; // end of multiline caret
-                if ((b < e and (where == +GLYPH or where == +LINE))
-                or  (b > e and (where == -GLYPH or where == -LINE)))
+            if (n >= 2 and not selective
+            and where == THERE)
+            {
                 ss[0] = ss[n-1];
                 ss.resize(1);
             }
-
-            for (auto& caret: ss)
-                go(caret, where, selective);
+            else
+            if (n == 1 and not selective
+            and ss[0].from != ss[0].upto)
+            {
+                auto& from = ss[0].from;
+                auto& upto = ss[0].upto;
+                if (from > upto) std::swap(from, upto);
+                if (where == -GLYPH or where == -LINE
+                or  where == -TOKEN or where == -PAGE)
+                upto = from; else
+                from = upto;
+            }
+            else
+            for (auto& caret: ss) go(
+            caret, where, selective);
 
             selections = ss;
         }
@@ -217,8 +229,9 @@ namespace gui::text
                 r = 0;
 
             if (not virtual_space.now and
-                offset > row(r).length-1)
-                offset = row(r).length-1;
+            // allowed to be right after the last char
+                offset > row(r).length)
+                offset = row(r).length;
             if (offset < 0)
                 offset = 0;
 
@@ -386,21 +399,25 @@ namespace gui::text
             if (sys::keyboard::ctrl)
             {
                 link = "";
-                for (auto token: view.cell.box.model->block.tokens())
+                bool same = true;
+                for (auto token: view.visible_tokens())
                 for (auto& glyph: token->glyphs)
-                glyph.style_index = token->style;
-                update();
+                if (glyph.style_index != token->style) {
+                    glyph.style_index  = token->style;
+                    same = false; }
+                if (not same) update();
                 return;
             }
 
             auto& block = view.cell.box.model->block;
             auto* token = block.hovered_token(p - view.shift);
             link = block.link(p - view.shift);
+            bool same = true;
 
             mouse_image = link != "" ? "hand" :
             token or virtual_space ? "editor" : "arrow";
 
-            for (auto token: block.tokens())
+            for (auto token: view.visible_tokens())
             {
                 auto style_index = token->style;
                 if (link != "" and token->link == link)
@@ -410,18 +427,23 @@ namespace gui::text
                     style_index = pix::text::style_index(style);
                 }
                 for (auto& glyph: token->glyphs)
-                glyph.style_index = style_index;
+                if (glyph.style_index != style_index) {
+                    glyph.style_index  = style_index;
+                    same = false; }
             }
-            update();
+            if (not same) update();
         }
 
         void on_mouse_leave () override
         {
             link = "";
-            for (auto token: view.cell.box.model->block.tokens())
+            bool same = true;
+            for (auto token: view.visible_tokens())
             for (auto& glyph: token->glyphs)
-            glyph.style_index = token->style;
-            update();
+            if (glyph.style_index != token->style) {
+                glyph.style_index  = token->style;
+                same = false; }
+            if (not same) update();
         }
 
 

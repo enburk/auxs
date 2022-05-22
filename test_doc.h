@@ -100,14 +100,13 @@ widget<TestDocHtml>
             int W = coord.now.w; if (W <= 0) return;
             int H = coord.now.h; if (H <= 0) return;
             int bw = gui::metrics::text::height*10;
-            int bh = gui::metrics::text::height*12/7;
+            int bh = gui::metrics::text::height*13/10;
             int w = W / 4;
             int h = (H-bh) / n;
 
             auto schema = gui::skins[skin];
             auto style = pix::text::style{
-                pix::font{"Consolas",
-                gui::metrics::text::height},
+                pix::font{"Consolas"},
                 schema.dark.first};
 
             for (int i=0; i<n; i++)

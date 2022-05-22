@@ -7,6 +7,7 @@ namespace gui::text
     struct view:
     widget<view>
     {
+        str brief;
         canvas canvas; cell cell;
         frame current_line_frame;
         frame frame;
@@ -17,8 +18,8 @@ namespace gui::text
         binary_property<array<xy>> rwrap;
         binary_property<xy> alignment = xy{pix::center, pix::center};
         binary_property<xy> shift;
-        binary_property<bool> wordwrap = true;
-        binary_property<bool> ellipsis = false;
+        property<bool> wordwrap = true;
+        property<bool> ellipsis = false;
 
         box::text_type& text = cell.text;
         box::html_type& html = cell.html;
@@ -30,8 +31,10 @@ namespace gui::text
         property<bool>& update_layout = cell.update_layout;
         unary_property<array<range>>& highlights = cell.highlights;
         unary_property<array<range>>& selections = cell.selections;
-        binary_property<bool>& virtual_space = cell.virtual_space;
-        binary_property<bool>& insert_mode = cell.insert_mode;
+        property<bool>& virtual_space = cell.virtual_space;
+        property<bool>& insert_mode = cell.insert_mode;
+        property<bool>& read_only = cell.read_only;
+        doc::model*& model = cell.box.model;
 
         void on_change (void* what) override
         {
@@ -66,6 +69,9 @@ namespace gui::text
                 cell.format = f;
             }
 
+            if (what == &update_text)
+                brief = cell.box.model->brief();
+
             if (what == &update_text
             or  what == &update_layout
             or  what == &shift)
@@ -82,9 +88,9 @@ namespace gui::text
             if (what == &selections
             or  what == &focus_on)
             {
-                if (selections.now.size() == 1
-                    and focus_on.now) {
-                    xywh r = cell.carets(0).coord.now;
+                if (focus_on.now and
+                    cell.carets.size() == 1) { xywh r =
+                    cell.carets(0).coord.now;
                     r.x = 0; r.w = coord.now.w;
                     current_line_frame.coord = r;
                     current_line_frame.show(); } else
@@ -107,5 +113,26 @@ namespace gui::text
         auto row(int n) { return cell.row(n); }
         place lines2rows(place p) { return cell.lines2rows(p); }
         place rows2lines(place p) { return cell.rows2lines(p); }
+
+        generator<pix::text::token*> visible_tokens ()
+        {
+            for (auto& column: model->block.columns)
+            for (auto& row: column.rows)
+            {
+                int ry = row->offset.y;
+                int rh = row->Height();
+                int vy = cell.coord.now.y;
+                int vh = cell.coord.now.h;
+                vh = min (vh, coord.now.h - vy);
+
+                if (ry + rh < vy
+                or ry >= vy + vh)
+                    continue;
+
+                for (auto& solid: row->solids)
+                for (auto& token: solid.tokens)
+                co_yield & token;
+            }
+        }
     };
 }

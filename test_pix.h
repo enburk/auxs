@@ -171,10 +171,10 @@ widget<TestPixFonts>
         str alnum = Latin + latin + digit;
         array<
         pix::font> fonts = {
-        pix::font{"Consolas", gui::metrics::text::height*5/2},
-        pix::font{"Arial",    gui::metrics::text::height*5/2},
-        pix::font{"Segoe UI", gui::metrics::text::height*5/2},
-        pix::font{"Tahoma",   gui::metrics::text::height*5/2}};
+        pix::font{"Consolas", gui::metrics::text::height*2},
+        pix::font{"Arial",    gui::metrics::text::height*2},
+        pix::font{"Segoe UI", gui::metrics::text::height*2},
+        pix::font{"Tahoma",   gui::metrics::text::height*2}};
 
         int gap = 1; int x = gap; int y = gap;
 

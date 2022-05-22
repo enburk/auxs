@@ -59,7 +59,7 @@ namespace gui
         frame frame2;
         frame frame3; X object;
 
-        unary_property<bool> show_focus = false;
+        property<bool> show_focus = false;
 
         using widget<area<X>>::skin;
         using widget<area<X>>::coord;

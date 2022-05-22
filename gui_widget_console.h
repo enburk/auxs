@@ -7,11 +7,12 @@ namespace gui
     widget<console>
     {
         text::page page;
+        text::view& view = page.view;
         scroll& scroll = page.scroll;
         canvas& canvas = page.canvas;
-        std::mutex mutex;
         property<time> timer;
         array<str> addon;
+        std::mutex mutex;
         int limit = 64*1024;
         str log;
 
@@ -37,14 +38,14 @@ namespace gui
                 timer.go (time::infinity,
                           time::infinity);
 
-            if (what == &coord && coord.was.size != coord.now.size)
-            {
-                page.coord = coord.now.local();
-            }
             if (what == &skin)
             {
-                page.view.canvas.color = skins[skin].ultralight.first;
-                page.alignment = xy{pix::left, pix::top};
+                view.canvas.color = skins[skin].ultralight.first;
+                view.alignment = xy{pix::left, pix::top};
+            }
+            if (what == &coord)
+            {
+                page.coord = coord.now.local();
             }
             if (what == &timer)
             {

@@ -183,4 +183,23 @@ namespace gui
             }
         }
     };
+
+    template<> struct property<bool>
+    {
+        bool now; base::widget* widget = nullptr;
+
+        property (bool value) : now(value) {}
+
+        operator bool () { return now; }
+
+        void operator = (bool value) {
+            if (now != value) {
+                now = value;
+                if (!widget) widget = inholder(this);
+                if (!widget) throw std::runtime_error
+                ("property: wrong inholder");
+                change(widget, this);
+            }
+        }
+    };
 }

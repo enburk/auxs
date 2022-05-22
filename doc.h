@@ -26,6 +26,7 @@ namespace doc
         virtual void add_html (str) {}
         virtual str  get_text () { return ""; }
         virtual str  get_html () { return ""; }
+        virtual str  brief    () { return ""; }
 
         virtual place front () const { return place{}; }
         virtual place back  () const { return place{}; }

@@ -14,10 +14,10 @@ struct GDI_FONT
         HDC dc = ::CreateCompatibleDC (NULL);
 
         if (font.face == "") font.face = "Segoe UI";
-        if (font.size ==  0) font.size = gui::metrics::text::height;
+        if (font.size ==  0) font.size = -9;
 
-        LONG height = font.size >= 0 ? -font.size :
-            MulDiv (font.size, ::GetDeviceCaps(dc,LOGPIXELSY), 72);
+        LONG height = font.size >= 0 ? font.size :
+        MulDiv (font.size, ::GetDeviceCaps(dc,LOGPIXELSY), 72);
 
         str face = font.face;
         if (face == "monospace")
@@ -74,10 +74,7 @@ static GDI_FONT cache (pix::font font) {
 
 pix::font::metrics pix::metrics (pix::font font)
 {
-    return cache(
-        font != pix::font{} ?
-        font :  pix::font{"Arial", -8})
-        .metrics;
+    return cache(font).metrics;
 }
 
 struct GDI_CONTEXT

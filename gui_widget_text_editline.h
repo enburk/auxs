@@ -19,20 +19,21 @@ namespace gui::text
         binary_property<array<xy>>& rwrap = editor.rwrap;
         unary_property<array<range>>& highlights = editor.highlights;
         unary_property<array<range>>& selections = editor.selections;
-        binary_property<bool>& wordwrap = editor.wordwrap;
-        binary_property<bool>& ellipsis = editor.ellipsis;
-        binary_property<bool>& virtual_space = editor.virtual_space;
-        binary_property<bool>& insert_mode = editor.insert_mode;
-        property<bool>& update_text = editor.update_text;
+        property<bool>& wordwrap = editor.wordwrap;
+        property<bool>& ellipsis = editor.ellipsis;
+        property<bool>& update_text   = editor.update_text;
         property<bool>& update_colors = editor.update_colors;
         property<bool>& update_layout = editor.update_layout;
+        property<bool>& virtual_space = editor.virtual_space;
+        property<bool>& insert_mode = editor.insert_mode;
+        property<bool>& read_only = editor.read_only;
 
         one_line_editor ()
         {
             ellipsis = false;
             wordwrap = false;
-            editor.page.scroll.x.mode = gui::scroll::mode::none;
-            editor.page.scroll.y.mode = gui::scroll::mode::none;
+            editor.scroll.x.mode = gui::scroll::mode::none;
+            editor.scroll.y.mode = gui::scroll::mode::none;
         }
 
         void on_change (void* what) override
@@ -41,7 +42,10 @@ namespace gui::text
             {
                 editor.coord = coord.now.local();
             }
-
+            if (what == &focus_on)
+            {
+                editor.focus_on = focus_on.now;
+            }
             notify(what);
         }
 
@@ -69,7 +73,7 @@ namespace gui::text
             }
             else
 
-            if (key == "enter"            ) {} else
+            if (key == "enter"            ) { notify(); } else
             if (key == "shift+enter"      ) {} else
             if (key == "ctrl+enter"       ) {} else
             if (key == "ctrl+shift+enter" ) {} else

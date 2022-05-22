@@ -9,6 +9,7 @@ namespace doc::html
         array<pix::text::line>& lines = block.lines;
         typedef struct pix::text::line::padding padding;
 
+        str  brief    () override { return untagged(source.upto(200)); }
         str  get_text () override { return untagged(source); }
         str  get_html () override { return source; }
 
