@@ -67,8 +67,14 @@ namespace gui
             or  what == &on)
                 on_change_state();
 
+            if (what == &coord and
+                coord.was.size !=
+                coord.now.size)
+                on_change_state();
+
             if (what == &on)
-            if (on.now or notify_off or kind == toggle)
+            if (on.now or kind == toggle
+            or  notify_off)
                 notify();
 
             if (what == &mouse_hover)

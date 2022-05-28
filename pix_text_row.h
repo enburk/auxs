@@ -125,19 +125,30 @@ namespace pix::text
             layout();
 
             int x = 0;
-            int h = Height();
+            int hh = Height();
             for (auto bar: format.lwrap) {
                 x = aux::max(x, bar.x);
-                h -= bar.y;
-                if (h <= 0)
+                hh -= bar.y;
+                if (hh <= 0)
                     break;
             }
             for (auto& s: solids)
             s.offset.x += x + lpadding;
 
+            int H = Height();
+            int h = height();
+
+            if (format.alignment.y == center_of_area
+            or  format.alignment.y == center_of_mass)
+               for (auto& s: solids)
+               s.offset.y -= (H-h)/2;
+
             int align = format.alignment.x;
             int W = max_width(Height());
+            int v = rborder - lborder;
             int w = rborder;
+            if (W <= w)
+                return;
 
             if (align == left or
                (align <= justify_left and last))
@@ -146,9 +157,15 @@ namespace pix::text
             advance = W;
             rborder = W;
 
-            if (align == center and W > w) {
+            if (align == center) {
                 for (auto& s: solids)
-                s.offset.x += W/2 - w/2;
+                s.offset.x += (W-w)/2;
+                return; }
+
+            if (align == center_of_area
+            or  align == center_of_mass) {
+                for (auto& s: solids)
+                s.offset.x += (W-v)/2;
                 return; }
 
             if (align == right or
@@ -184,18 +201,22 @@ namespace pix::text
             and upto == max<int>()
             and last and virtual_space)
             return array<xywh>{xywh(0,0,
-                max<int>(), Height())};
+                max<int>()/2, Height()) +
+                offset};
 
             array<xywh> bars;
             from = max(0, from);
+            if (from == upto)
+                return bars;
+
             for (auto& solid : solids)
             {
                 for (xywh r: solid.bars(from, upto))
                 {
                     r += solid.offset;
                     if (bars.size() > 0
-                    and bars.back().x == r.x
-                    and bars.back().w == r.w)
+                    and bars.back().y == r.y
+                    and bars.back().h == r.h)
                         bars.back() |= r; else
                         bars += r;
                 }
@@ -207,7 +228,8 @@ namespace pix::text
                 if (from < 0) from = 0;
                 int n = min(upto - from, 10000);
                 glyph space(" ", style);
-                bars += xywh(advance, 0,
+                bars += xywh(advance +
+                    space.advance * from, 0,
                     space.advance * n,
                     space.Height());
             }

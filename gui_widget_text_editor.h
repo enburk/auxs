@@ -8,29 +8,31 @@ namespace gui::text
     widget<editor>
     {
         page page;
-        view& view = page.view;
-        scroll& scroll = page.scroll;
-        canvas& canvas = page.canvas;
-        box::text_type& text = page.text;
-        box::html_type& html = page.html;
-        property<rgba>& color = page.color;
-        binary_property<font>& font = page.font;
-        binary_property<style>& style = page.style;
-        binary_property<xy>& alignment = page.alignment;
-        binary_property<int>& lpadding = page.lpadding;
-        binary_property<int>& rpadding = page.rpadding;
-        binary_property<array<xy>>& lwrap = page.lwrap;
-        binary_property<array<xy>>& rwrap = page.rwrap;
-        unary_property<array<range>>& highlights = page.highlights;
-        unary_property<array<range>>& selections = page.selections;
-        property<bool>& wordwrap = page.wordwrap;
-        property<bool>& ellipsis = page.ellipsis;
-        property<bool>& update_text   = page.update_text;
-        property<bool>& update_colors = page.update_colors;
-        property<bool>& update_layout = page.update_layout;
-        property<bool>& virtual_space = page.virtual_space;
-        property<bool>& insert_mode = page.insert_mode;
-        property<bool>& read_only = page.read_only;
+
+#define using(x) decltype(page.x)& x = page.x;
+        using(canvas)
+        using(scroll)
+        using(view)
+        using(text)
+        using(html)
+        using(color)
+        using(font)
+        using(style)
+        using(wordwrap)
+        using(ellipsis)
+        using(alignment)
+        using(padding)
+        using(lwrap)
+        using(rwrap)
+        using(update_text)
+        using(update_colors)
+        using(update_layout)
+        using(highlights)
+        using(selections)
+        using(virtual_space)
+        using(insert_mode)
+        using(read_only)
+        #undef using
 
         doc::model*& model = view.model;
         doc::text::model model_;
@@ -103,7 +105,8 @@ namespace gui::text
             if (key == "alt+shift+left" ) key = "shift+left";
             if (key == "alt+shift+right") key = "shift+right";
 
-            if (key == "alt+shift+up")
+            if (key == "alt+shift+up"
+            or (key == "shift+up" and selections.now.size() > 1))
             {
                 auto ss = selections.now;
                 int n = ss.size();
@@ -121,7 +124,8 @@ namespace gui::text
                 selections = ss;
             }
             else
-            if (key == "alt+shift+down")
+            if (key == "alt+shift+down"
+            or (key == "shift+down" and selections.now.size() > 1))
             {
                 auto ss = selections.now;
                 int n = ss.size();
@@ -174,6 +178,7 @@ namespace gui::text
             if (key == "shift+end"      ) go(LINE_END,   true); else
             if (key == "shift+page up"  ) { see(-PAGE); go(-PAGE, true); } else
             if (key == "shift+page down") { see(+PAGE); go(+PAGE, true); } else
+            if (key == "ctrl+A"         ) { go(TEXT_BEGIN ); go(TEXT_END, true); } else
 
             if (key == "ctrl+shift+home"     ) go(TEXT_BEGIN , true); else
             if (key == "ctrl+shift+end"      ) go(TEXT_END   , true); else

@@ -82,7 +82,7 @@ namespace sfx::trees::binary
         void place (node* x, xyxy r)
         {
             if (!x) return;
-            int d = gui::metrics::text::height*12/7;
+            int d = gui::metrics::text::height*13/10;
             int c = (r.x1 + r.x2)/2;
 
             x->x = c;
@@ -101,7 +101,7 @@ namespace sfx::trees::binary
         }
         void place ()
         {
-            int d = gui::metrics::text::height*12/7;
+            int d = gui::metrics::text::height*13/10;
             xyxy r = coord.now.local();
             r.x1 += d/2; r.x2 -= d/2;
             place(root, r);

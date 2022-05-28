@@ -36,6 +36,10 @@ namespace sfx
             outer.color = rgba::red;
             outex.color = rgba::red;
             outey.color = rgba::red;
+
+            value.alignment = xy{
+            pix::center_of_mass,
+            pix::center_of_mass};
         }
         void mimic (node const& n)
         {
@@ -71,7 +75,7 @@ namespace sfx
                 outey.y = d*3/2; outey.ry = r-2; outey.ry2 = r-2;
                 int l = str(value.text).size();
                 auto font = value.font.now;
-                font.size = l <= 2 ? (d*7+1)/12 : (d*7+1)/14;
+                font.size = l <= 2 ? (d*9+1)/10 : (d*7+1)/11;
                 value.font = font;
                 label.font = font;
 

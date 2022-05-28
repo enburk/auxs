@@ -74,8 +74,10 @@ namespace pix::text
             if (p.y < 0) p.x = 0;
 
             if (first == rows.size()) {
-                p.x = max<int>();
-                first--; }
+                first--; return {
+                rows[first]->from.line,
+                rows[first]->from.offset +
+                rows[first]->length}; }
 
             return rows[first]->pointed(
                 p.x, virtual_space);

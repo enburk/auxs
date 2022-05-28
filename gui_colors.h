@@ -71,7 +71,7 @@ namespace gui
     void init ()
     {
         metrics::text::height = pix::metrics(pix::font{}).height;
-        metrics::line::width = max (1, metrics::text::height/16);
+        metrics::line::width = max (1, metrics::text::height/20);
 
         str name;
         for (auto [index, s] : enumerate(palettes_data))

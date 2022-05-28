@@ -36,17 +36,17 @@ widget<TestGui>
             int W = coord.now.w; if (W <= 0) return;
             int H = coord.now.h; if (H <= 0) return;
             int h = gui::metrics::text::height;
-            int w = W / 3;
+            int w = 7*h;
             int d = 5;
 
-            console.coord = xywh(0, 0, w, H);
+            console.coord = xywh(0, 0, W/3, H);
 
             for (int x=0; x<6; x++)
             for (int y=0; y<3; y++)
             {
                 int i = x*3 + y;
-                cols[i].coord = xywh(w+x*w/6, y*H/3+d, w/6, (H-d)/3);
-                bars[i].coord = xywh(w+x*w/6, y*H/3+d, w/6, (H-d)/3);
+                cols[i].coord = xywh(W/3+x*w, y*H/3+d, w, (H-d)/3);
+                bars[i].coord = xywh(W/3+x*w, y*H/3+d, w, (H-d)/3);
                 array<str> fonts = { "", "Consolas", "Tahoma"};
                 array<int> sizes = { 0, -9, h*10/9, -10, h*8/9, -8 };
                 str font = fonts[y];
@@ -59,13 +59,16 @@ widget<TestGui>
                 pix::metrics(pix::font(font, size)).ascent +
                 pix::metrics(pix::font(font, size)).descent;
 
-                for (int l=0; l<15; l++)
+                int ll = (H-d)/3 / (h*10/9) - 2;
+
+                for (int l=0; l<ll; l++)
                 {
                     s += " " + font + " " + std::to_string(size) + "\n";
                     bars[i](l).color = l%2 == 0 ? rgba::white : rgba::red;
-                    bars[i](l).coord = xywh(d, hh*l, w/4-d, hh);
+                    bars[i](l).coord = xywh(d, hh*l, w-d, hh);
                 }
 
+                bars[i].truncate(ll);
                 cols[i].text = s;
             }
 
@@ -174,7 +177,7 @@ widget<TestGuiColorsX>
             {
                 int W = coord.now.w; if (W <= 0) return;
                 int H = coord.now.h; if (H <= 0) return;
-                int h = gui::metrics::text::height*12/7;
+                int h = gui::metrics::text::height*13/10;
                 int q = W/10;
 
                 title.coord = xywh(0,0, W,h);
@@ -215,7 +218,7 @@ widget<TestGuiColorsX>
                 page.object.alignment = xy{pix::left, pix::top};
                 page.object.canvas.color = schema.ultralight.first;
                 page.object.style = pix::text::style{
-                    pix::font{"Segoe UI", h*4/7},
+                    pix::font{"Segoe UI"},
                     schema.dark.first};
             }
         }
@@ -376,7 +379,7 @@ widget<TestGuiConsole>
             int W = coord.now.w; if (W <= 0) return;
             int H = coord.now.h; if (H <= 0) return;
             int w = gui::metrics::text::height*xx;
-            int h = gui::metrics::text::height*12/7;
+            int h = gui::metrics::text::height*13/10;
             int d = gui::metrics::line::width * 6;
             int m = w * x / 100'00;
             doubling.coord = xywh(w-0, 0, w/9, h);
@@ -432,7 +435,7 @@ widget<TestGuiAnimat>
             int W = coord.now.w; if (W <= 0) return;
             int H = coord.now.h; if (H <= 0) return;
             int w = gui::metrics::text::height*10;
-            int h = gui::metrics::text::height*12/7;
+            int h = gui::metrics::text::height*13/10;
             int d = gui::metrics::line::width * 6;
 
             view.text = "text";

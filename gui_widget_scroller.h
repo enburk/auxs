@@ -64,8 +64,8 @@ namespace gui
                 up.coord = xywh(0,0,w,d);
                 down.coord = xywh(0,h-d,w,d);
                 canvas.coord = xywh(0,0,w,h);
-                up.text.font = pix::font{"", d/2};
-                down.text.font = pix::font{"", d/2};
+                up.text.font = pix::font{"", d*7/10};
+                down.text.font = pix::font{"", d*7/10};
                 refresh();
             }
             if (what == &skin)
@@ -172,8 +172,8 @@ namespace gui
                 left.coord = xywh(0,0,d,h);
                 right.coord = xywh(w-d,0,d,h);
                 canvas.coord = xywh(0,0,w,h);
-                left.text.font = pix::font{"", d*2/3};
-                right.text.font = pix::font{"", d*2/3};
+                left.text.font = pix::font{"", d};
+                right.text.font = pix::font{"", d};
                 refresh();
             }
             if (what == &skin)

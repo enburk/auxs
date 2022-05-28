@@ -44,7 +44,7 @@ widget<TestSfxTrees>
             int W = coord.now.w; if (W <= 0) return;
             int H = coord.now.h; if (H <= 0) return;
             int w = gui::metrics::text::height*10;
-            int h = gui::metrics::text::height*12/7;
+            int h = gui::metrics::text::height*13/10;
 
             if (buttons.empty())
             {

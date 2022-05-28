@@ -19,55 +19,57 @@ namespace gui::text
 
         page() { focusable.now = true; }
 
+        binary_property<xyxy> padding;
+        binary_property<bool> infotip = false;
 
-        property<bool> infotip = false;
-
-        canvas& canvas = view.canvas;
-        box::text_type& text = view.text;
-        box::html_type& html = view.html;
-        property<rgba>& color = view.color;
-        binary_property<font>& font = view.font;
-        binary_property<style>& style = view.style;
-        binary_property<xy>& alignment = view.alignment;
-        binary_property<int>& lpadding = view.lpadding;
-        binary_property<int>& rpadding = view.rpadding;
-        binary_property<array<xy>>& lwrap = view.lwrap;
-        binary_property<array<xy>>& rwrap = view.rwrap;
-        property<bool>& wordwrap = view.wordwrap;
-        property<bool>& ellipsis = view.ellipsis;
-        property<bool>& update_text   = view.update_text;
-        property<bool>& update_colors = view.update_colors;
-        property<bool>& update_layout = view.update_layout;
-        unary_property<array<range>>& highlights = view.highlights;
-        unary_property<array<range>>& selections = view.selections;
-        property<bool>& virtual_space = view.virtual_space;
-        property<bool>& insert_mode = view.insert_mode;
-        property<bool>& read_only = view.read_only;
+#define using(x) decltype(view.x)& x = view.x;
+        using(canvas)
+        using(text)
+        using(html)
+        using(color)
+        using(font)
+        using(style)
+        using(wordwrap)
+        using(ellipsis)
+        using(alignment)
+        using(lwrap)
+        using(rwrap)
+        using(update_text)
+        using(update_colors)
+        using(update_layout)
+        using(highlights)
+        using(selections)
+        using(virtual_space)
+        using(insert_mode)
+        using(read_only)
+        #undef using
 
         void on_change (void* what) override
         {
-            if (what == &coord and
-                coord.was.size !=
-                coord.now.size)
-            {
-                view.coord = coord.now.local();
-            }
-            if (what == &update_text
+            if (what == &coord
+            or  what == &padding
+            or  what == &update_text
             or  what == &update_layout)
             {
                 xy size = coord.now.size;
+                
                 bool
-                    scroll_x =
-                    scroll.x.mode == scroll::mode::permanent or (
-                    scroll.x.mode == scroll::mode::automatic and
-                        view.cell.coord.now.size.x > size.x );
+                scroll_x =
+                scroll.x.mode == scroll::mode::permanent or
+                scroll.x.mode == scroll::mode::automatic and
+                padding.now.xl + padding.now.xh +
+                view.cell.coord.now.size.x >
+                size.x;
+
                 bool
-                    scroll_y =
-                    scroll.y.mode == scroll::mode::permanent or (
-                    scroll.y.mode == scroll::mode::automatic and
-                        view.cell.coord.now.size.y > size.y );
+                scroll_y =
+                scroll.y.mode == scroll::mode::permanent or
+                scroll.y.mode == scroll::mode::automatic and
+                padding.now.yl + padding.now.yh +
+                view.cell.coord.now.size.y >
+                size.y;
             
-                int d = gui::metrics::text::height +
+                int d = gui::metrics::text::height * 7/10 +
                     2 * gui::metrics::line::width;
 
                 int x = scroll_y ? size.x - d : size.x;
@@ -88,12 +90,20 @@ namespace gui::text
                 if (scroll_x) size.y -= d;
                 if (scroll_y) size.x -= d;
 
-                view.resize(size);
+                size.x -= padding.now.xl + padding.now.xh;
+                size.y -= padding.now.yl + padding.now.yh;
+
+                view.coord = xywh(
+                    padding.now.xl,
+                    padding.now.yl,
+                    size.x,
+                    size.y);
             }
             if (what == &selections and not view.cell.carets.empty())
             {
-                xyxy r = view.cell.carets.back().coord.now +
-                         view.shift.now;
+                xyxy r = 
+                view.cell.carets.back().coord.now +
+                view.shift.now;
 
                 int d = gui::metrics::text::height;
                 int w = coord.now.size.x, dx = 0;
@@ -128,8 +138,8 @@ namespace gui::text
             if (what == &focus_on)
             {
                 if (not focus_on.now)
-                    view.cell.selection_bars.clear();
-                else view.cell.on_change(&selections);
+                view.cell.selection_bars.clear(); else
+                view.cell.on_change(&selections);
             }
 
             notify(what);
@@ -144,27 +154,54 @@ namespace gui::text
             auto ss =
             selections.now;
             int n = ss.size();
-            if (n >= 2 and not selective
-            and where == THERE)
+            if (n >= 2 and not selective and where == THERE)
             {
-                ss[0] = ss[n-1];
+                ss.front() = ss.back();
+                ss.front().from =
+                ss.front().upto;
                 ss.resize(1);
             }
             else
-            if (n == 1 and not selective
-            and ss[0].from != ss[0].upto)
+            if (n >= 2 and (where == -LINE or where == +LINE))
             {
-                auto& from = ss[0].from;
-                auto& upto = ss[0].upto;
-                if (from > upto) std::swap(from, upto);
-                if (where == -GLYPH or where == -LINE
-                or  where == -TOKEN or where == -PAGE)
-                upto = from; else
-                from = upto;
+                auto upto1 = ss.front().upto;
+                auto upto2 = ss.back ().upto;
+                upto1 = view.lines2rows(upto1);
+                upto2 = view.lines2rows(upto2);
+
+                int r = rows()-1;
+                if((where == -LINE and upto1.line > 0 and upto2.line > 0)
+                or (where == +LINE and upto1.line < r and upto2.line < r))
+                for (auto& caret: ss) go(
+                caret, where, false);
             }
             else
-            for (auto& caret: ss) go(
-            caret, where, selective);
+            if (n == 1 and not selective and ss.front().from != ss.front().upto)
+            {
+                auto& from = ss.front().from;
+                auto& upto = ss.front().upto;
+                if (from > upto) std::swap(from, upto);
+
+                if (where == -GLYPH or where == -LINE
+                or  where == -TOKEN or where == -PAGE)
+                upto = from;
+                else
+                if (where == +GLYPH or where == +LINE
+                or  where == +TOKEN or where == +PAGE)
+                from = upto;
+                else
+                for (auto& caret: ss) go(
+                caret, where, false);
+            }
+            else
+            {
+                if (where == TEXT_BEGIN
+                or  where == TEXT_END)
+                    ss.resize(1);
+
+                for (auto& caret: ss) go(
+                caret, where, selective);
+            }
 
             selections = ss;
         }
@@ -228,8 +265,9 @@ namespace gui::text
             if (r < 0)
                 r = 0;
 
+            // allowed to be
+            // right after the last char
             if (not virtual_space.now and
-            // allowed to be right after the last char
                 offset > row(r).length)
                 offset = row(r).length;
             if (offset < 0)
@@ -292,7 +330,7 @@ namespace gui::text
             }
         }
 
-        bool on_mouse_wheel (xy p, int delta) override
+        bool on_mouse_wheel (xy, int delta) override
         {
             delta /= 20;
             delta *= gui::metrics::text::height;
@@ -308,7 +346,7 @@ namespace gui::text
         }
 
         bool  touch = false;
-        place touch_place;
+        range touch_range;
         time  touch_time;
         xy    touch_point;
         
@@ -322,39 +360,44 @@ namespace gui::text
 
         void on_mouse_click (xy p, str button, bool down) override
         {
+            p -= view.coord.now.origin;
+
             if (button == "right") return;
-            if (button != "left") return;
-            if (down and not touch)
+            if (button != "left" ) return;
+
+            if (down
+            and not touch
+            and not sys::keyboard::ctrl)
             {
-                if (touch_point == p and time::now -
-                    touch_time < 1000ms) // double click
+                select_point = p;
+                auto  place = view.pointed(p);
+                auto& block = view.cell.box.model->block;
+
+                if (touch_point == p
+                and time::now < touch_time + 1000ms)
                 {
-                    //go(-TOKEN); go(+TOKEN, true); // select token
-                    //while (caret_upto > 0 &&
-                    //    symbol_kind(caret_upto-1) == ' ')
-                    //    caret_upto--;
-                    //refresh();
+                    touch_range = block.token_placed(place).range;
                 }
                 else
                 {
-                    select_point = p;
-                    touch_place = view.pointed(p);
-                    auto& block = view.cell.box.model->block;
+                    touch_range = {place, place};
                     link = block.link(p - view.shift);
                     if (link != "") notify(&link);
                 }
                 touch_point = p;
                 touch_time = time::now;
             }
-            touch = down;
 
+            touch = down;
             select_notch = time::now + select_delay;
-            timer.go (down ? time::infinity : time(),
-                      down ? time::infinity : time());
+            timer.go(down? time::infinity : time(),
+                     down? time::infinity : time());
         }
 
         void on_mouse_hover (xy p) override
         {
+            p -= view.coord.now.origin;
+
             bool drag_and_drop = false;
             bool inside_selection = false;
 
@@ -369,11 +412,14 @@ namespace gui::text
 
             if (touch)
             {
-                select_point = p;
-                range selection;
-                selection.from = touch_place;
-                selection.upto = view.pointed(p);
-                selections = array<range>{selection};
+                select_point =  p;
+                auto place = view.pointed(p);
+                selections = array<range>{
+                place< touch_range.from ? range{
+                place, touch_range.upto} :
+                touch_range.upto< place ? range{
+                touch_range.from, place} :
+                touch_range};
                 //info.hide();
                 return;
             }
@@ -492,6 +538,7 @@ namespace gui::text
             if (key == "ctrl+shift+end"      ) go(TEXT_END   , true); else
             if (key == "ctrl+shift+page up"  ) go(PAGE_TOP   , true); else
             if (key == "ctrl+shift+page down") go(PAGE_BOTTOM, true); else
+            if (key == "ctrl+A") { go(TEXT_BEGIN ); go(TEXT_END, true); } else
 
             if (key == "ctrl+C"     ) { sys::clipboard::set(selected()); } else
             if (key == "ctrl+insert") { sys::clipboard::set(selected()); } else

@@ -6,32 +6,30 @@ namespace gui::text
     widget<one_line_editor>
     {
         editor editor;
-        canvas& canvas = editor.canvas;
-        box::text_type& text = editor.text;
-        box::html_type& html = editor.html;
-        property<rgba>& color = editor.color;
-        binary_property<font>& font = editor.font;
-        binary_property<style>& style = editor.style;
-        binary_property<xy>& alignment = editor.alignment;
-        binary_property<int>& lpadding = editor.lpadding;
-        binary_property<int>& rpadding = editor.rpadding;
-        binary_property<array<xy>>& lwrap = editor.lwrap;
-        binary_property<array<xy>>& rwrap = editor.rwrap;
-        unary_property<array<range>>& highlights = editor.highlights;
-        unary_property<array<range>>& selections = editor.selections;
-        property<bool>& wordwrap = editor.wordwrap;
-        property<bool>& ellipsis = editor.ellipsis;
-        property<bool>& update_text   = editor.update_text;
-        property<bool>& update_colors = editor.update_colors;
-        property<bool>& update_layout = editor.update_layout;
-        property<bool>& virtual_space = editor.virtual_space;
-        property<bool>& insert_mode = editor.insert_mode;
-        property<bool>& read_only = editor.read_only;
+
+#define using(x) decltype(editor.x)& x = editor.x;
+        using(canvas)
+        using(text)
+        using(html)
+        using(color)
+        using(font)
+        using(style)
+        using(alignment)
+        using(padding)
+        using(update_text)
+        using(update_colors)
+        using(update_layout)
+        using(highlights)
+        using(selections)
+        using(virtual_space)
+        using(insert_mode)
+        using(read_only)
+        #undef using
 
         one_line_editor ()
         {
-            ellipsis = false;
-            wordwrap = false;
+            editor.ellipsis = false;
+            editor.wordwrap = false;
             editor.scroll.x.mode = gui::scroll::mode::none;
             editor.scroll.y.mode = gui::scroll::mode::none;
         }

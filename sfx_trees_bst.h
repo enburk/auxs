@@ -8,7 +8,7 @@ namespace sfx::trees::binary
         queue queue;
         gui::text::view title;
         gui::text::view counter;
-        property<int> side = gui::metrics::text::height*12/7;
+        property<int> side = gui::metrics::text::height*13/10;
         property<double> speed = 1.0;
         property<bool> pause = true;
         property<time> timer;
@@ -111,8 +111,8 @@ namespace sfx::trees::binary
                 r.x1 = r.x1 - side.now*5;
                 counter.coord = r;
                 counter.color = rgba::gray;
-                counter.alignment = xy{pix::right, pix::center};
-                counter.font = pix::font("", (side.now*7+1)/12);
+                counter.alignment = xy{pix::right, pix::center_of_mass};
+                counter.font = pix::font("", side.now);
 
                 r.x2 = r.x1;
                 r.x1 = side.now/2;
@@ -121,7 +121,7 @@ namespace sfx::trees::binary
                 title.color = rgba::white;
                 title.alignment = xy{pix::left, pix::top};
                 title.font = pix::font("", max(side.now*7/8,
-                    gui::metrics::text::height));
+                    gui::metrics::text::height*3/2));
             }
 
             if (what == &speed) queue.speed = speed.now;

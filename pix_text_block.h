@@ -173,6 +173,47 @@ namespace pix::text
             return {};
         }
 
+        struct token_data
+        {
+            str text, link, info; range range;
+        };
+
+        token_data token_placed (place p)
+        {
+            int n = lines.size();
+            if (p.line < 0 or n == 0) return {};
+            if (p.line > n-1) return { "", "", "", {
+                {n-1, lines[n-1].length},
+                {n-1, lines[n-1].length}}};
+
+            int offset = 0;
+            auto& line = lines[p.line];
+
+            if (p.offset < 0) return { "", "", "", {
+                {p.line, 0},
+                {p.line, 0}}};
+
+            for (auto& token: line.tokens)
+            {
+                if (p.offset >= token.size()) {
+                    p.offset -= token.size();
+                      offset += token.size();
+                        continue; }
+
+                return {
+                token.text,
+                token.link,
+                token.info, {
+                {p.line, offset},
+                {p.line, offset +
+                token.size()}}};
+            }
+
+            return { "", "", "", {
+            {p.line, line.length},
+            {p.line, line.length}}};
+        }
+
         token* hovered_token (xy p)
         {
             for (auto& column: columns)
@@ -208,7 +249,6 @@ namespace pix::text
                 and x <= solid.offset.x + token.offset.x + token.rborder)
                 return &token;
             }
-
             return nullptr;
         }
 

@@ -12,28 +12,29 @@ namespace gui::text
         frame current_line_frame;
         frame frame;
 
-        binary_property<int> lpadding;
-        binary_property<int> rpadding;
+        property<bool> wordwrap = true;
+        property<bool> ellipsis = false;
         binary_property<array<xy>> lwrap;
         binary_property<array<xy>> rwrap;
         binary_property<xy> alignment = xy{pix::center, pix::center};
         binary_property<xy> shift;
-        property<bool> wordwrap = true;
-        property<bool> ellipsis = false;
 
-        box::text_type& text = cell.text;
-        box::html_type& html = cell.html;
-        property<rgba>& color = cell.color;
-        binary_property<font>& font = cell.font;
-        binary_property<style>& style = cell.style;
-        property<bool>& update_text = cell.update_text;
-        property<bool>& update_colors = cell.update_colors;
-        property<bool>& update_layout = cell.update_layout;
-        unary_property<array<range>>& highlights = cell.highlights;
-        unary_property<array<range>>& selections = cell.selections;
-        property<bool>& virtual_space = cell.virtual_space;
-        property<bool>& insert_mode = cell.insert_mode;
-        property<bool>& read_only = cell.read_only;
+#define using(x) decltype(cell.x)& x = cell.x;
+        using(text)
+        using(html)
+        using(color)
+        using(font)
+        using(style)
+        using(update_text)
+        using(update_colors)
+        using(update_layout)
+        using(highlights)
+        using(selections)
+        using(virtual_space)
+        using(insert_mode)
+        using(read_only)
+        #undef using
+
         doc::model*& model = cell.box.model;
 
         void on_change (void* what) override
@@ -49,8 +50,6 @@ namespace gui::text
             if (what == &alignment
             or  what == &wordwrap
             or  what == &ellipsis
-            or  what == &lpadding
-            or  what == &rpadding
             or  what == &lwrap
             or  what == &rwrap
             or  what == &coord and

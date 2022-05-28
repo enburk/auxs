@@ -19,15 +19,17 @@ namespace gui::text
         property<bool> insert_mode = true;
         property<bool> virtual_space = false;
 
-        box::text_type& text = box.text;
-        box::html_type& html = box.html;
-        property<rgba>& color = box.color;
-        binary_property<font>& font = box.font;
-        binary_property<style>& style = box.style;
-        binary_property<format>& format = box.format;
-        property<bool>& update_text   = box.update_text;
-        property<bool>& update_colors = box.update_colors;
-        property<bool>& update_layout = box.update_layout;
+#define using(x) decltype(box.x)& x = box.x;
+        using(text)
+        using(html)
+        using(color)
+        using(font)
+        using(style)
+        using(format)
+        using(update_text)
+        using(update_colors)
+        using(update_layout)
+        #undef using
 
         void on_change (void* what) override
         {
@@ -47,11 +49,19 @@ namespace gui::text
             {
                 xy size = box.coord.now.size;
                 if (not read_only.now) size.x += // for caret
-                2*gui::metrics::line::width;
+                3*gui::metrics::line::width;
+                size.x = max(size.x,
+                format.now.width);
                 resize(size);
+            }
 
+            if (what == &update_text
+            or  what == &update_layout)
+            {
                 highlights = array<range>{};
-                selections = box.model->selections;
+                if (selections.now != box.model->selections)
+                    selections = box.model->selections; else
+                    on_change(&selections);
             }
 
             if (what == &highlights)
@@ -68,6 +78,8 @@ namespace gui::text
 
             if (what == &selections)
             {
+                box.model->selections = selections.now;
+
                 int n = 0;
                 for (auto range: selections.now)
                 for (xywh r: bars(range)) {
@@ -83,8 +95,6 @@ namespace gui::text
             or  what == &read_only
             or  what == &focus_on)
             {
-                box.model->selections = selections.now;
-
                 int n = 0;
                 for (auto range: selections.now)
                     carets(n++).coord = box.model->block.bar(
@@ -140,6 +150,7 @@ namespace gui::text
             }
 
             if (s != "") s.pop_back(); // last \n
+            if (s.contains_only(one_of("\n"))) s = "";
             return s;
         }
 
@@ -149,7 +160,9 @@ namespace gui::text
                 co_yield bar; }
 
         place pointed (xy p) { return box.model->block.
-            pointed(p, virtual_space.now); }
+              pointed (p, virtual_space.now); }
+
+        auto token_placed (place p) { return box.model->block.token_placed(p); }
 
         auto rows() { return box.model->block.rows(); }
         auto row(int n) { return box.model->block.row(n); }

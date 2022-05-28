@@ -45,6 +45,7 @@ widget<TestGuiEditor>
             "esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non "
             "proident, sunt in culpa qui officia deserunt mollit anim id est laborum.";
 
+            editor2.object.wordwrap = false;
             editor2.object.virtual_space = true;
             editor2.object.text = 
             "template <class ForwardIterator, class T, class Distance>\n"
@@ -89,6 +90,7 @@ widget<TestGuiEditor>
             str w5 = std::to_string(5*w); str h5 = std::to_string(5*h);
             try
             {
+                xy point;
                 auto& carets = ee.view.cell.carets;
                 auto& bars = ee.view.cell.selection_bars;
                 ee.scroll.x.mode = gui::scroll::mode::none;
@@ -188,27 +190,127 @@ widget<TestGuiEditor>
                     oops(out(bars[1].coord.now.w)) { w2 };
                     oops(out(bars[1].coord.now.h)) { h2 };
                     oops(out(bars[2].coord.now.x)) { w0 };
+                    oops(out(bars[2].coord.now.y)) { h4 };
+                    oops(out(bars[2].coord.now.w)) { w1 };
+                    oops(out(bars[2].coord.now.h)) { h1 };
+                }
+                test("editor.virtual.space.1");
+                {
+                    ee.wordwrap = false;
+                    ee.virtual_space = true;
+                    oops(input("ctrl+home" )) { "" };
+                    oops(input("shift+down")) { "123 ab|" };
+                    oops(input("shift+down")) { "123 ab|AB|" };
+                    oops(input("shift+down")) { "123 ab|AB||" };
+                    oops(input("shift+down")) { "123 ab|AB||" };
+                    ouch(out(bars.size())) { "1" };
+                    oops(out(bars[0].coord.now.x)) { w0 };
+                    oops(out(bars[0].coord.now.y)) { h0 };
+                    oops(out(bars[0].coord.now.w > 10000)) { "1" };
+                    oops(out(bars[0].coord.now.h)) { h3 };
+                    oops(input("shift+right")) { "123 ab|AB||C" };
+                    oops(input("shift+right")) { "123 ab|AB||C" };
+                    ouch(out(bars.size())) { "3" };
+                    oops(out(bars[0].coord.now.x)) { w0 };
+                    oops(out(bars[0].coord.now.y)) { h0 };
+                    oops(out(bars[0].coord.now.w > 10000)) { "1" };
+                    oops(out(bars[0].coord.now.h)) { h3 };
+                    oops(out(bars[1].coord.now.x)) { w0 }; // C
+                    oops(out(bars[1].coord.now.y)) { h3 };
+                    oops(out(bars[1].coord.now.w)) { w1 };
+                    oops(out(bars[1].coord.now.h)) { h1 };
+                    oops(out(bars[2].coord.now.x)) { w1 }; // virtual space
                     oops(out(bars[2].coord.now.y)) { h3 };
                     oops(out(bars[2].coord.now.w)) { w1 };
                     oops(out(bars[2].coord.now.h)) { h1 };
+                }
+                test("editor.virtual.space.2");
+                {
+                    oops(input("right")) { "" };
+                    ouch(out(bars.size())) { "0" };
+                    ouch(out(carets.size())) { "1" };
+                    oops(out(carets[0].coord.now.x)) { w2 };
+                    oops(out(carets[0].coord.now.y)) { h3 };
+                    oops(out(carets[0].coord.now.w)) { w1 };
+                    oops(out(carets[0].coord.now.h)) { h1 };
+                    oops(input("D"              )) { "" };
+                    oops(input("ctrl+shift+home")) { "123 ab|AB||C D" };
+                    oops(input("ctrl+shift+end" )) { "" };
+                    oops(input("shift+up"       )) { "|C D" };
+                    ouch(out(bars.size())) { "2" };
+                    oops(out(bars[0].coord.now.x)) { w3 }; // virtual space
+                    oops(out(bars[0].coord.now.y)) { h2 };
+                    oops(out(bars[0].coord.now.w > 10000)) { "1" };
+                    oops(out(bars[0].coord.now.h)) { h1 };
+                    oops(out(bars[1].coord.now.x)) { w0 }; // C D
+                    oops(out(bars[1].coord.now.y)) { h3 };
+                    oops(out(bars[1].coord.now.w)) { w3 };
+                    oops(out(bars[1].coord.now.h)) { h1 };
+                    ouch(out(carets.size())) { "1" };
+                    oops(out(carets[0].coord.now.x)) { w3 };
+                    oops(out(carets[0].coord.now.y)) { h2 };
+                    oops(out(carets[0].coord.now.w)) { w1 };
+                    oops(out(carets[0].coord.now.h)) { h1 };
+                    oops(input("shift+up")) { "||C D" };
+                    ouch(out(bars.size())) { "3" };
+                    oops(out(bars[0].coord.now.x)) { w3 }; // virtual space
+                    oops(out(bars[0].coord.now.y)) { h1 };
+                    oops(out(bars[0].coord.now.w > 10000)) { "1" };
+                    oops(out(bars[0].coord.now.h)) { h1 };
+                    oops(out(bars[1].coord.now.x)) { w0 }; // virtual space
+                    oops(out(bars[1].coord.now.y)) { h2 };
+                    oops(out(bars[1].coord.now.w > 10000)) { "1" };
+                    oops(out(bars[1].coord.now.h)) { h1 };
+                    oops(out(bars[2].coord.now.x)) { w0 }; // C D
+                    oops(out(bars[2].coord.now.y)) { h3 };
+                    oops(out(bars[2].coord.now.w)) { w3 };
+                    oops(out(bars[2].coord.now.h)) { h1 };
+                    ouch(out(carets.size())) { "1" };
+                    oops(out(carets[0].coord.now.x)) { w3 };
+                    oops(out(carets[0].coord.now.y)) { h1 };
+                    oops(out(carets[0].coord.now.w)) { w1 };
+                    oops(out(carets[0].coord.now.h)) { h1 };
+                    oops(input("shift+left")) { "||C D" };
+                    oops(input("shift+left")) { "B||C D" };
+                }
+                test("editor.multicaret");
+                {
+                    oops(input("ctrl+A")) { "123 ab|AB||C D" };
+                    oops(input("ctrl+home")) { "" };
+                    oops(input("alt+shift+down")) { "" };
+                    oops(input("alt+shift+down")) { "" };
+                    oops(input("alt+shift+down")) { "" };
+                    oops(input("alt+shift+down")) { "" };
+                    oops(input("alt+shift+down")) { "" };
+                    oops(out(carets.size())) { "4" };
+                    oops(input("shift+right")) { "1|A||C" };
+                    oops(input("shift+left" )) { "" };
+                    oops(input("up"         )) { "" };
+                    oops(out(carets.size())) { "4" };
+                    oops(input("shift+right")) { "1|A||C" };
+                    oops(input("shift+up"   )) { "1|A|" };
+                    oops(input("escape"     )) { "" };
+                    oops(out(carets.size())) { "1" };
+                    oops(out(bars.size())) { "0" };
+                }
+                test("editor.undo.redo");
+                {
                 }
                 test("editor.clipboard");
                 {
                     oops(input("ctrl+end")) { "" };
                 }
-                test("editor.virtual.space");
-                {
-                }
-                test("editor.multicaret");
+                test("editor.indent");
                 {
                 }
                 test("editor.clear");
                 {
-                    oops(input("backspace" )) { "" };
-                    oops(input("ctrl+home" )) { "" };
-                    oops(input("ctrl+shift+end" )) { "" };
+                    oops(input("ctrl+A")) { "123 ab|AB||C D" };
+                    oops(input("delete")) { "" };
+                    ouch(out(bars.size())) { "0" };
                     ouch(out(carets.size())) { "1" };
                     oops(out(carets[0].coord.now.x)) { "0" };
+                    oops(out(carets[0].coord.now.y)) { "0" };
                 }
             }
             catch (assertion_failed) {}
@@ -234,8 +336,18 @@ widget<TestGuiEditor>
                     oops(input("2" )) { "" };
                     oops(input("3" )) { "" };
                     oops(input("4" )) { "" };
-                    oops(input("ctrl+home" )) { "" };
-                    oops(input("ctrl+shift+end" )) { "1234" };
+                    oops(input("ctrl+home")) { "" };
+                    oops(input("ctrl+shift+end")) { "1234" };
+                }
+                test("one_line_editor.clear");
+                {
+                    oops(input("ctrl+home")) { "" };
+                    oops(input("delete")) { "" };
+                    oops(input("delete")) { "" };
+                    oops(input("delete")) { "" };
+                    oops(input("delete")) { "" };
+                    oops(input("delete")) { "" };
+                    oops(input("ctrl+shift+end" )) { "" };
                 }
             }
             catch (assertion_failed) {}
@@ -249,8 +361,8 @@ widget<TestGuiEditor>
         {
             int W = coord.now.w; if (W <= 0) return;
             int H = coord.now.h; if (H <= 0) return;
-            int h = gui::metrics::text::height * 12 / 7;
-            int d = gui::metrics::line::width * 6;
+            int h = gui::metrics::text::height*13/10;
+            int d = gui::metrics::line::width*6;
             int l = W * x1 / 100'00;
             int r = W * x2 / 100'00;
             console.coord = xyxy(0-0, 0, l+0, H);
@@ -277,17 +389,17 @@ widget<TestGuiEditor>
             splitt2.middle/coord.now.w;
             on_change(&coord);
         }
-        //if (what == &edline1.object)
-        //{
-        //    editor1.object.text += edline1.object.text;
-        //    editor1.object.text += "\n";
-        //    edline1.object.text = "";
-        //}
-        //if (what == &edline2.object)
-        //{
-        //    editor2.object.text += edline2.object.text;
-        //    editor2.object.text += "\n";
-        //    edline2.object.text = "";
-        //}
+        if (what == &edline1.object)
+        {
+            editor1.object.text += edline1.object.text;
+            editor1.object.text += "\n";
+            edline1.object.text = "";
+        }
+        if (what == &edline2.object)
+        {
+            editor2.object.text += edline2.object.text;
+            editor2.object.text += "\n";
+            edline2.object.text = "";
+        }
     }
 };

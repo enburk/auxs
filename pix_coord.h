@@ -213,13 +213,19 @@ namespace pix
     using segment = aux::segment<vector>;
     using circle  = aux::circle;
 
-    ///////////////////////////////////////////////////////////////////////
-                                const  int
-    ///////////////////////////////////////////////////////////////////////
-                                top    =-1,
-    justify_left =-2, left =-1, center = 0, right = 1, justify_right = 2,
-                                bottom = 1;
-    ///////////////////////////////////////////////////////////////////////
+    ////////////////////////////////
+              const  int
+    ////////////////////////////////
+              top    =-1,
+    left =-1, center = 0, right = 1,
+              bottom = 1,
+    ////////////////////////////////
+
+    justify_left  =-2,
+    justify_right = 2,
+
+    center_of_area =-99,
+    center_of_mass = 99;
 
     enum class geo
     {
