@@ -40,8 +40,7 @@ namespace doc::html
 
         void proceed (entity const& entity, style style, padding padding, str link)
         {
-            std::map<str,str> attr_style;
-
+            std::multimap<str,str> attr_style;
             for (auto [attr, value] : entity.attr)
             {
                 if (attr == "hidden")
@@ -54,30 +53,45 @@ namespace doc::html
                     {
                         str key, value;
                         if (s.split_by(":", key, value))
-                            attr_style[key] = value;
+                        {
+                            key.strip();
+                            value.strip();
+                            attr_style.emplace
+                            (key, value);
+                        }
                     }
                 }
             }
 
-            int height = pix::metrics(style.font).height;
-
-            auto heights = [height](str val)
+            auto metrics = pix::metrics(style.font);
+            auto measure = [metrics](str value)
             {
-                double h = 0;
-                if (val.ends_with("em")) h = height; else
-                if (val.ends_with("ex")) h = height * 0.39; else
-                return int(h);
-                val.truncate();
-                val.truncate();
-                return int(h * std::round(std::stof(val)));
+                double coeff = 1.0;
+
+                if (value.ends_with("em")) { coeff = metrics.height;
+                    value.truncate();
+                    value.truncate();
+                }
+                else
+                if (value.ends_with("ex")) { coeff = metrics.height * 0.39;
+                    value.truncate();
+                    value.truncate();
+                }
+                else
+                if (value.ends_with("ch")) { coeff = metrics.average_char_width;
+                    value.truncate();
+                    value.truncate();
+                }
+                return int(std::round(coeff * std::stof(value)));
             };
 
             if (entity.kind == "text")
             {
-                if (lines.size() == 0 or
-                    lines.back().padding != padding)
+                if (lines.size() == 0)
                     lines += pix::text::line{
                     style_index(style), padding};
+
+                lines.back().padding = padding;
 
                 for (auto token : entity.head)
                     lines.back().tokens +=
@@ -89,9 +103,14 @@ namespace doc::html
             if (entity.name == "br")
             {
                 if (lines.size() == 0)
-                lines += pix::text::line{style_index(style), padding};
-                lines.back().style = style_index(style); // could be empty
-                lines += pix::text::line{style_index(style), padding};
+                    lines += pix::text::line{
+                    style_index(style), padding};
+
+                lines.back().style = // line could be empty
+                style_index(style);  // apply current font height
+                
+                lines += pix::text::line{
+                style_index(style), padding};
             }
             else
             if (entity.name == "h4") {
@@ -107,27 +126,29 @@ namespace doc::html
             }
             else
             if (entity.name == "small") {
-                style.font.size = height * 85/100;
+                style.font.size = metrics.height * 85/100;
             }
             else
             if (entity.name == "big") {
-                style.font.size = height * 125/100;
+                style.font.size = metrics.height * 125/100;
             }
             else
             if (entity.name == "sub") {
-                style.font.size = height * 77/100;
-                style.offset.y  = height * 30/100;
+                style.font.size = metrics.height * 77/100;
+                style.offset.y  = metrics.height * 30/100;
                 for (auto [key, val] : attr_style)
                     if (key == "margin-left")
-                        style.offset.x = heights(val);
+                        style.offset.x =
+                            measure(val);
             }
             else
             if (entity.name == "sup") {
-                style.font.size = height * 77/100;
-                style.offset.y  = -height * 30/100;
+                style.font.size = metrics.height * 77/100;
+                style.offset.y  =-metrics.height * 30/100;
                 for (auto [key, val] : attr_style)
                     if (key == "margin-left")
-                        style.offset.x = heights(val);
+                        style.offset.x =
+                            measure(val);
             }
             else
             if (entity.name == "code") {
@@ -156,7 +177,7 @@ namespace doc::html
                         value.strip("\"");
                         if (value.ends_with("%")) {
                             value.truncate();
-                            int x = std::atoi(value.c_str());
+                            int x = std::stoi(value);
                             int size = gui::metrics::text::height;
                             style.font.size = size * x/100;
                         }
@@ -178,16 +199,20 @@ namespace doc::html
             else
             if (entity.name == "blockquote")
             {
-                padding.left += 3*height;
+                padding.left += 3 * metrics.height;
             }
             else
             if (entity.name == "div")
             {
                 for (auto [key, val] : attr_style)
                 {
-                    if (key == "margin-left") {
-                        padding.left = heights(val);
-                    }
+                    if (key == "margin-left")
+                        padding.left +=
+                        measure(val);
+
+                    if (key == "text-indent")
+                        padding.first +=
+                        measure(val);
 
                     if (key == "line-height")
                     {

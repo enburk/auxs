@@ -166,16 +166,14 @@ namespace pix::text
                 s.offset.x += W - w;
             }
             else // justify
+            if (int n = solids.size(); n >= 2)
             {
-                int n = solids.size();
-                if (n <= 0) return;
-                if (n <= 1) return; //  t o k e n
-
                 int d = (W - w) / (n-1);
                 int e = (W - w) % (n-1);
 
                 for (int i=0; i<n; i++)
                 solids[i].offset.x += d*i;
+
                 for (int i=0; i<e; i++)
                 solids[n-e+i].offset.x += i;
             }
