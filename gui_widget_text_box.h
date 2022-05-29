@@ -11,8 +11,8 @@ namespace gui::text
         auto operator == (str text) { return str(*this) ==  text; }
         auto operator != (str text) { return str(*this) !=  text; }
         auto operator <=>(str text) { return str(*this) <=> text; }
-        void operator  = (str text) { x.model->set_text(std::move(text)); x.on_change(this); }
-        void operator += (str text) { x.model->add_text(std::move(text)); x.on_change(this); }
+        void operator  = (str text) { if (x.model->set_text(std::move(text))) x.on_change(this); }
+        void operator += (str text) { if (x.model->add_text(std::move(text))) x.on_change(this); }
         operator str() const { return x.model->get_text(); } };
 
         struct html_type { box& x; html_type(box& x) : x(x) {}
@@ -20,8 +20,8 @@ namespace gui::text
         auto operator == (str text) { return str(*this) ==  text; }
         auto operator != (str text) { return str(*this) !=  text; }
         auto operator <=>(str text) { return str(*this) <=> text; }
-        void operator  = (str html) { x.model->set_html(std::move(html)); x.on_change(this); }
-        void operator += (str html) { x.model->add_html(std::move(html)); x.on_change(this); }
+        void operator  = (str html) { if (x.model->set_html(std::move(html))) x.on_change(this); }
+        void operator += (str html) { if (x.model->add_html(std::move(html))) x.on_change(this); }
         operator str() const { return x.model->get_html(); } };
 
         text_type text{*this};

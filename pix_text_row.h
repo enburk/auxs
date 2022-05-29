@@ -21,25 +21,33 @@ namespace pix::text
             layout();
         }
 
+        int lwrap (int height)
+        {
+            int x = 0;
+            for (auto bar: format.lwrap) {
+                x = aux::max(x, bar.x);
+                height -= bar.y;
+                if (height <= 0)
+                    break;
+            }
+            return x;
+        }
+        int rwrap (int height)
+        {
+            int x = 0;
+            for (auto bar: format.rwrap) {
+                x = aux::max(x, bar.x);
+                height -= bar.y;
+                if (height <= 0)
+                    break;
+            }
+            return x;
+        }
         int max_width (int height)
         {
-            int l = 0; int h = height;
-            for (auto bar: format.lwrap) {
-                l = aux::max(l, bar.x);
-                h -= bar.y;
-                if (h <= 0)
-                    break;
-            }
-            int r = 0; h = height;
-            for (auto bar: format.rwrap) {
-                r = aux::max(r, bar.x);
-                h -= bar.y;
-                if (h <= 0)
-                    break;
-            }
             return format.width
-                - l - lpadding
-                - r - rpadding;
+            - lwrap(height) - lpadding
+            - rwrap(height) - rpadding;
         }
 
         void add (array<token>::range_type& tokens)
@@ -124,67 +132,64 @@ namespace pix::text
 
             layout();
 
-            int x = 0;
-            int hh = Height();
-            for (auto bar: format.lwrap) {
-                x = aux::max(x, bar.x);
-                hh -= bar.y;
-                if (hh <= 0)
-                    break;
-            }
-            for (auto& s: solids)
-            s.offset.x += x + lpadding;
-
             int H = Height();
             int h = height();
-
             if (format.alignment.y == center_of_area
             or  format.alignment.y == center_of_mass)
+            {
                for (auto& s: solids)
                s.offset.y -= (H-h)/2;
+            }
 
             int align = format.alignment.x;
             int W = max_width(Height());
-            int v = rborder - lborder;
-            int w = rborder;
-            if (W <= w)
-                return;
-
-            if (align == left or
-               (align <= justify_left and last))
-                return;
-
-            advance = W;
-            rborder = W;
-
-            if (align == center) {
+            int w = rborder - lborder;
+            if (W <= w
+            or  align == left
+            or  align <= justify_left and last)
+            {
+                W = min(advance, rborder);
+            }
+            else
+            if (align == center
+            or  align == center_of_area
+            or  align == center_of_mass)
+            {
                 for (auto& s: solids)
                 s.offset.x += (W-w)/2;
-                return; }
-
-            if (align == center_of_area
-            or  align == center_of_mass) {
-                for (auto& s: solids)
-                s.offset.x += (W-v)/2;
-                return; }
-
-            if (align == right or
-               (align >= justify_right and last)) {
+            }
+            else
+            if (align == right
+            or  align >= justify_right and last)
+            {
                 for (auto& s: solids)
                 s.offset.x += W - w;
-                return; }
+            }
+            else // justify
+            {
+                int n = solids.size();
+                if (n <= 0) return;
+                if (n <= 1) return; //  t o k e n
 
-            int n = solids.size();
-            if (n <= 0) return;
-            if (n <= 1) return; //  t o k e n
+                int d = (W - w) / (n-1);
+                int e = (W - w) % (n-1);
 
-            int d = (W - w) / (n-1);
-            int e = (W - w) % (n-1);
+                for (int i=0; i<n; i++)
+                solids[i].offset.x += d*i;
+                for (int i=0; i<e; i++)
+                solids[n-e+i].offset.x += i;
+            }
 
-            for (int i=0; i<n; i++)
-            solids[i].offset.x += d*i;
-            for (int i=0; i<e; i++)
-            solids[n-e+i].offset.x += i;
+            advance = max(advance, W);
+            rborder = max(rborder, W);
+
+            int x = 
+            lpadding + lwrap(Height());
+            for (auto& s: solids)
+            s.offset.x += x;
+            advance += x;
+            lborder += x;
+            rborder += x;
         }
 
         void render (frame<rgba> frame, xy shift=xy{}, uint8_t alpha=255)

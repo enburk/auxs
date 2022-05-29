@@ -221,11 +221,11 @@ namespace pix
               bottom = 1,
     ////////////////////////////////
 
-    justify_left  =-2,
-    justify_right = 2,
+    justify_left  =-99,
+    justify_right = 99,
 
-    center_of_area =-99,
-    center_of_mass = 99;
+    center_of_area =-2,
+    center_of_mass = 2;
 
     enum class geo
     {

@@ -87,7 +87,7 @@ namespace pix
             ascent  = max(ascent,  m.ascent);
             Descent = max(Descent, m.Descent);
             descent = max(descent, m.descent);
-            lborder = min(lborder, m.lborder + advance + m.xoffset);
+            lborder = min(lborder, m.lborder + advance + m.xoffset); // starts from zero?
             rborder = max(rborder, m.rborder + advance + m.xoffset);
             advance += m.advance; }
         };

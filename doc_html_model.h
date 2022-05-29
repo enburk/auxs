@@ -13,9 +13,10 @@ namespace doc::html
         str  get_text () override { return untagged(source); }
         str  get_html () override { return source; }
 
-        void set_text (str text) override { set_html(encoded(text)); }
-        void set_html (str text) override 
+        bool set_text (str text) override { return set_html(encoded(text)); }
+        bool set_html (str text) override 
         {
+            if (source == text) return false;
             source = std::move(text);
             entities = html::entities(source);
             if (false) { // debug
@@ -24,10 +25,11 @@ namespace doc::html
                 entities += entity{"", "text"};
                 entities.back().head = tokens;
             }
+            return true;
         }
 
-        void add_text (str text) override { set_html(source + encoded(text)); }
-        void add_html (str html) override { set_html(source + html); }
+        bool add_text (str text) override { return set_html(source + encoded(text)); }
+        bool add_html (str html) override { return set_html(source + html); }
 
         void set (style s) override
         {

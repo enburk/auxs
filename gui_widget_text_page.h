@@ -98,6 +98,9 @@ namespace gui::text
                     padding.now.yl,
                     size.x,
                     size.y);
+
+                timer.go(gui::time{}, gui::time{});
+                touch = false;
             }
             if (what == &selections and not view.cell.carets.empty())
             {

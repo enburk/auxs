@@ -20,13 +20,13 @@ namespace doc
             style_index>
             styles;
 
-        virtual void set_text (str) {}
-        virtual void set_html (str) {}
-        virtual void add_text (str) {}
-        virtual void add_html (str) {}
+        virtual str  brief    () { return ""; }
         virtual str  get_text () { return ""; }
         virtual str  get_html () { return ""; }
-        virtual str  brief    () { return ""; }
+        virtual bool set_text (str) { return false; }
+        virtual bool set_html (str) { return false; }
+        virtual bool add_text (str) { return false; }
+        virtual bool add_html (str) { return false; }
 
         virtual place front () const { return place{}; }
         virtual place back  () const { return place{}; }

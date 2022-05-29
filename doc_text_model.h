@@ -81,12 +81,22 @@ namespace doc::text
 
         str  get_text ()      override { return string(); }
         str  get_html ()      override { throw std::runtime_error("unsupported"); }
-
-        void set_text (str s) override { if (base::set(text(s))) tokenize(); }
-        void set_html (str s) override { throw std::runtime_error("unsupported"); }
-
-        void add_text (str s) override { lines += base{s}.lines; tokenize(); }
-        void add_html (str s) override { throw std::runtime_error("unsupported"); }
+        bool add_html (str s) override { throw std::runtime_error("unsupported"); }
+        bool set_html (str s) override { throw std::runtime_error("unsupported"); }
+        bool set_text (str s) override
+        {
+            bool changed = base::set(text(s));
+            if (changed) tokenize();
+            return changed;
+        }
+        bool add_text (str s) override
+        {
+            bool changed = s != "";
+            if (not changed) return false;
+            lines += base{s}.lines;
+            tokenize();
+            return true;
+        }
 
         void set (style s) override
         {
