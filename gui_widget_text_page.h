@@ -384,7 +384,7 @@ namespace gui::text
                 else
                 {
                     touch_range = {place, place};
-                    link = block.link(p - view.shift);
+                    link = block.link(p - view.cell.coord.now.origin);
                     if (link != "") notify(&link);
                 }
                 touch_point = p;
@@ -458,13 +458,15 @@ namespace gui::text
                 return;
             }
 
+            p -= view.cell.coord.now.origin;
             auto& block = view.cell.box.model->block;
-            auto* token = block.hovered_token(p - view.shift);
-            link = block.link(p - view.shift);
+            bool hover = block.hovered_token(p) != nullptr;
+            link = block.link(p);
             bool same = true;
 
             mouse_image = link != "" ? "hand" :
-            token or virtual_space ? "editor" : "arrow";
+                hover or virtual_space ? "editor" :
+                    "arrow";
 
             for (auto token: view.visible_tokens())
             {

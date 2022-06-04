@@ -72,7 +72,7 @@ namespace gui
                 what == &focus_on or
                 what == &show_focus)
             {
-                auto & style = skins[skin.now];
+                auto style = skins[skin];
                 auto light = style.light.first;
                 auto heavy = style.heavy.first;
                 auto focus = focus_on.now
@@ -94,7 +94,10 @@ namespace gui
                 frame3.coord = r; r.deflate(frame3.thickness.now);
                 object.coord = r;
             }
-
+            if (what == &object)
+            {
+                notify();
+            }
             notify(what);
         }
     };

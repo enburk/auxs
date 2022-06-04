@@ -54,7 +54,7 @@ namespace doc::text::repo
             {
                 std::ofstream stream(temp);
                 for (auto & line : model->lines)
-                    stream << doc::text::string(line) << "\n";
+                stream << aux::unicode::string(line) << "\n";
             }
             std::filesystem::rename(temp, path);
             filetime = std::filesystem::last_write_time(path);
@@ -113,7 +113,8 @@ namespace doc::text::repo
     void reload ()
     {
         std::erase_if(map, [](auto & pair){ return 
-            !std::filesystem::exists(pair.second.path); });
+            not std::filesystem::exists(
+                pair.second.path); });
 
         for (auto & [path, source] : map)
         {

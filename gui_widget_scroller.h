@@ -1,6 +1,6 @@
 #pragma once
 #include "gui_widget.h"
-#include "gui_widget_canvas.h"
+#include "gui_widget_aux.h"
 #include "gui_widget_button.h"
 namespace gui
 {
@@ -34,7 +34,8 @@ namespace gui
     {
         canvas canvas;
         runner runner;
-        button up, down, page_up, page_down;
+        button up, down;
+        button page_up, page_down;
         property<double> ratio = 1;
         property<int> span = 0, top = 0, step = 1;
         bool touch = false;
@@ -55,8 +56,8 @@ namespace gui
 
         void on_change (void* what) override
         {
-            if (what == &coord or
-                what == &ratio)
+            if (what == &coord
+            or  what == &ratio)
             {
                 int w = coord.now.w;
                 int h = coord.now.h;
@@ -72,10 +73,12 @@ namespace gui
             {
                 canvas.color = gui::skins[skin].light.first;
             }
-            if (what == &span)
+            if (what == &span
+            or  what == &coord)
             {
-                if (span.now < 0) throw std::out_of_range
-                    ("scroller: negative span");
+                if (span.now < 0)
+                throw std::out_of_range(
+                "scroller: negative span");
 
                 int y = max (0, min (top.now, span.now - coord.now.h));
                 if (top.now != y) top = y;
@@ -142,7 +145,8 @@ namespace gui
     {
         canvas canvas;
         runner runner;
-        button left, right, page_left, page_right;
+        button left, right;
+        button page_left, page_right;
         property<double> ratio = 1;
         property<int> span = 0, top = 0, step = 1;
         bool touch = false;
@@ -180,10 +184,12 @@ namespace gui
             {
                 canvas.color = gui::skins[skin.now].light.first;
             }
-            if (what == &span)
+            if (what == &span
+            or  what == &coord)
             {
-                if (span.now < 0) throw std::out_of_range
-                    ("scroller: negative span");
+                if (span.now < 0)
+                throw std::out_of_range(
+                "scroller: negative span");
 
                 int x = max (0, min (top.now, span.now - coord.now.w));
                 if (top.now != x) top = x;
@@ -218,8 +224,8 @@ namespace gui
             int d = left.coord.now.w;
 
             runner.coord = xywh(d+fake_top, 0, fake_page, h);
-            page_left.coord = xyxy(d, 0, runner.coord.now.y, h);
-            page_right.coord = xyxy(d+fake_top+fake_page, 0, right.coord.now.y, h);
+            page_left.coord = xyxy(d, 0, runner.coord.now.x, h);
+            page_right.coord = xyxy(d+fake_top+fake_page, 0, right.coord.now.x, h);
 
             left.enabled = top.now > 0;
             right.enabled = top.now < span.now - real_page;

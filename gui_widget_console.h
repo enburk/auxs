@@ -10,6 +10,7 @@ namespace gui
         text::view& view = page.view;
         scroll& scroll = page.scroll;
         canvas& canvas = page.canvas;
+        str& link = page.link;
         property<time> timer;
         array<str> addon;
         std::mutex mutex;
@@ -35,8 +36,8 @@ namespace gui
         void on_change (void* what) override
         {
             if (timer.now == time())
-                timer.go (time::infinity,
-                          time::infinity);
+                timer.go(time::infinity,
+                         time::infinity);
 
             if (what == &skin)
             {
@@ -65,6 +66,10 @@ namespace gui
                 page.html = log;
                 page.scroll.y.top =
                     max<int>();
+            }
+            if (what == &link)
+            {
+                notify(&link);
             }
         }
 

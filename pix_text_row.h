@@ -15,6 +15,7 @@ namespace pix::text
         int length = 0;
         int indent = 0;
         bool last = true;
+        bool ellipsis = false;
 
         row (style_index style = {}) : style(style)
         {
@@ -94,6 +95,10 @@ namespace pix::text
 
         void ellipt()
         {
+            if (
+            ellipsis) return;
+            ellipsis = true;
+
             last = true;
 
             int W = max_width(Height());
@@ -113,6 +118,11 @@ namespace pix::text
 
         void align ()
         {
+            if (rborder > max_width(Height())
+            and format.ellipsis and
+            not format.wordwrap)
+                ellipt();
+
             length = 0;
             indent = -1;
             for (auto& solid: solids)

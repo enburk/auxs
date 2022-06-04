@@ -1,7 +1,7 @@
 #pragma once
 #include "doc_html_model.h"
 #include "gui_widget_text_cell.h"
-#include "gui_widget_canvas.h"
+#include "gui_widget_aux.h"
 namespace gui::text
 {
     struct view:
@@ -11,6 +11,8 @@ namespace gui::text
         canvas canvas; cell cell;
         frame current_line_frame;
         frame frame;
+
+        view () { frame.thickness = 0; }
 
         property<bool> wordwrap = true;
         property<bool> ellipsis = false;
@@ -62,9 +64,13 @@ namespace gui::text
                 f.alignment = alignment.now;
                 f.wordwrap = wordwrap.now;
                 f.ellipsis = ellipsis.now;
-                f.width  = coord.now.size.x; if (ellipsis.now)
+                f.width  = coord.now.size.x;
+                
+                if (ellipsis.now
+                and wordwrap.now)
                 f.height = coord.now.size.y; else
                 f.alignment.y = pix::top;
+
                 cell.format = f;
             }
 
@@ -96,9 +102,15 @@ namespace gui::text
                     current_line_frame.hide();
             }
 
-            if (what == &focus_on)
+            if (what == &focus_on
+            or  what == &read_only)
             {
                 cell.focus_on = focus_on.now;
+
+                frame.color =
+                read_only.now? skins[skin].disabled.first:
+                focus_on.now? skins[skin].focused.first:
+                             skins[skin].heavy.first;
             }
 
             notify(what);
@@ -106,7 +118,7 @@ namespace gui::text
 
         auto selected () { return cell.selected(); }
 
-        place pointed (xy p) { return cell.pointed(p - shift.now); }
+        place pointed (xy p) { return cell.pointed(p - cell.coord.now.origin); }
 
         auto rows() { return cell.rows(); }
         auto row(int n) { return cell.row(n); }
@@ -120,12 +132,11 @@ namespace gui::text
             {
                 int ry = row->offset.y;
                 int rh = row->Height();
-                int vy = cell.coord.now.y;
-                int vh = cell.coord.now.h;
-                vh = min (vh, coord.now.h - vy);
+                int vy =-cell.coord.now.y;
+                int vh = coord.now.h;
 
                 if (ry + rh < vy
-                or ry >= vy + vh)
+                or  vy + vh < ry)
                     continue;
 
                 for (auto& solid: row->solids)

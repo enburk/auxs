@@ -108,9 +108,6 @@
     <ClInclude Include="gui_widget_button.h">
       <Filter>gui</Filter>
     </ClInclude>
-    <ClInclude Include="gui_widget_canvas.h">
-      <Filter>gui</Filter>
-    </ClInclude>
     <ClInclude Include="gui_widget_console.h">
       <Filter>gui</Filter>
     </ClInclude>
@@ -299,6 +296,9 @@
     </ClInclude>
     <ClInclude Include="test_gui_edit.h">
       <Filter>test</Filter>
+    </ClInclude>
+    <ClInclude Include="gui_widget_aux.h">
+      <Filter>gui</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

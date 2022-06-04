@@ -1,6 +1,6 @@
 #pragma once
 #include "gui_widgetarium.h"
-#include "gui_widget_canvas.h"
+#include "gui_widget_aux.h"
 namespace gui::text
 {
     using pix::font;

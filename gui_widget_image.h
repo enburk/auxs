@@ -2,7 +2,7 @@
 #include <fstream>
 #include "sys_aux.h"
 #include "pix_sampling.h"
-#include "gui_widget_canvas.h"
+#include "gui_widget_aux.h"
 #include "gui_widgetarium.h"
 namespace gui
 {

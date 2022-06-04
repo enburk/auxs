@@ -28,9 +28,9 @@ namespace doc::text
     struct token
     {
         str text, kind, info; range range;
-        void operator += (const glyph & g) { text += g.string(); range.upto.offset++; }
-        bool operator != (const token & t) const = default;
-        bool operator == (const token & t) const = default;
+        void operator += (glyph const& g) { text += g.string(); range.upto.offset++; }
+        bool operator != (token const& t) const = default;
+        bool operator == (token const& t) const = default;
     };
 
     struct report

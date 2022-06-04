@@ -101,7 +101,8 @@ namespace pix::text
                     columns[c].rows.from(r);
                     columns[c].rows.resize(r);
 
-                    if (c+1 == cc and format.ellipsis)
+                    if (c+1 == cc
+                    and format.ellipsis)
                     columns[c].rows.back()->ellipt();
                     break;
                 }
@@ -246,7 +247,7 @@ namespace pix::text
                 for (auto& solid: row->solids)
                 for (auto& token: solid.tokens)
                 if (x >= solid.offset.x + token.offset.x
-                and x <= solid.offset.x + token.offset.x + token.rborder)
+                and x <= solid.offset.x + token.offset.x + token.advance)
                 return &token;
             }
             return nullptr;

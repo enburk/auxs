@@ -50,8 +50,8 @@
     <ClInclude Include="gui_effect.h" />
     <ClInclude Include="gui_widget.h" />
     <ClInclude Include="gui_widgetarium.h" />
+    <ClInclude Include="gui_widget_aux.h" />
     <ClInclude Include="gui_widget_button.h" />
-    <ClInclude Include="gui_widget_canvas.h" />
     <ClInclude Include="gui_widget_console.h" />
     <ClInclude Include="gui_widget_geometry.h" />
     <ClInclude Include="gui_widget_image.h" />

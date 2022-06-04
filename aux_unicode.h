@@ -149,7 +149,7 @@ namespace aux::unicode
         return n;
     }
 
-    inline str string (auto glyphs)
+    str string (auto glyphs)
     {
         str s; int n = 0;
         for (auto g : glyphs) n += g.size(); s.reserve(n);

@@ -1,6 +1,6 @@
 #pragma once
 #include "gui_colors.h"
-#include "gui_widget_canvas.h"
+#include "gui_widget_aux.h"
 #include "gui_widget_image.h"
 #include "gui_widget_text_view.h"
 namespace gui

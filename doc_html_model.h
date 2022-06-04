@@ -9,9 +9,20 @@ namespace doc::html
         array<pix::text::line>& lines = block.lines;
         typedef struct pix::text::line::padding padding;
 
-        str  brief    () override { return untagged(source.upto(200)); }
-        str  get_text () override { return untagged(source); }
-        str  get_html () override { return source; }
+        str brief () override
+        {
+            str s;
+            for (auto g: aux::unicode::glyphs(source)) {
+                s += g.string();
+                if (s.size() >= 200) {
+                    s += "...\n";
+                    break; } }
+
+            return untagged(s);
+        }
+
+        str get_text () override { return untagged(source); }
+        str get_html () override { return source; }
 
         bool set_text (str text) override { return set_html(encoded(text)); }
         bool set_html (str text) override 
@@ -36,6 +47,11 @@ namespace doc::html
             lines.clear();
             for (auto entity : entities)
                 proceed(entity, s, padding{}, "");
+
+            while (
+            not lines.empty()
+            and lines.back().tokens.empty())
+                lines.truncate();
         }
 
         void proceed (entity const& entity, style style, padding padding, str link)
