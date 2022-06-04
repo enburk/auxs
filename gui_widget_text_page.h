@@ -13,7 +13,7 @@ namespace gui::text
     struct page:
     widget<page>
     {
-        view view;
+        canvas canvas; view view;
         scroll scroll;
         str link;
 
@@ -23,7 +23,6 @@ namespace gui::text
         binary_property<bool> infotip = false;
 
 #define using(x) decltype(view.x)& x = view.x;
-        using(canvas)
         using(text)
         using(html)
         using(color)
@@ -69,7 +68,7 @@ namespace gui::text
                 view.cell.coord.now.size.y >
                 size.y;
             
-                int d = gui::metrics::text::height * 7/10 +
+                int d = gui::metrics::text::height * 6/10 +
                     2 * gui::metrics::line::width;
 
                 int x = scroll_y ? size.x - d : size.x;
@@ -92,6 +91,8 @@ namespace gui::text
 
                 size.x -= padding.now.xl + padding.now.xh;
                 size.y -= padding.now.yl + padding.now.yh;
+
+                canvas.coord = coord.now.local();
 
                 view.coord = xywh(
                     padding.now.xl,

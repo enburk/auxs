@@ -330,21 +330,21 @@ HWND MainWindowHwnd = nullptr;
 
 void sys::window::create (str title)
 {
-    WNDCLASS wc = {};
+    WNDCLASSW wc = {};
     wc.hInstance = ::GetModuleHandle(NULL);
-    wc.lpszClassName = TEXT("AE window class name");
+    wc.lpszClassName = L"AE window class name";
     wc.lpfnWndProc = gpu ? GpuWindowProc : PixWindowProc;
-    ::RegisterClass(&wc);
+    ::RegisterClassW(&wc);
 
     int x = CW_USEDEFAULT;
     int y = CW_USEDEFAULT;
     int w = CW_USEDEFAULT;
     int h = CW_USEDEFAULT;
 
-    HWND handle = ::CreateWindowEx(
+    HWND handle = ::CreateWindowExW(
         WS_EX_APPWINDOW, // optional styles
         wc.lpszClassName, // window class
-        title.c_str(),
+        winstr(title).c_str(),
         WS_OVERLAPPEDWINDOW,
         x, y, w, h,
         NULL, // parent window
@@ -395,7 +395,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPTSTR pCmdLine, int nCmdShow
     MSG msg = {}; //...W for UNICODE
     while (::GetMessageW(&msg, NULL, 0, 0)) {
         ::TranslateMessage(&msg);
-        ::DispatchMessage(&msg);
+        ::DispatchMessageW(&msg);
     }
 }
 
