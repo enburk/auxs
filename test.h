@@ -91,7 +91,7 @@ widget<Test>
             canvas.coord = xywh(0, 0, W, H);
             buttons.coord = xywh(W-w, 0, w, H);
 
-            for (auto & button : buttons) {
+            for (auto & button: buttons) {
                 str s = button.text.text;
                 if (s == "doc"
                 or  s == "pix"
