@@ -63,9 +63,16 @@ namespace gui
                         .first("<br>")
                         .begin());
 
-                page.html = log;
-                page.scroll.y.top =
-                    max<int>();
+                try
+                {
+                    page.html = log;
+                    page.scroll.y.top =
+                        max<int>();
+                }
+                catch(std::exception const& e)
+                {
+                    page.text = e.what();
+                }
             }
             if (what == &link)
             {

@@ -341,6 +341,7 @@ void sys::window::create (str title)
     int w = CW_USEDEFAULT;
     int h = CW_USEDEFAULT;
 
+    //...W for UNICODE
     HWND handle = ::CreateWindowExW(
         WS_EX_APPWINDOW, // optional styles
         wc.lpszClassName, // window class

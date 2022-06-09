@@ -145,7 +145,7 @@ namespace doc::html::syntax
         return output;
     }
 
-    inline array<entity> combine (deque<entity> & input, str closing)
+    array<entity> combine (deque<entity> & input, str closing)
     {
         array<entity> output;
 
@@ -160,8 +160,7 @@ namespace doc::html::syntax
                         e.name = "error: /" + e.name;
                 }
 
-                if (e.name != "br" &&
-                    e.name != "br2" &&
+                if (e.name != "br" and
                     e.info != "closed")
                     e.body += combine(input, e.name);
 
@@ -171,7 +170,7 @@ namespace doc::html::syntax
 
         return output;
     }
-    inline array<entity> combine (deque<entity> input)
+    array<entity> combine (deque<entity> input)
     {
         return combine(input, "");
     }

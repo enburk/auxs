@@ -5,8 +5,8 @@ namespace aux
 {
     struct timing
     {
-        decltype (std::chrono::high_resolution_clock::now ())
-        stamp  =  std::chrono::high_resolution_clock::now ();
+        decltype (std::chrono::high_resolution_clock::now())
+        stamp  =  std::chrono::high_resolution_clock::now();
         friend auto operator - (timing t1, timing t0) noexcept
             { return t1.stamp - t0.stamp; }
     };
@@ -41,5 +41,14 @@ namespace aux
         std::string s = format_nano(duration);
         s.resize(s.size()-4);
         return s;
+    }
+    std::string ms (
+    std::chrono::high_resolution_clock::duration duration)
+    {
+        return
+        std::to_string(
+        std::chrono::duration_cast<
+        std::chrono::milliseconds>
+        (duration).count());
     }
 }

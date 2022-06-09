@@ -79,6 +79,24 @@ widget<TestGui>
             console.object.page.style = style;
             try
             {
+                test("effect.transit");
+                {
+                    oops(out(gui::transit<uint8_t>(0, 255,   0,   0))) { "255" };
+                    oops(out(gui::transit<uint8_t>(0, 255,   0, 255))) {   "0" };
+                    oops(out(gui::transit<uint8_t>(0, 255,  64, 255))) {  "64" };
+                    oops(out(gui::transit<uint8_t>(0, 255, 128, 255))) { "128" };
+                    oops(out(gui::transit<uint8_t>(0, 255, 192, 255))) { "192" };
+                    oops(out(gui::transit<uint8_t>(0, 255, 255, 255))) { "255" };
+                    oops(out(gui::transit<uint8_t>(0, 255, 256, 255))) { "255" };
+
+                    oops(out(gui::transit<bool>(false, true,   0,   0))) { "1" };
+                    oops(out(gui::transit<bool>(false, true,   0, 255))) { "0" };
+                    oops(out(gui::transit<bool>(false, true,  64, 255))) { "0" };
+                    oops(out(gui::transit<bool>(false, true, 128, 255))) { "0" };
+                    oops(out(gui::transit<bool>(false, true, 192, 255))) { "0" };
+                    oops(out(gui::transit<bool>(false, true, 255, 255))) { "1" };
+                    oops(out(gui::transit<bool>(false, true, 256, 255))) { "1" };
+                }
                 test("widgets.size");
                 {
                     oops(out(coord.now.w)) { "3594" };

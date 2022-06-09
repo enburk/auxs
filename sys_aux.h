@@ -17,8 +17,8 @@ namespace sys
         void set (str);
         void set (frame<rgba>);
         namespace get {
-            image<rgba> image ();
-            str string ();
+            auto image  () -> pix::image<rgba>;
+            auto string () -> str;
         }
     }
 
@@ -29,6 +29,51 @@ namespace sys
         void save (str name, str value);
         void save (str name, int value);
     }
+
+    struct thread
+    {
+        std::thread th;
+        std::exception_ptr exception = nullptr;
+        std::atomic<bool> stop = false;
+        std::atomic<bool> done = false;
+        std::chrono::high_resolution_clock::
+        duration duration;
+
+        thread () = default;
+        thread (auto f) { *this = std::move(f); }
+       ~thread () { stop = true; join(); }
+
+        void join ()
+        {
+            if (th.joinable())
+                th.join();
+        }
+        void check ()
+        {
+            done = false;
+            if (exception) {
+            auto e = exception;
+            exception = nullptr;
+            std::rethrow_exception(e); }
+        }
+        void operator = (auto f)
+        {
+            stop = true; join();
+            stop = false;
+            check();
+
+            th = std::thread([this,f]()
+            {
+                aux::timing t0;
+                try { f(stop); }
+                catch(...) { exception =
+                std::current_exception(); }
+                aux::timing t1;
+                duration = t1-t0;
+                done = true;
+            });
+        }
+    };
 
     struct process
     {

@@ -81,8 +81,7 @@ namespace doc::text::repo
         if (!source.model) {
              source.model = std::move(std::make_unique<Model>());
              source.model->path = path;
-             source.path = path;
-        }
+             source.path = path; }
 
         auto rc = source.load();
         if (!rc.ok()) report.error(
@@ -103,11 +102,9 @@ namespace doc::text::repo
     void save ()
     {
         for (auto & [path, source] : map)
-        {
-            auto rc = source.save();
-            if (!rc.ok()) report.error(
+            if (auto rc = source.save();
+                !rc.ok()) report.error(
                  rc.error());
-        }
     }
 
     void reload ()
@@ -117,17 +114,15 @@ namespace doc::text::repo
                 pair.second.path); });
 
         for (auto & [path, source] : map)
-        {
-            auto rc = source.load();
-            if (!rc.ok()) report.error(
+            if (auto rc = source.load();
+                !rc.ok()) report.error(
                  rc.error());
-        }
 
         for (auto & [path, source] : map)
-            source.model->prereanalyze();
+            source.model->preanalize();
 
         for (auto & [path, source] : map)
-            source.model->reanalyze();
+            source.model->analyze();
     }
 
     void tick ()
