@@ -345,7 +345,7 @@ void sys::window::create (str title)
     HWND handle = ::CreateWindowExW(
         WS_EX_APPWINDOW, // optional styles
         wc.lpszClassName, // window class
-        winstr(title).c_str(),
+        (LPCWSTR)(title.c_str()),
         WS_OVERLAPPEDWINDOW,
         x, y, w, h,
         NULL, // parent window

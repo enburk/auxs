@@ -31,6 +31,7 @@ namespace gui
             addon.clear();
             addon += "<script type=\"text/javascript\"></script>"; // HTML NOOP
             log.clear();
+            page.text = "";
         }
 
         void on_change (void* what) override
@@ -44,48 +45,54 @@ namespace gui
                 view.canvas.color = skins[skin].ultralight.first;
                 view.alignment = xy{pix::left, pix::top};
             }
+            
             if (what == &coord)
             {
                 page.coord = coord.now.local();
             }
+
             if (what == &timer)
             {
+                str s;
                 {
                     std::lock_guard guard{mutex};
-                    if (addon.size() == 0) return;
-                    log += str(addon);
+                    s = str(addon);
                     addon.clear();
                 }
+                if (s == "") return;
 
-                if (log.size() > limit*3/2)
+                if (log.size() > limit*3/2) {
                     log.erase(log.begin(),
                     log.from(limit/2)
-                        .first("<br>")
-                        .begin());
+                       .first("<br>")
+                       .begin());
+
+                    page.html = log;
+                }
 
                 try
                 {
-                    page.html = log;
-                    page.scroll.y.top =
-                        max<int>();
+                    auto gg = aux::unicode::array(s);
                 }
                 catch(std::exception const& e)
                 {
-                    page.text = e.what();
+                    if (str(e.what()) !=
+                    "unicode: broken UTF-8")
+                        throw;
+
+                    s = aux::unicode::what(s);
                 }
+
+                log += s;
+                page.html += s;
+                page.scroll.y.top =
+                    max<int>();
             }
+
             if (what == &link)
             {
                 notify(&link);
             }
-        }
-
-        void on_mouse_click (xy p, str button, bool down) override
-        {
-            if (parent)
-                parent->on_mouse_click (
-                    p + coord.now.origin,
-                    button, down);
         }
     };
 } 

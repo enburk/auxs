@@ -5,21 +5,37 @@
 #include <windows.h>
 #include <windowsx.h>
 
-inline std::wstring winstr(std::string s)
+std::wstring acpstr(std::string s)
 {
-    std::wstring ss; auto p = s.data(); auto l = (int)(s.size()); if (l <= 0) return ss; int n =
+    std::wstring ss;
+    auto p = s.data();
+    auto l = (int)(s.size());
+    if (l <= 0) return ss; int n =
+    ::MultiByteToWideChar(CP_ACP, 0, p, l, nullptr, 0); if (n <= 0) return ss; ss.resize(n);
+    ::MultiByteToWideChar(CP_ACP, 0, p, l, ss.data(), n);
+    return ss;
+}
+std::wstring winstr(std::string s)
+{
+    std::wstring ss;
+    auto p = s.data();
+    auto l = (int)(s.size());
+    if (l <= 0) return ss; int n =
     ::MultiByteToWideChar(CP_UTF8, 0, p, l, nullptr, 0); if (n <= 0) return ss; ss.resize(n);
     ::MultiByteToWideChar(CP_UTF8, 0, p, l, ss.data(), n);
     return ss;
 }
-inline std::string unwinstr(std::wstring ss)
+std::string unwinstr(std::wstring ss)
 {
-    std::string s; auto p = ss.data(); auto l = (int)(ss.size()); if (l <= 0) return s; int n =
+    std::string s;
+    auto p = ss.data();
+    auto l = (int)(ss.size());
+    if (l <= 0) return s; int n =
     ::WideCharToMultiByte(CP_UTF8, 0, p, l, nullptr, 0, NULL, NULL); if (n <= 0) return s; s.resize(n);
     ::WideCharToMultiByte(CP_UTF8, 0, p, l, s.data(), n, NULL, NULL);
     return s;
 }
-inline std::string GetErrorMessage(DWORD dwErrorCode)
+std::string GetErrorMessage(DWORD dwErrorCode)
 {
     LPWSTR s = nullptr;
     DWORD n = FormatMessageW(
@@ -35,6 +51,11 @@ inline std::string GetErrorMessage(DWORD dwErrorCode)
     }
     else throw std::system_error(::GetLastError(), std::system_category(),
         "Failed to retrieve error message string.");
+}
+
+namespace aux::unicode
+{
+    str what (str s) { return unwinstr(acpstr(s)); }
 }
 
 

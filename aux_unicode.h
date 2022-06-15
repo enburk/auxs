@@ -156,4 +156,6 @@ namespace aux::unicode
         for (auto g : glyphs) s += g.string();
         return s;
     }
+
+    str what (str); // std::exception::what to UTF-8
 }

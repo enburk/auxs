@@ -28,4 +28,3 @@ using std::ranges::views::reverse;
 using std::numbers::pi;
 using std::sin;
 using std::cos;
-
