@@ -24,6 +24,7 @@ namespace gui::text
 #define using(x) decltype(cell.x)& x = cell.x;
         using(text)
         using(html)
+        using(model)
         using(color)
         using(font)
         using(style)
@@ -36,8 +37,6 @@ namespace gui::text
         using(insert_mode)
         using(read_only)
         #undef using
-
-        doc::model*& model = cell.box.model;
 
         void on_change (void* what) override
         {
@@ -75,7 +74,7 @@ namespace gui::text
             }
 
             if (what == &update_text)
-                brief = cell.box.model->brief();
+                brief = model.now->brief();
 
             if (what == &update_text
             or  what == &update_layout
@@ -127,7 +126,7 @@ namespace gui::text
 
         generator<pix::text::token*> visible_tokens ()
         {
-            for (auto& column: model->block.columns)
+            for (auto& column: model.now->block.columns)
             for (auto& row: column.rows)
             {
                 int ry = row->offset.y;

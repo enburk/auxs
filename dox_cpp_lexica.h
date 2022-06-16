@@ -3,7 +3,7 @@
 #include "doc_text_text.h"
 namespace doc::cpp::lexica
 {
-	using text::token;
+    using text::token;
 
     inline const std::set<str> keywords = 
     {
@@ -114,8 +114,8 @@ namespace doc::cpp::lexica
 
                     t = token {c, "", "", range{
                         {n, offset},
-                        {n, offset}}
-                    };
+                        {n, offset}}};
+
                     t.kind =
                         alpha (c) ? "name"    :
                         digit (c) ? "number"  :
@@ -133,12 +133,14 @@ namespace doc::cpp::lexica
 
             if (t.text != "") tokens += t;
 
-            tokens += token {"\n", "", "", range{
-                {n, line.size()},
-                {n, line.size()}}
-            };
+            if (n != text.lines.size()-1)
+            {
+                tokens += token {"\n", "", "", range{
+                    {n, line.size()},
+                    {n, line.size()}}};
 
-            t = token{};
+                t = token{};
+            }
         }
 
         return tokens;

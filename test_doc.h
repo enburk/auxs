@@ -197,7 +197,7 @@ widget<TestDocHtml>
                 result[j].object.html = html;
 
                 array<str> ll; auto& lines = 
-                result[j].object.view.cell.box.model->block.lines;
+                result[j].object.model.now->block.lines;
 
                 int l = 0;
                 for (auto& line: lines) {

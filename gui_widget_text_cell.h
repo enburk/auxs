@@ -22,6 +22,7 @@ namespace gui::text
 #define using(x) decltype(box.x)& x = box.x;
         using(text)
         using(html)
+        using(model)
         using(color)
         using(font)
         using(style)
@@ -59,8 +60,8 @@ namespace gui::text
             or  what == &update_layout)
             {
                 highlights = array<range>{};
-                if (selections.now != box.model->selections)
-                    selections = box.model->selections; else
+                if (selections.now != model.now->selections)
+                    selections = model.now->selections; else
                     on_change(&selections);
             }
 
@@ -78,7 +79,7 @@ namespace gui::text
 
             if (what == &selections)
             {
-                box.model->selections = selections.now;
+                model.now->selections = selections.now;
 
                 int n = 0;
                 for (auto range: selections.now)
@@ -97,7 +98,7 @@ namespace gui::text
             {
                 int n = 0;
                 for (auto range: selections.now)
-                    carets(n++).coord = box.model->block.bar(
+                    carets(n++).coord = model.now->block.bar(
                         range.upto); // could be after the end of line
 
                 carets.truncate(n);
@@ -113,7 +114,7 @@ namespace gui::text
 
         str selected () const
         {
-            str s; auto& lines = box.model->block.lines;
+            str s; auto& lines = model.now->block.lines;
 
             for (auto [from, upto] : selections.now)
             {
@@ -155,18 +156,18 @@ namespace gui::text
         }
 
         generator<xywh> bars(range range) {
-            for (xywh bar: box.model->block.
+            for (xywh bar: model.now->block.
                 bars(range, virtual_space))
                 co_yield bar; }
 
-        place pointed (xy p) { return box.model->block.
+        place pointed (xy p) { return model.now->block.
               pointed (p, virtual_space.now); }
 
-        auto token_placed (place p) { return box.model->block.token_placed(p); }
+        auto token_placed (place p) { return model.now->block.token_placed(p); }
 
-        auto rows() { return box.model->block.rows(); }
-        auto row(int n) { return box.model->block.row(n); }
-        place lines2rows(place p) { return box.model->block.lines2rows(p); }
-        place rows2lines(place p) { return box.model->block.rows2lines(p); }
+        auto rows() { return model.now->block.rows(); }
+        auto row(int n) { return model.now->block.row(n); }
+        place lines2rows(place p) { return model.now->block.lines2rows(p); }
+        place rows2lines(place p) { return model.now->block.rows2lines(p); }
     };
 }

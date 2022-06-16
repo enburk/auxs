@@ -25,6 +25,7 @@ namespace gui::text
 #define using(x) decltype(view.x)& x = view.x;
         using(text)
         using(html)
+        using(model)
         using(color)
         using(font)
         using(style)
@@ -375,7 +376,7 @@ namespace gui::text
             {
                 select_point = p;
                 auto  place = view.pointed(p);
-                auto& block = view.cell.box.model->block;
+                auto& block = model.now->block;
 
                 if (touch_point == p
                 and time::now < touch_time + 1000ms)
@@ -460,7 +461,7 @@ namespace gui::text
             }
 
             p -= view.cell.coord.now.origin;
-            auto& block = view.cell.box.model->block;
+            auto& block = model.now->block;
             bool hover = block.hovered_token(p) != nullptr;
             link = block.link(p);
             bool same = true;

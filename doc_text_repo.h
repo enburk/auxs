@@ -53,8 +53,7 @@ namespace doc::text::repo
             temp.replace_extension(temp.extension().string() + "~");
             {
                 std::ofstream stream(temp);
-                for (auto & line : model->lines)
-                stream << aux::unicode::string(line) << "\n";
+                stream << model->string();
             }
             std::filesystem::rename(temp, path);
             filetime = std::filesystem::last_write_time(path);
@@ -68,7 +67,7 @@ namespace doc::text::repo
         }
     };
 
-    inline std::unordered_map<str, source> map;
+    inline std::unordered_map<path, source> map;
     inline doc::text::report report;
     inline doc::text::model error;
 
@@ -76,10 +75,10 @@ namespace doc::text::repo
     {
         if (path == std::filesystem::path{}) return &error;
 
-        auto & source = map[std::filesystem::canonical(path).string()];
+        auto & source = map[path];
 
         if (!source.model) {
-             source.model = std::move(std::make_unique<Model>());
+             source.model = std::make_unique<Model>();
              source.model->path = path;
              source.path = path; }
 
@@ -94,14 +93,12 @@ namespace doc::text::repo
     {
         if (path == std::filesystem::path{}) return;
 
-        auto & source = map[std::filesystem::canonical(path).string()];
-
-        source.edittime = time::clock::now();
+        map[path].edittime = time::clock::now();
     }
 
     void save ()
     {
-        for (auto & [path, source] : map)
+        for (auto& [path, source]: map)
             if (auto rc = source.save();
                 !rc.ok()) report.error(
                  rc.error());
@@ -113,21 +110,18 @@ namespace doc::text::repo
             not std::filesystem::exists(
                 pair.second.path); });
 
-        for (auto & [path, source] : map)
+        for (auto& [path, source]: map)
             if (auto rc = source.load();
                 !rc.ok()) report.error(
                  rc.error());
 
-        for (auto & [path, source] : map)
-            source.model->preanalize();
-
-        for (auto & [path, source] : map)
-            source.model->analyze();
+        for (auto& [path, source]: map)
+            source.model->reanalyze();
     }
 
     void tick ()
     {
-        for (auto & [path, source] : map)
+        for (auto& [path, source]: map)
             source.model->tick();
     }
 }

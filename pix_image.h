@@ -9,9 +9,9 @@ namespace pix
         std::vector<type> data; xy size;
         coord::rectifier<int> updates;
 
-	    explicit image (               ) : data(                  ), size(0, 0) { updates = xyxy(*this); }
-	    explicit image (xy size        ) : data(size.x * size.y   ), size(size) { updates = xyxy(*this); }
-	    explicit image (xy size, type c) : data(size.x * size.y, c), size(size) { updates = xyxy(*this); }
+        explicit image (               ) : data(                  ), size(0, 0) { updates = xyxy(*this); }
+        explicit image (xy size        ) : data(size.x * size.y   ), size(size) { updates = xyxy(*this); }
+        explicit image (xy size, type c) : data(size.x * size.y, c), size(size) { updates = xyxy(*this); }
         template<typename U>
         explicit image (frame<U> f) : image (f.size)
         {
@@ -28,7 +28,7 @@ namespace pix
         frame<type> crop (      ) { return frame<type>(*this); }
         frame<type> crop (xywh r) { return crop().crop(r); }
 
-	    void resize (xy Size)
+        void resize (xy Size)
         {
             data.resize(Size.x * Size.y);
             size = Size;

@@ -15,6 +15,7 @@ namespace gui::text
         using(view)
         using(text)
         using(html)
+        using(model)
         using(color)
         using(font)
         using(style)
@@ -34,12 +35,11 @@ namespace gui::text
         using(read_only)
         #undef using
 
-        doc::model*& model = view.model;
-        doc::text::model model_;
+        doc::text::model default_model;
 
         editor ()
         {
-            model = &model_;
+            model = &default_model;
             alignment.now = xy{pix::left, pix::top};
             read_only.now = false;
             focusable.now = true;
@@ -63,15 +63,15 @@ namespace gui::text
         template<class F> void does (F f)
         {
             if (read_only.now) return;
-            model->selections = selections;
+            model.now->selections = selections;
             if (f()) update_text = true;
         }
 
-        void undo        () { does([=](){ return model->undo     (); }); }
-        void redo        () { does([=](){ return model->redo     (); }); }
-        void erase       () { does([=](){ return model->erase    (); }); }
-        void backspace   () { does([=](){ return model->backspace(); }); }
-        void insert (str s) { does([=](){ return model->insert  (s); }); }
+        void undo        () { does([=](){ return model.now->undo     (); }); }
+        void redo        () { does([=](){ return model.now->redo     (); }); }
+        void erase       () { does([=](){ return model.now->erase    (); }); }
+        void backspace   () { does([=](){ return model.now->backspace(); }); }
+        void insert (str s) { does([=](){ return model.now->insert  (s); }); }
 
         auto rows() { return view.rows(); }
         auto row(int n) { return view.row(n); }

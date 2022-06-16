@@ -31,7 +31,7 @@ widget<TestGuiEditor>
         once_flag = true;
 
         editor1.object.text = 
-        "Lorem ipsum\n\n"
+        "Lorem <b>ipsum</b>\n\n"
         "Lorem ipsum dolor sit amet, consectetur "
         "adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. "
         "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip "
@@ -301,6 +301,7 @@ widget<TestGuiEditor>
             {
                 oops(input("ctrl+A")) { "123 ab|AB||C D" };
                 oops(input("delete")) { "" };
+                oops(input("ctrl+A")) { "" };
                 ouch(out(bars.size())) { "0" };
                 ouch(out(carets.size())) { "1" };
                 oops(out(carets[0].coord.now.x)) { "0" };

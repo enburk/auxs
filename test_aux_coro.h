@@ -8,10 +8,10 @@ namespace aux::unittest
     {
         test("coro.generator");
         {
-			auto fibs = []() -> generator<int> {
-				int a = 0, b = 1; while (true) {
-					co_yield a; b += std::
-						exchange(a, b); } } ();
+            auto fibs = []() -> generator<int> {
+                int a = 0, b = 1; while (true) {
+                    co_yield a; b += std::
+                        exchange(a, b); } } ();
 
             auto i = fibs.begin();
             oops(out(*++i)) { "1" };
@@ -21,16 +21,16 @@ namespace aux::unittest
             oops(out(*++i)) { "5" };
             oops(out(*++i)) { "8" };
 
-			auto nats = []() -> generator<int> {
-				int n = 0; while (true)
-					co_yield n++; } ();
+            auto nats = []() -> generator<int> {
+                int n = 0; while (true)
+                    co_yield n++; } ();
 
             int N = 100;
             int sum = 0;
             for (int n : nats) {
                 if (n > N) break;
                 sum += n; }
-			
+            
             oops(out(sum)) { std::to_string(N*(N+1)/2) };
         }
 

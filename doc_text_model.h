@@ -15,11 +15,9 @@ namespace doc::text
 
         virtual bool ready () { return true; }
 
-        virtual void tick  () {}
+        virtual void tick () {}
 
-        virtual void preanalize () {}
-
-        virtual void analyze () {}
+        virtual void reanalyze () {}
 
         virtual void tokenize ()
         {
@@ -27,12 +25,12 @@ namespace doc::text
 
             for (auto [n, line] : enumerate(lines))
             {
-                for (auto [offset, glyph] : enumerate(line, ""))
+                for (auto [offset, glyph] : enumerate(line))
                 {
-				    if (glyph.letter() or
-					    glyph.digit() or
-					    glyph == "_")
-					    t += glyph;
+                    if (glyph.letter() or
+                        glyph.digit() or
+                        glyph == "_")
+                        t += glyph;
                     else
                     {
                         if (t.text != "") tokens += t;
@@ -45,6 +43,19 @@ namespace doc::text
                             {n, offset+1},
                             {n, offset+1}}};
                     }
+                }
+
+                if (t.text != "") tokens += t;
+
+                if (n != lines.size()-1)
+                {
+                    tokens += token {"\n", "", "", range{
+                        {n, line.size()},
+                        {n, line.size()}}};
+
+                    t = token {"", "", "", range{
+                        {n+1, 0},
+                        {n+1, 0}}};
                 }
             }
         };

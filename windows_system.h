@@ -216,7 +216,7 @@ void sys::clipboard::set (str s)
         Clipboard clipboard;
         std::wstring text = winstr(s);
         HGLOBAL handle = GlobalAlloc(GMEM_MOVEABLE|GMEM_DDESHARE, (text.size()+1) * sizeof(WCHAR)); if (!handle) return;
-	    LPWSTR buffer = (LPWSTR)::GlobalLock(handle); if (!buffer) return;
+        LPWSTR buffer = (LPWSTR)::GlobalLock(handle); if (!buffer) return;
         memcpy(buffer, text.data(), text.size() * sizeof(WCHAR));
         buffer[text.size()] = 0;
         ::GlobalUnlock(handle);

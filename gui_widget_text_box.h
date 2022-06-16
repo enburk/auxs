@@ -11,18 +11,18 @@ namespace gui::text
         auto operator == (str text) { return str(*this) ==  text; }
         auto operator != (str text) { return str(*this) !=  text; }
         auto operator <=>(str text) { return str(*this) <=> text; }
-        void operator  = (str text) { if (x.model->set_text(std::move(text))) x.on_change(this); }
-        void operator += (str text) { if (x.model->add_text(std::move(text))) x.on_change(this); }
-        operator str() const { return x.model->get_text(); } };
+        void operator  = (str text) { if (x.model.now->set_text(std::move(text))) x.on_change(this); }
+        void operator += (str text) { if (x.model.now->add_text(std::move(text))) x.on_change(this); }
+        operator str() const { return x.model.now->get_text(); } };
 
         struct html_type { box& x; html_type(box& x) : x(x) {}
         void operator =  (html_type const& tt) { *this = str(tt); }
         auto operator == (str text) { return str(*this) ==  text; }
         auto operator != (str text) { return str(*this) !=  text; }
         auto operator <=>(str text) { return str(*this) <=> text; }
-        void operator  = (str html) { if (x.model->set_html(std::move(html))) x.on_change(this); }
-        void operator += (str html) { if (x.model->add_html(std::move(html))) x.on_change(this); }
-        operator str() const { return x.model->get_html(); } };
+        void operator  = (str html) { if (x.model.now->set_html(std::move(html))) x.on_change(this); }
+        void operator += (str html) { if (x.model.now->add_html(std::move(html))) x.on_change(this); }
+        operator str() const { return x.model.now->get_html(); } };
 
         text_type text{*this};
         html_type html{*this};
@@ -36,8 +36,9 @@ namespace gui::text
         property<bool> update_layout = false;
         property<bool> update_text   = false;
 
-        doc::html:: model    default_model;
-        doc::model* model = &default_model;
+        doc::html::model default_model;
+        unary_property<doc::model*> model =
+            &default_model;
 
         void on_change (void* what) override
         {
@@ -87,16 +88,16 @@ namespace gui::text
                 update_colors.now = false;
                 update_layout.now = false;
 
-                model->set(style.now);
-                model->block.format = format.now;
-                model->block.layout();
+                model.now->set(style.now);
+                model.now->block.format = format.now;
+                model.now->block.layout();
 
-                if (model->block.size.x < 0
-                or  model->block.size.y < 0)
+                if (model.now->block.size.x < 0
+                or  model.now->block.size.y < 0)
                     throw std::out_of_range(
                     "bad text size");
 
-                resize(model->block.size);
+                resize(model.now->block.size);
                 notify(what);
                 update();
             }
@@ -105,7 +106,7 @@ namespace gui::text
         void on_render(sys::window& window,
         xywh r, xy offset, uint8_t alpha) override
         {
-            for (auto& column: model->block.columns)
+            for (auto& column: model.now->block.columns)
             for (auto& row: column.rows)
             {
                 for (auto& solid: row->solids)

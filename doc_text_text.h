@@ -44,6 +44,7 @@ namespace doc::text
         };
         array<message> messages;
         array<message> errors;
+        str path;
 
         void debug (token*  token, str      what) {
         messages += message{token, "debug", what};}
@@ -70,7 +71,7 @@ namespace doc::text
              messages.clear();
              errors.clear(); }
 
-        str operator () (str path = "") const
+        str operator () () const
         {
             str s;
             
