@@ -143,5 +143,7 @@ namespace gui::text
                 co_yield & token;
             }
         }
+
+        xy text_size () { return model.now->block.size; }
     };
 }

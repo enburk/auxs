@@ -1,8 +1,6 @@
 #pragma once
-#include "gui_colors.h"
-#include "gui_widget_aux.h"
 #include "gui_widget_image.h"
-#include "gui_widget_text_view.h"
+#include "gui_widget_tooltip.h"
 namespace gui
 {
     struct button:
@@ -27,6 +25,7 @@ namespace gui
         image image;
         icon icon;
         text::view text;
+        tooltip tooltip;
 
         std::function<void(void)> on_change_state = [this]()
         {
@@ -44,8 +43,8 @@ namespace gui
                                style.normal;
 
             canvas.color.go(colors.first);
-            icon.color.go(colors.second);
-            text.color.go(colors.second);
+            icon  .color.go(colors.second);
+            text  .color.go(colors.second);
 
             auto r = coord.now.local();
             frame.thickness = metrics::line::width;
@@ -78,14 +77,18 @@ namespace gui
                 notify();
 
             if (what == &mouse_hover)
+                tooltip.on =
+                mouse_hover;
+
+            if (what == &mouse_hover)
             if (notify_hover)
                 notify();
 
             if (what == &timer)
             if (repeat_notch < time::now) {
                 repeat_notch = time::now + repeat_lapse;
-                if (mouse_clicked.now) notify();
-            }
+                if (mouse_clicked.now)
+                    notify(); }
         }
 
         bool mouse_sensible (xy) override { return enabled.now; }

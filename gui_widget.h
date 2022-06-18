@@ -31,7 +31,7 @@ namespace gui::base
         virtual Opacity opacity () { return transparent; }
 
         pix::coord::rectifier<int> updates;
-        void update () { update (coord.now.local()); }
+        void update () { update(coord.now.local()); }
         void update (xywh r) {
             if (alpha.now == 0) return; r &= coord.now.local();
             if (parent) parent->update (r +  coord.now.origin);

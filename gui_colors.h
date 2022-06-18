@@ -17,7 +17,7 @@ namespace gui
         std::pair<rgba,rgba> 
         ultralight, light, soft, normal, middle, heavy, dark,
         active, hovered, touched, focused, disabled,
-        highlight, selection, error, link;
+        highlight, selection, tooltip, error, link;
     };
     inline std::map<str, schema> skins;
 
@@ -107,7 +107,8 @@ namespace gui
         //     palettes[""][i] = std::pair{
         //         rgba::random(), rgba::random()};
 
-        for (auto [name, palette] : palettes) {
+        for (auto [name, palette] : palettes)
+        {
             auto & skin = skins[name];
 
             skin.white      = palette[9].second;
@@ -129,6 +130,7 @@ namespace gui
 
             skin.highlight  = palette[3];
             skin.selection  = palette[4];
+            skin.tooltip    = palettes["amber"][0];
             skin.error      = std::pair{rgba::error, rgba::white};
             skin.link       = std::pair{rgba::blue,  rgba::white};
         }

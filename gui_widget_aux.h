@@ -88,11 +88,25 @@ namespace gui
                 coord.was.size !=
                 coord.now.size)
             {
-                auto r = coord.now.local();
-                frame1.coord = r; r.deflate(frame1.thickness.now);
-                frame2.coord = r; r.deflate(frame2.thickness.now);
-                frame3.coord = r; r.deflate(frame3.thickness.now);
-                object.coord = r;
+                int d1 = frame1.thickness.now;
+                int d2 = frame2.thickness.now;
+                int d3 = frame3.thickness.now;
+                int dd = 2*d1 + 2*d2 + 2*d3;
+                xywh r = coord.now.local();
+                if (r.w < dd or r.h < dd)
+                {
+                    frame1.coord = xywh{};
+                    frame2.coord = xywh{};
+                    frame3.coord = xywh{};
+                    object.coord = xywh{};
+                }
+                else
+                {
+                    frame1.coord = r; r.deflate(d1);
+                    frame2.coord = r; r.deflate(d2);
+                    frame3.coord = r; r.deflate(d3);
+                    object.coord = r;
+                }
             }
             if (what == &object)
             {

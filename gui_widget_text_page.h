@@ -14,13 +14,11 @@ namespace gui::text
     widget<page>
     {
         canvas canvas; view view;
-        scroll scroll;
+        scroll scroll; tooltip tooltip;
+        binary_property<xyxy> padding;
         str link;
 
         page() { focusable.now = true; }
-
-        binary_property<xyxy> padding;
-        binary_property<bool> infotip = false;
 
 #define using(x) decltype(view.x)& x = view.x;
         using(text)
@@ -425,26 +423,7 @@ namespace gui::text
                 touch_range.upto< place ? range{
                 touch_range.from, place} :
                 touch_range};
-                //info.hide();
                 return;
-            }
-
-            if (infotip.now)
-            {
-                //if (auto token = view.target(p); token && token->info != "")
-                //{
-                //    xywh r = view.cell.bar(view.point(p).from);
-                //    info.hide(); r.w = r.h*100;
-                //    info.alignment = xy{pix::left, pix::top};
-                //    info.coord = r;
-                //    info.html = token->info;
-                //    r.w = info.cell.coord.now.w + r.h*2; r.y += r.h;
-                //    r.h = info.cell.coord.now.h + r.h/2;
-                //    info.coord = r;
-                //    info.alignment = xy{pix::center, pix::center};
-                //    info.see();
-                //}
-                //else info.hide();
             }
 
             if (sys::keyboard::ctrl)
@@ -460,8 +439,11 @@ namespace gui::text
                 return;
             }
 
-            p -= view.cell.coord.now.origin;
             auto& block = model.now->block;
+            tooltip.text.html = block.info(p);
+            tooltip.area = block.bar(view.pointed(p));
+
+            p -= view.cell.coord.now.origin;
             bool hover = block.hovered_token(p) != nullptr;
             link = block.link(p);
             bool same = true;

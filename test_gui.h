@@ -216,6 +216,7 @@ widget<TestGuiColorsX>
                 int n = 3;
                 for (int i=0; i<n; i++) {
                     buttons(i).text.text = "button";
+                    buttons(i).tooltip.text.text = "tooltip";
                     buttons(i).coord = xywh(i*W/n, 0, W/n, h);
                     buttons(i).skin = name;
                     buttons(i).on = i == 0;

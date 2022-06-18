@@ -64,6 +64,7 @@
     <ClInclude Include="gui_widget_text_editor.h" />
     <ClInclude Include="gui_widget_text_page.h" />
     <ClInclude Include="gui_widget_text_view.h" />
+    <ClInclude Include="gui_widget_tooltip.h" />
     <ClInclude Include="pix_abc.h" />
     <ClInclude Include="pix_color.h" />
     <ClInclude Include="pix_coord.h" />
