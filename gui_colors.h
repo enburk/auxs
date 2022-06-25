@@ -128,8 +128,8 @@ namespace gui
             skin.focused    = std::pair{rgba::amber, rgba::black};
             skin.disabled   = std::pair{palette[3].first, palette[5].first};
 
-            skin.highlight  = palette[3];
             skin.selection  = palette[4];
+            skin.highlight  = palettes["amber"][3];
             skin.tooltip    = palettes["amber"][0];
             skin.error      = std::pair{rgba::error, rgba::white};
             skin.link       = std::pair{rgba::blue,  rgba::white};

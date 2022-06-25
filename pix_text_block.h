@@ -73,6 +73,11 @@ namespace pix::text
 
             for (auto& line: lines)
             {
+                int l = 0;
+                for (auto& token: line.tokens) {
+                    token.range.from = {n,l}; l += token.size();
+                    token.range.upto = {n,l}; }
+
                 for (auto row: line.ptrrows(f))
                 {
                     row->from.line = n;

@@ -9,6 +9,7 @@ namespace pix::text
         str info;
         style_index style;
         array<glyph> glyphs;
+        range range;
         xy offset;
 
         token () = default;

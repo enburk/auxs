@@ -92,8 +92,9 @@ namespace gui::text
             if (what == &selections
             or  what == &focus_on)
             {
-                if (focus_on.now and
-                    cell.carets.size() == 1) { xywh r =
+                if (focus_on.now
+                and current_line_frame.color.now.a > 0
+                and cell.carets.size() == 1) { xywh r =
                     cell.carets(0).coord.now;
                     r.x = 0; r.w = coord.now.w;
                     current_line_frame.coord = r;

@@ -115,9 +115,9 @@ namespace gui
 
         void go (type to_, time lapse_)
         {
-            if (to == to_ and
-                lapse == lapse_ and
-                lapse.ms > 0)
+            if (to == to_
+            and lapse == lapse_
+            and lapse.ms > 0)
                 return;
             from = now; to = to_;
             notch = time::now;

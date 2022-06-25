@@ -375,6 +375,7 @@ namespace gui::text
                 select_point = p;
                 auto  place = view.pointed(p);
                 auto& block = model.now->block;
+                selections = array<range>{{place, place}};
 
                 if (touch_point == p
                 and time::now < touch_time + 1000ms)

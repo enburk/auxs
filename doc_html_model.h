@@ -39,8 +39,14 @@ namespace doc::html
             return true;
         }
 
-        bool add_text (str text) override { return set_html(source + encoded(text)); }
-        bool add_html (str html) override { return set_html(source + html); }
+        bool add_text (str text) override { return add_html(encoded(text)); }
+        bool add_html (str html) override
+        {
+            if (html == "") return false;
+            entities += html::entities(html);
+            source += html;
+            return true;
+        }
 
         void set (style s) override
         {

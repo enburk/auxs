@@ -114,6 +114,7 @@ namespace doc::text
                     block.lines.back().tokens +=
                     pix::text::token{t.text, style};
                     block.lines.back().tokens.back().info = t.info;
+                    block.lines.back().tokens.back().range = t.range;
                 }
             }
         }

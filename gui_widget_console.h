@@ -14,7 +14,8 @@ namespace gui
         property<time> timer;
         array<str> addon;
         std::mutex mutex;
-        int limit = 64*1024;
+        bool clear_ = false;
+        int limit = 1024*1024;
         str log;
 
         void operator << (str s)
@@ -28,10 +29,9 @@ namespace gui
         void clear ()
         {
             std::lock_guard guard{mutex};
+            clear_ = true;
             addon.clear();
-            addon += "<script type=\"text/javascript\"></script>"; // HTML NOOP
             log.clear();
-            page.text = "";
         }
 
         void on_change (void* what) override
@@ -42,7 +42,7 @@ namespace gui
 
             if (what == &skin)
             {
-                view.canvas.color = skins[skin].ultralight.first;
+                canvas.color = skins[skin].ultralight.first;
                 view.alignment = xy{pix::left, pix::top};
             }
             
@@ -53,23 +53,27 @@ namespace gui
 
             if (what == &timer)
             {
-                str s;
+                str s; bool add = true;
                 {
                     std::lock_guard guard{mutex};
-                    s = str(addon);
+
+                    if (clear_) {
+                        clear_ = false;
+                        add = false;
+                    }
+                    if (log.size() > limit) {
+                        log.upto(log.size() - limit/2).erase();
+                        log.upto(log.first("<br>")
+                           .begin()).erase();
+
+                        s = log; add = false;
+                    }
+
+                    s += str(addon);
                     addon.clear();
+                    log += s;
                 }
-                if (s == "") return;
-
-                if (log.size() > limit*3/2) {
-                    log.erase(log.begin(),
-                    log.from(limit/2)
-                       .first("<br>")
-                       .begin());
-
-                    page.html = log;
-                }
-
+                if (s == "" and add) return;
                 try
                 {
                     auto gg = aux::unicode::array(s);
@@ -83,8 +87,9 @@ namespace gui
                     s = aux::unicode::what(s);
                 }
 
-                log += s;
-                page.html += s;
+                if (add)
+                page.html += s; else
+                page.html  = s;
                 page.scroll.y.top =
                     max<int>();
             }

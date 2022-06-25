@@ -160,14 +160,13 @@ namespace gui::base
                     if (w->mouse_sense (p - w->coord.now.origin))
                         mouse_click_child = w; // last sibling wins
 
-                if (mouse_click_child and
-                    mouse_click_child->focusable_now())
-                    focus = mouse_click_child;
-
                 if (mouse_click_child) {
                     mouse_click_child->mouse_click (p -
                     mouse_click_child->coord.now.origin, button, true);
                     on_mouse_click_child(p, button, down);
+                    // only now, to prevent jump to cursor:
+                    if (mouse_click_child->focusable_now())
+                    focus = mouse_click_child;
                     return; }
             }
             else
