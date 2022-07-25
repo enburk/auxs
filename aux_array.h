@@ -88,6 +88,9 @@ namespace aux
             explicit operator bool () const {
                 return not empty(); }
 
+            auto& front () { return *begin(); }
+            auto& back  () { return *(end()-1); }
+
             auto clip (iterator i) /***/ { return std::min(std::max(begin(),i), end()); }
             auto clip (iterator i) const { return std::min(std::max(begin(),i), end()); }
             auto from (iterator i) /***/ { return range(clip(i), end  ()); }

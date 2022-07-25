@@ -186,12 +186,10 @@ namespace gui::text
                 if (from > upto) std::swap(from, upto);
 
                 if (where == -GLYPH or where == -LINE
-                or  where == -TOKEN or where == -PAGE)
-                upto = from;
+                or  where == -TOKEN or where == -PAGE) upto = from;
                 else
                 if (where == +GLYPH or where == +LINE
-                or  where == +TOKEN or where == +PAGE)
-                from = upto;
+                or  where == +TOKEN or where == +PAGE) from = upto;
                 else
                 for (auto& caret: ss) go(
                 caret, where, false);
@@ -443,6 +441,7 @@ namespace gui::text
             auto& block = model.now->block;
             tooltip.text.html = block.info(p);
             tooltip.area = block.bar(view.pointed(p));
+            tooltip.on = true;
 
             p -= view.cell.coord.now.origin;
             bool hover = block.hovered_token(p) != nullptr;
@@ -480,6 +479,7 @@ namespace gui::text
                 glyph.style_index  = token->style;
                 same = false; }
             if (not same) update();
+            tooltip.on = false;
         }
 
 
