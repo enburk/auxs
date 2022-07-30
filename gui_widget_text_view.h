@@ -94,6 +94,7 @@ namespace gui::text
             or  what == &shift)
             {
                 if (focus_on.now
+                and not read_only
                 and current_line_frame.color.now.a > 0
                 and cell.carets.size() == 1) { xywh r =
                     cell.carets(0).coord.now;

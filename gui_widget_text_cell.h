@@ -77,18 +77,23 @@ namespace gui::text
                 highlight_bars.truncate(n);
             }
 
-            if (what == &selections)
+            if (what == &selections
+            or  what == &focus_on)
             {
                 model.now->selections = selections.now;
 
-                int n = 0;
-                for (auto range: selections.now)
-                for (xywh r: bars(range)) {
-                    auto& bar = selection_bars(n++);
-                    bar.color = skins[skin.now].selection.first;
-                    bar.coord = r; }
+                if (not focus_on.now)
+                selection_bars.clear(); else
+                {
+                    int n = 0;
+                    for (auto range: selections.now)
+                    for (xywh r: bars(range)) {
+                        auto& bar = selection_bars(n++);
+                        bar.color = skins[skin.now].selection.first;
+                        bar.coord = r; }
 
-                selection_bars.truncate(n);
+                    selection_bars.truncate(n);
+                }
             }
 
             if (what == &selections
@@ -105,8 +110,7 @@ namespace gui::text
 
                 for (auto& caret: carets) {
                 caret.insert_mode = insert_mode.now;
-                caret.show(not read_only
-                    and focus_on.now); }
+                caret.show(not read_only and focus_on.now); }
             }
 
             notify(what);

@@ -111,8 +111,8 @@ namespace gui::base
 
             else if (on)
             for (auto child: reverse(children))
-                if (child->focusable_now()) {
-                    focus = child;
+                if (child->focusable_now()) { focus = child;
+                    child->on_focus(on);
                     break; }
         }
 
@@ -161,12 +161,15 @@ namespace gui::base
                         mouse_click_child = w; // last sibling wins
 
                 if (mouse_click_child) {
+
+                    if (mouse_click_child->focusable_now()) {
+                        focus = mouse_click_child;
+                        focus.now->on_focus(
+                        focus_on.now); }
+
                     mouse_click_child->mouse_click (p -
                     mouse_click_child->coord.now.origin, button, true);
                     on_mouse_click_child(p, button, down);
-                    // only now, to prevent jump to cursor:
-                    if (mouse_click_child->focusable_now())
-                    focus = mouse_click_child;
                     return; }
             }
             else

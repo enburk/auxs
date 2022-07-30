@@ -75,14 +75,14 @@ namespace gui
                 auto style = skins[skin];
                 auto light = style.light.first;
                 auto heavy = style.heavy.first;
-                auto focus = focus_on.now
+                auto focal = focus_on.now
                     and show_focus.now?
                     style.focused.first :
                     light;
 
                 frame1.color = light;
                 frame2.color = heavy;
-                frame3.color = focus;
+                frame3.color = focal;
             }
             if (what == &coord and
                 coord.was.size !=

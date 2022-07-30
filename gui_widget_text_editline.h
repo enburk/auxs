@@ -40,10 +40,6 @@ namespace gui::text
             {
                 editor.coord = coord.now.local();
             }
-            if (what == &focus_on)
-            {
-                editor.focus_on = focus_on.now;
-            }
             notify(what);
         }
 

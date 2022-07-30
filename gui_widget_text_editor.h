@@ -53,10 +53,6 @@ namespace gui::text
             {
                 page.coord = coord.now.local();
             }
-            if (what == &focus_on)
-            {
-                view.focus_on = focus_on.now;
-            }
             notify(what);
         }
 

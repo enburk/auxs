@@ -8,6 +8,7 @@ namespace gui::text
     enum WHERE { THERE = 0,
     GLYPH, LINE, LINE_BEGIN, LINE_END, PAGE_TOP,
     TOKEN, PAGE, TEXT_BEGIN, TEXT_END, PAGE_BOTTOM,
+    ANTIGLYPH, // oposite side glyph in selection
     };
 
     struct page:
@@ -140,9 +141,7 @@ namespace gui::text
 
             if (what == &focus_on)
             {
-                if (not focus_on.now)
-                view.cell.selection_bars.clear(); else
-                view.cell.on_change(&selections);
+                view.focus_on = focus_on.now;
             }
 
             notify(what);
@@ -213,6 +212,7 @@ namespace gui::text
             auto& [from, upto] = caret;
             auto& [r, offset] = upto;
 
+            from = view.lines2rows(from);
             upto = view.lines2rows(upto);
 
             int rows_on_page =
@@ -234,6 +234,20 @@ namespace gui::text
                 if (offset > row(r).length
                     and r < rows()-1) {
                     r++; offset = 0; }
+                break;
+
+            case-ANTIGLYPH:
+                from.offset--;
+                if (not virtual_space.now)
+                if (from.offset < 0 and from.line > 0) { from.line--;
+                    from.offset = row(from.line).length; }
+                break;
+            case+ANTIGLYPH:
+                from.offset++;
+                if (not virtual_space.now)
+                if (from.offset > row(from.line).length
+                    and from.line < rows()-1) {
+                    from.line++; from.offset = 0; }
                 break;
 
             //case-TOKEN: break;
@@ -274,6 +288,7 @@ namespace gui::text
             if (offset < 0)
                 offset = 0;
 
+            from = view.rows2lines(from);
             upto = view.rows2lines(upto);
 
             if (not selective) from = upto;
@@ -504,8 +519,8 @@ namespace gui::text
             if (key == "shift+up"   ) go(-LINE,  true); else
             if (key == "shift+down" ) go(+LINE,  true); else
 
-            if (key == "ctrl+shift+left" ) go(-TOKEN, true); else
-            if (key == "ctrl+shift+right") go(+TOKEN, true); else
+            if (key == "ctrl+shift+left" ) go(-ANTIGLYPH, true); else
+            if (key == "ctrl+shift+right") go(+ANTIGLYPH, true); else
             if (key == "ctrl+shift+up"   ) go(-LINE,  true); else
             if (key == "ctrl+shift+down" ) go(+LINE,  true); else
 
