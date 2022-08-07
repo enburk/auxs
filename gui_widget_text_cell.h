@@ -62,7 +62,25 @@ namespace gui::text
                 highlights = array<range>{};
                 if (selections.now != model.now->selections)
                     selections = model.now->selections; else
-                    on_change(&selections);
+                    //on_change(&selections);
+                /// this call causes notify(&selections)
+                /// and subsequent jump to caret position
+                /// thus preventing mouse wheeling
+                /// so, instead, do copy-paste:
+                {
+                    if (not focus_on.now)
+                    selection_bars.clear(); else
+                    {
+                        int n = 0;
+                        for (auto range: selections.now)
+                        for (xywh r: bars(range)) {
+                            auto& bar = selection_bars(n++);
+                            bar.color = skins[skin.now].selection.first;
+                            bar.coord = r; }
+
+                        selection_bars.truncate(n);
+                    }
+                }
             }
 
             if (what == &highlights)
@@ -101,6 +119,11 @@ namespace gui::text
             or  what == &read_only
             or  what == &focus_on)
             {
+                if (read_only or not focus_on.now)
+                {
+                    int a = 0;
+                }
+
                 int n = 0;
                 for (auto range: selections.now)
                     carets(n++).coord = model.now->block.bar(
@@ -168,6 +191,7 @@ namespace gui::text
               pointed (p, virtual_space.now); }
 
         auto token_placed (place p) { return model.now->block.token_placed(p); }
+        auto hovered_token (xy p) { return model.now->block.hovered_token(p); }
 
         auto rows() { return model.now->block.rows(); }
         auto row(int n) { return model.now->block.row(n); }

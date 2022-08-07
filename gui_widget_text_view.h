@@ -122,6 +122,8 @@ namespace gui::text
         auto selected () { return cell.selected(); }
 
         place pointed (xy p) { return cell.pointed(p - cell.coord.now.origin); }
+        auto hovered_token (xy p) { return cell.hovered_token(p - cell.coord.now.origin); }
+        auto token_placed (place p) { return cell.token_placed(p); }
 
         auto rows() { return cell.rows(); }
         auto row(int n) { return cell.row(n); }

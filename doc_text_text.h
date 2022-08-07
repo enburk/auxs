@@ -74,7 +74,7 @@ namespace doc::text
         str operator () () const
         {
             str s;
-            
+
             for (auto [token, kind, what] : messages)
             {
                 if (token and path != "")
