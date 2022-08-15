@@ -8,6 +8,7 @@ namespace gui
         text::view text;
         text::view* tip;
         property<bool> on = false;
+        property<bool> enabled = true;
         property<xywh> area;
         property<time> timer;
         time delay = 300ms;
@@ -28,9 +29,12 @@ namespace gui
             }
 
             if (what == &on
+            or  what == &enabled
             or  what == &text.update_text)
             {
-                if (on.now and text.text != "")
+                if (on.now
+                and enabled.now
+                and text.text != "")
                 {
                     timer.go(
                     time::infinity,

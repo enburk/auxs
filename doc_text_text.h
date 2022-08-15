@@ -98,6 +98,8 @@ namespace doc::text
 
                 if (token and path != "")
                 s += "</a>";
+
+                if (not what.ends_with("<br>"))
                 s += "<br>";
             }
 

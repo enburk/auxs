@@ -11,6 +11,8 @@ namespace doc::text
 
         std::filesystem::path path;
 
+        virtual report log (array<std::filesystem::path>& visited) { return report{}; }
+
         virtual report log () { return report{}; }
 
         virtual bool ready () { return true; }

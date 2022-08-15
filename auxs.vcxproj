@@ -24,6 +24,7 @@
     <ClInclude Include="aux_array.h" />
     <ClInclude Include="aux_aux.h" />
     <ClInclude Include="aux_coro.h" />
+    <ClInclude Include="aux_graph.h" />
     <ClInclude Include="aux_hask.h" />
     <ClInclude Include="aux_math.h" />
     <ClInclude Include="aux_registry.h" />
