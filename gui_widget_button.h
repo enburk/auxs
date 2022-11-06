@@ -108,8 +108,8 @@ namespace gui
                 }
             }
             else // if disabled
-                if (kind == normal && !down)
-                    on = false; // do not stick on disable on notify
+            if (kind == normal && !down)
+                on = false; // do not stick when disabled on notify
 
             if (repeating) {
                 repeat_notch = time::now + repeat_delay;
@@ -120,8 +120,8 @@ namespace gui
 
         bool focusable_now () override {
             return alpha.now > 0
-                and focusable.now
-                and enabled.now; }
+            and focusable.now
+            and enabled.now; }
 
         void on_key (str key, bool down, bool input) override
         {

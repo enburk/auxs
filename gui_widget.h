@@ -291,8 +291,15 @@ namespace gui
        ~widget ()
        {
             update();
-            if (parent)
+            if (parent) {
                 parent->children.try_erase(this);
+                if (parent->focus == this)
+                    parent->focus = nullptr;
+                if (parent->mouse_click_child == this)
+                    parent->mouse_click_child = nullptr;
+                if (parent->mouse_hover_child == this)
+                    parent->mouse_hover_child = nullptr;
+            }
             auto it = widgets.lower_bound(this);
             if (it != widgets.end() && *it == this)
                 widgets.erase(it);
