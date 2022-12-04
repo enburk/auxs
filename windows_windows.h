@@ -128,7 +128,14 @@ LRESULT CALLBACK WindowProc (HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
     POINT p{0,0}; ClientToScreen(hwnd, &p); xy o {p.x, p.y};
 
     switch (msg) {
-    case WM_COMMAND: if (wparam == 11111) win->on_timing(); break;
+    case WM_COMMAND: if (wparam == 11111)
+    {
+        MSG msg;
+        auto rc = ::PeekMessage(&msg, hwnd, 0, 0, PM_NOREMOVE);
+        if (!rc) // queue empty
+            win->on_timing();
+    }
+    break;
 
     case WM_MOUSEMOVE     : win->mouse_on_move  (xy(LX,LY)); break;
     case WM_MOUSEWHEEL    : win->mouse_on_wheel (xy(LX,LY) - o, (short)HIWORD(wparam)); break;

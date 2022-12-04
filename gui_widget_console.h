@@ -15,7 +15,7 @@ namespace gui
         array<str> addon;
         std::mutex mutex;
         bool clear_ = false;
-        int limit = 1024*1024;
+        int limit = 16*1024*1024;
         str log;
 
         void operator << (str s)

@@ -38,10 +38,14 @@ namespace gui
         static time infinity;
         static void reset_after_pause() { pause = time(); }
         static void set_after_pause() { set(); pause = now - was; }
-        static void set() { static
+        static time get() { static
             auto t0 = std::chrono::high_resolution_clock::now();
             auto t1 = std::chrono::high_resolution_clock::now();
-            was = now; now = t1-t0;
+            return t1-t0;
+        }
+        static void set() {
+            was = now;
+            now = get();
         }
     };
     inline time time::was;

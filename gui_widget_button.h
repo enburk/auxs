@@ -86,9 +86,10 @@ namespace gui
 
             if (what == &timer)
             if (repeat_notch < time::now) {
-                repeat_notch = time::now + repeat_lapse;
-                if (mouse_clicked.now)
-                    notify(); }
+                if (mouse_clicked.now) notify(); // can take some time
+                repeat_notch = time::get() +
+                repeat_lapse;
+            }
         }
 
         bool mouse_sensible (xy) override { return enabled.now; }
