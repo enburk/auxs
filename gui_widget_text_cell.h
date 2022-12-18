@@ -119,11 +119,6 @@ namespace gui::text
             or  what == &read_only
             or  what == &focus_on)
             {
-                if (read_only or not focus_on.now)
-                {
-                    int a = 0;
-                }
-
                 int n = 0;
                 for (auto range: selections.now)
                     carets(n++).coord = model.now->block.bar(

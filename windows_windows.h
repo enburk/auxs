@@ -160,7 +160,7 @@ LRESULT CALLBACK WindowProc (HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
     {
         static bool minimized = false;
         if(wparam == SIZE_MINIMIZED) { if (!minimized) win->on_pause (); minimized = true; break; }
-        if(wparam != SIZE_MINIMIZED) { if (!minimized) win->on_resume(); minimized = false; }
+        if(wparam != SIZE_MINIMIZED) { if ( minimized) win->on_resume(); minimized = false; }
         win->on_resize(xy(LOWORD(lparam), HIWORD(lparam)));
         break;
     }

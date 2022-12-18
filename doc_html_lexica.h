@@ -45,7 +45,8 @@ namespace doc::html::lexica
         {
             if (last.kind == "text"
             &&  last.text.starts_with("&")
-            && !last.text.ends_with(";")) {
+            && !last.text.ends_with(";")
+            && !t.text.starts_with(" ")) {
                 last.text += t.text;
                 last.range.upto = t.range.upto;
                 continue;
