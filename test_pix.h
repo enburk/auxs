@@ -1,12 +1,139 @@
 #pragma once
+#include <format>
 #include "aux_unittest.h"
 #include "gui_widget_console.h"
 using namespace pix;
 using gui::widget;
 
+namespace aux::unittest
+{
+    void test_pix1 () try
+    {
+        test("pix.hsv");
+        {
+            auto p = [](double x){ return std::format("{:5.2f}, ", x); };
+            auto q = [](double x){ return std::format("{:5.1f}, ", x); };
+            array<array<double>> rgb_hsv =
+            {
+	            {1.000, 1.000, 1.000,   0.0, 0.000, 1.000}, // #FFFFFF (H n/a)
+	            {0.500, 0.500, 0.500,   0.0, 0.000, 0.500}, // #808080 (H n/a)
+	            {0.000, 0.000, 0.000,   0.0, 0.000, 0.000}, // #000000 (H n/a)
+	            {1.000, 0.000, 0.000,   0.0, 1.000, 1.000}, // #FF0000
+	            {0.750, 0.750, 0.000,  60.0, 1.000, 0.750}, // #BFBF00
+	            {0.000, 0.500, 0.000, 120.0, 1.000, 0.500}, // #008000
+	            {0.500, 1.000, 1.000, 180.0, 0.500, 1.000}, // #80FFFF
+	            {0.500, 0.500, 1.000, 240.0, 0.500, 1.000}, // #8080FF
+	            {0.750, 0.250, 0.750, 300.0, 0.667, 0.750}, // #BF40BF
+	            {0.628, 0.643, 0.142,  61.8, 0.779, 0.643}, // #A0A424
+	            {0.255, 0.104, 0.918, 251.1, 0.887, 0.918}, // #411BEA
+	            {0.116, 0.675, 0.255, 134.9, 0.828, 0.675}, // #1EAC41
+	            {0.941, 0.785, 0.053,  49.5, 0.944, 0.941}, // #F0C80E
+	            {0.704, 0.187, 0.897, 283.7, 0.792, 0.897}, // #B430E5
+	            {0.931, 0.463, 0.316,  14.3, 0.661, 0.931}, // #ED7651
+	            {0.998, 0.974, 0.532,  56.9, 0.467, 0.998}, // #FEF888
+	            {0.099, 0.795, 0.591, 162.4, 0.875, 0.795}, // #19CB97
+	            {0.211, 0.149, 0.597, 248.3, 0.750, 0.597}, // #362698
+	            {0.495, 0.493, 0.721, 240.5, 0.316, 0.721}, // #7E7EB8
+            };
+            for (auto& d: rgb_hsv)
+            {
+                double h,s,v; rgb2hsv(d[0],d[1],d[2],h,s,v);
+                double r,g,b; hsv2rgb(d[3],d[4],d[5],r,g,b);
+                oops(out(p(r)+p(g)+p(b))) { p(d[0])+p(d[1])+p(d[2]) };
+                oops(out(q(h)+p(s)+p(v))) { q(d[3])+p(d[4])+p(d[5]) };
+            }
+        }
+        test("pix.hsl");
+        {
+            auto p = [](double x){ return std::format("{:5.2f}, ", x); };
+            auto q = [](double x){ return std::format("{:5.1f}, ", x); };
+            array<array<double>> rgb_hsl =
+            {
+	            {1.000, 1.000, 1.000,   0.0, 0.000, 1.000}, // #FFFFFF (H n/a)
+	            {0.500, 0.500, 0.500,   0.0, 0.000, 0.500}, // #808080 (H n/a)
+	            {0.000, 0.000, 0.000,   0.0, 0.000, 0.000}, // #000000 (H n/a)
+	            {1.000, 0.000, 0.000,   0.0, 1.000, 0.500}, // #FF0000
+	            {0.750, 0.750, 0.000,  60.0, 1.000, 0.375}, // #BFBF00
+	            {0.000, 0.500, 0.000, 120.0, 1.000, 0.250}, // #008000
+	            {0.500, 1.000, 1.000, 180.0, 1.000, 0.750}, // #80FFFF
+	            {0.500, 0.500, 1.000, 240.0, 1.000, 0.750}, // #8080FF
+	            {0.750, 0.250, 0.750, 300.0, 0.500, 0.500}, // #BF40BF
+	            {0.628, 0.643, 0.142,  61.8, 0.638, 0.393}, // #A0A424
+	            {0.254, 0.104, 0.918, 251.1, 0.832, 0.511}, // #411BEA
+	            {0.116, 0.675, 0.255, 134.9, 0.707, 0.396}, // #1EAC41
+	            {0.941, 0.786, 0.053,  49.5, 0.893, 0.497}, // #F0C80E
+	            {0.704, 0.187, 0.897, 283.7, 0.775, 0.542}, // #B430E5
+	            {0.931, 0.462, 0.316,  14.2, 0.817, 0.624}, // #ED7651
+	            {0.998, 0.974, 0.532,  56.9, 0.991, 0.765}, // #FEF888
+	            {0.099, 0.795, 0.591, 162.4, 0.779, 0.447}, // #19CB97
+	            {0.211, 0.149, 0.597, 248.3, 0.601, 0.373}, // #362698
+	            {0.495, 0.493, 0.721, 240.5, 0.290, 0.607}, // #7E7EB8
+            };
+            for (auto& d: rgb_hsl)
+            {
+                double h,s,v; rgb2hsl(d[0],d[1],d[2],h,s,v);
+                double r,g,b; hsl2rgb(d[3],d[4],d[5],r,g,b);
+                oops(out(p(r)+p(g)+p(b))) { p(d[0])+p(d[1])+p(d[2]) };
+                oops(out(q(h)+p(s)+p(v))) { q(d[3])+p(d[4])+p(d[5]) };
+            }
+            auto navy = forecorrected(rgba::navy, rgba::black);
+            oops(out(navy.r)) { "127" };
+            oops(out(navy.g)) { "127" };
+            oops(out(navy.b)) { "255" };
+        }
+    }
+    catch(assertion_failed){}
+
+    void test_pix2 () try
+    {
+         test("-");
+    }
+    catch(assertion_failed){}
+}
+
 struct TestPix:
 widget<TestPix>
 {
+    bool ok = true;
+    bool done = false;
+    gui::canvas canvas;
+    gui::area<gui::console> console1;
+    gui::area<gui::console> console2;
+    void on_change (void* what) override
+    {
+        if (what == &coord and
+            coord.was.size !=
+            coord.now.size)
+        {
+            int h = gui::metrics::text::height*12/7;
+            int W = coord.now.w; if (W <= 0) return; int w = W/3;
+            int H = coord.now.h; if (H <= 0) return;
+            console1.coord = xywh(w*0, 0, w, H);
+            console2.coord = xywh(w*1, 0, w, H);
+
+            if (done) return; done = true;
+
+            auto style = pix::text::style{
+            pix::font{"Consolas"}, rgba::black};
+            console1.object.page.style = style;
+            console2.object.page.style = style;
+
+            aux::unittest::test_pix1();
+            aux::unittest::test("");
+            console1.object.page.html = 
+            aux::unittest::results; ok &= 
+            aux::unittest::all_ok;
+
+            aux::unittest::test_pix2();
+            aux::unittest::test("");
+            console2.object.page.html = 
+            aux::unittest::results; ok &= 
+            aux::unittest::all_ok;
+
+            console1.object.page.scroll.y.top = max<int>();
+            console2.object.page.scroll.y.top = max<int>();
+        }
+    }
 };
 
 struct TestPixDraw:

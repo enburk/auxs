@@ -73,8 +73,16 @@ namespace gui::text
                 cell.format = f;
             }
 
+            if (what == &skin)
+            {
+                model.now->background =
+                skins[skin.now].ultralight.first;
+            }
+
             if (what == &update_text)
+            {
                 brief = model.now->brief();
+            }
 
             if (what == &update_text
             or  what == &update_layout

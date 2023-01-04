@@ -125,6 +125,13 @@ namespace aux::unicode
         }
     }
 
+    bool ok (str const& s)
+    {
+        try { for (auto g: s) ; }
+        catch (...) { return false; }
+        return true;
+    }
+
     std::vector<glyph> array (str s)
     {
         std::vector<glyph> gg;

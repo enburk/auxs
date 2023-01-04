@@ -62,8 +62,9 @@ namespace aux
         //         (*this) += std::forward(e);
         // }
 
-        friend array operator + (const array & a, const type  & b) { array r = a; r += b; return r; }
-        friend array operator + (const type  & a, const array & b) { array r; r += a; r += b; return r; }
+        friend array operator + (array const& a, type  const& b) { array r = a; r += b; return r; }
+        friend array operator * (array const& a, array const& b) { array r; r += a; r += b; return r; }
+        friend array operator + (type  const& a, array const& b) { array r; r += a; r += b; return r; }
 
         ////////////////////////////////////////////////////////////////////////
 
