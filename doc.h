@@ -15,7 +15,6 @@ namespace doc
         pix::text::block block;
         //array<pix::text::block> blocks;
         array<range> selections;
-        rgba background;
 
         static inline
             std::map<str,

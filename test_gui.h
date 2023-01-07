@@ -19,6 +19,23 @@ str Lorem =
 "proident, sunt in culpa qui officia deserunt mollit anim id est "
 "<b><font color=#008000>laborum.</font></b><br><br>";
 
+str LOrem =
+"<font color=#800000>maroon </font>"
+"<font color=#008000>green </font>"
+"<font color=#000080>navy </font>"
+"<font color=#800080>purple </font>"
+"<font color=#808000>olive </font>"
+"<font color=#008080>teal </font>"
+"<font color=#FF0000>red </font>"  
+"<font color=#00FF00>lime </font>"  
+"<font color=#0000FF>blue </font>"  
+"<font color=#FF00FF>fuchsia </font>"  
+"<font color=#FFFF00>yellow </font>"  
+"<font color=#00FFFF>aqua </font>"  
+"<font color=#FFBF00>amber </font>"   
+"<font color=#B00020>error </font>"   
+"<br><br>" + Lorem;
+
 struct TestGui:
 widget<TestGui>
 {
@@ -233,7 +250,7 @@ widget<TestGuiColorsX>
 
                 page.skin = name;
                 page.coord = xyxy(0,h+q+h+h, W, H);
-                page.object.html = Lorem;
+                page.object.html = LOrem;
                 page.object.alignment = xy{pix::left, pix::top};
                 page.object.canvas.color = schema.ultralight.first;
                 page.object.style = pix::text::style{

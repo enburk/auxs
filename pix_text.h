@@ -38,6 +38,7 @@ namespace pix
 
             font font;
             rgba color;
+            rgba background;
             line underline;  // "solid", "double", "dahsed", "dotted", "wavy"
             line strikeout;
             line outline;

@@ -51,8 +51,8 @@ namespace gui::text
             {
                 style = pix::text::style{
                 skins[skin.now].font,
-                skins[skin.now].light
-                    .second};
+                skins[skin.now].ultralight.second,
+                skins[skin.now].ultralight.first};
             }
             if (what == &font)
             {

@@ -125,14 +125,21 @@ namespace gui
             skin.hovered    = palette[6];
             skin.active     = palette[7];
             skin.touched    = palette[8];
-            skin.focused    = std::pair{rgba::amber, rgba::black};
-            skin.disabled   = std::pair{palette[3].first, palette[5].first};
+            skin.focused    = std::pair{rgba::amber, skin.black};
+            skin.disabled   = std::pair{skin.normal.first, skin.heavy.first};
 
-            skin.selection  = palette[4];
+            skin.selection  = skin.normal;
             skin.highlight  = palettes["amber"][3];
             skin.tooltip    = palettes["amber"][0];
-            skin.error      = std::pair{rgba::error, rgba::white};
-            skin.link       = std::pair{rgba::blue,  rgba::white};
+            skin.error      = std::pair{rgba::error, skin.white};
+            skin.link       = std::pair{rgba::blue,  skin.white};
+
+            skin.focused.first = pix::forecorrected(
+            skin.focused.first, skin.ultralight.first);
+            skin.error  .first = pix::forecorrected(
+            skin.error  .first, skin.ultralight.first);
+            skin.link   .first = pix::forecorrected(
+            skin.link   .first, skin.ultralight.first);
         }
 
         skins[""] = skins["gray"];

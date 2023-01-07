@@ -214,9 +214,9 @@ namespace doc::html
                         style.color.r = (uint8_t) std::strtoul(r.c_str(), nullptr, 16);
                         style.color.g = (uint8_t) std::strtoul(g.c_str(), nullptr, 16);
                         style.color.b = (uint8_t) std::strtoul(b.c_str(), nullptr, 16);
-                        style.color.a = 255; if (background != rgba{})
+                        style.color.a = 255;
                         style.color = forecorrected(
-                        style.color, background);
+                        style.color, style.background);
                     }
                 }
             }
