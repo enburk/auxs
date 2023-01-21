@@ -24,10 +24,13 @@ namespace sys
 
     namespace settings
     {
+        void init (str appname);
         str  load (str name, str default_value);
         int  load (str name, int default_value);
         void save (str name, str value);
         void save (str name, int value);
+        void save ();
+        void done ();
     }
 
     struct thread

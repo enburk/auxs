@@ -2,6 +2,9 @@
 #include <map>
 #include "sys_aux.h"
 #include "windows_aux.h"
+#include <shlwapi.h>
+#include <shlobj.h>
+#pragma comment(lib,"shlwapi.lib")
 
 sys::process::process (std::filesystem::path path, str args, options opt)
 {
@@ -235,33 +238,81 @@ void sys::clipboard::set (pix::frame<rgba> image)
 
 ///////////////////////////////////////////////////////////////////////////////
 
-static std::map<str, int> int_settings;
-static std::map<str, str> str_settings;
-
-static void load_settings ()
+namespace sys::settings
 {
-}
-static void save_settings ()
-{
-}
+    std::map<str, int> ints, Ints;
+    std::map<str, str> strs, Strs;
+    using namespace std::literals::chrono_literals;
+    auto was = std::chrono::high_resolution_clock::now();
+    auto delay = 5*6s;
+    std::filesystem::path path;
+    std::mutex mutex;
 
-str sys::settings::load (str name, str default_value) {
-    load_settings();
-    auto [it, ins] = str_settings.try_emplace(name, default_value);
-    return it->second;
-}
-int sys::settings::load (str name, int default_value) {
-    load_settings();
-    auto [it, ins] = int_settings.try_emplace(name, default_value);
-    return it->second;
-}
-void sys::settings::save (str name, str value) {
-    str_settings[name] = value;
-    save_settings();
-}
-void sys::settings::save (str name, int value) {
-    int_settings[name] = value;
-    save_settings();
+    static void init (str appname)
+    {
+        appname.replace_all(":", "..");
+
+        TCHAR szPath[MAX_PATH];
+        if (FAILED(SHGetFolderPath(NULL,
+            CSIDL_COMMON_APPDATA, NULL, 0, szPath)))
+            return;
+
+        path = szPath;
+        path = path / appname.c_str() / "settings.txt";
+        std::ifstream stream(path); str text = std::string{(
+        std::istreambuf_iterator<char>(stream)),
+        std::istreambuf_iterator<char>()};
+
+        for (str s: text.split_by("\n"))
+        {
+            str type; s.split_by(":", type, s);
+            str key;  s.split_by("=", key,  s);
+            if (type == "int") ints[key] = std::stoi(s); else
+            if (type == "str") strs[key] = s;
+        }
+        Ints = ints;
+        Strs = strs;
+    }
+    static void save ()
+    {
+        auto now = std::chrono::high_resolution_clock::now();
+        if (now < was + delay) return; was = now;
+        if (ints == Ints
+        and strs == Strs)
+            return;
+
+        str text;
+        for (auto const& [key, val]: ints) text += "int:"+key+"="+std::to_string(val)+"\n";
+        for (auto const& [key, val]: strs) text += "str:"+key+"="+val+"\n";
+        std::filesystem::create_directories(path.parent_path());
+        std::ofstream(path) << text;
+        Ints = ints;
+        Strs = strs;
+    }
+    static void done ()
+    {
+        delay = -999s; save();
+    }
+    str load (str name, str default_value) {
+        std::lock_guard guard{mutex};
+        auto [it, ins] = strs.try_emplace(name, default_value);
+        return it->second;
+    }
+    int load (str name, int default_value) {
+        std::lock_guard guard{mutex};
+        auto [it, ins] = ints.try_emplace(name, default_value);
+        return it->second;
+    }
+    void save (str name, str value) {
+        std::lock_guard guard{mutex};
+        strs[name] = value;
+        save();
+    }
+    void save (str name, int value) {
+        std::lock_guard guard{mutex};
+        ints[name] = value;
+        save();
+    }
 }
 
 ///////////////////////////////////////////////////////////////////////////////

@@ -3,6 +3,7 @@
 #include <atomic>
 #include "gui_colors.h"
 #include "gui_effect.h"
+#include "sys_aux.h"
 namespace sys
 {
     namespace screen
@@ -140,6 +141,7 @@ namespace sys
         void on_timing() override
         {
              gui::time::set();
+             sys::settings::save();
              auto active_properties_copy = gui::active_properties;
              active_properties_copy.for_each([](auto p){ p->tick(); });
              for (xywh r : widget.updates) widget.render(*this, r, r.origin);
@@ -176,6 +178,7 @@ namespace sys
         void on_timing() override
         {
              gui::time::set();
+             sys::settings::save();
              auto active_properties_copy = gui::active_properties;
              active_properties_copy.for_each([](auto p){ p->tick(); });
              image.updates = widget.updates;
@@ -199,11 +202,19 @@ namespace sys
     };
     struct app_instance
     {
-        static void init() { gui::init(); }
-        static void done() { gui::done(); }
+        static void init()
+        {
+            gui::init();
+            sys::settings::init("enburk/" + app->title);
+        }
+        static void done()
+        {
+            sys::settings::done();
+            gui::done();
+        }
         static inline app_base * app = nullptr;
-        app_instance () { init(); if (app) app->constructor(); }
-       ~app_instance () { if (app) app->destructor();  done(); }
+        app_instance () { assert(app); init(); app->constructor(); }
+       ~app_instance () { assert(app); app->destructor();  done(); }
     };
     template<class Widget> struct app : app_base
     {
