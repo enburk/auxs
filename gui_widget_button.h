@@ -40,7 +40,7 @@ namespace gui
             enter_pressed.now? style.touched:
             mouse_hover  .now? style.hovered:
             on           .now? style.active:
-                               style.normal;
+                               style.soft;
 
             canvas.color.go(colors.first);
             icon  .color.go(colors.second);

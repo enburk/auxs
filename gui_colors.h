@@ -123,8 +123,8 @@ namespace gui
             skin.dark       = palette[9];
 
             skin.hovered    = palette[6];
-            skin.active     = palette[7];
-            skin.touched    = palette[8];
+            skin.active     = palette[8];
+            skin.touched    = palette[9];
             skin.focused    = std::pair{rgba::amber, skin.black};
             skin.disabled   = std::pair{skin.normal.first, skin.heavy.first};
 

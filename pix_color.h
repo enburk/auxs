@@ -259,19 +259,19 @@ namespace pix
         if (fore == XRGB(0xA0A0A0)) return XRGB(0x707070); // light
         if (fore == XRGB(0xC0C0C0)) return XRGB(0x505050); // silver
         if (fore == XRGB(0x008000)) return XRGB(0x00C000); // green 
-        if (fore == XRGB(0x000080)) return XRGB(0x2196F3); // navy  
-        if (fore == XRGB(0x800080)) return XRGB(0xD000D0); // purple
+        if (fore == XRGB(0x000080)) return XRGB(0x29B6F6); // navy  
+        if (fore == XRGB(0x800080)) return XRGB(0xBB86FC); // purple
         if (fore == XRGB(0x808000)) return XRGB(0xD0D000); // olive 
         if (fore == XRGB(0x008080)) return XRGB(0x00D0D0); // teal  
-        if (fore == XRGB(0xFF0000)) return XRGB(0xFF0000); // red      
+        if (fore == XRGB(0xFF0000)) return XRGB(0xFF0266); // red      
         if (fore == XRGB(0x00FF00)) return XRGB(0x00FF00); // lime     
-        if (fore == XRGB(0x0000FF)) return XRGB(0x64B5F6); // blue     
+        if (fore == XRGB(0x0000FF)) return XRGB(0x2196F3); // blue     
         if (fore == XRGB(0xFF00FF)) return XRGB(0xFF00FF); // fuchsia  
         if (fore == XRGB(0xFFFF00)) return XRGB(0xFFFF00); // yellow   
-        if (fore == XRGB(0xBF360C)) return XRGB(0xFFFF00); // yellow   
+        if (fore == XRGB(0xBF360C)) return XRGB(0xFFB74D); // yellow   
         if (fore == XRGB(0x00FFFF)) return XRGB(0x00FFFF); // aqua     
         if (fore == XRGB(0xFFBF00)) return XRGB(0xFFD54F); // amber     
-        if (fore == XRGB(0xB00020)) return XRGB(0xD00030); // error     
+        if (fore == XRGB(0xB00020)) return XRGB(0xEF5350); // error     
         }
 
         double r1 = fore.r/255.0; double r2 = back.r/255.0;

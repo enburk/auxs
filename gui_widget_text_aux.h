@@ -61,7 +61,7 @@ namespace gui::text
                 if (ms > MS/2) ms = MS-ms;
                 auto a = clamp<uint8_t>
                 (256 * ms/(MS/2) + 00 - 1);
-                if (true) a = a > 127 ? 255 : 0;
+                if (true) a = a > 127 ? insert_mode.now ? 255 : 200 : 0;
                 image.alpha = a;
                 return;
             }
@@ -79,7 +79,7 @@ namespace gui::text
                 time_moved = time::now;
                 xywh r = coord.now.local();
                 if (insert_mode.now) r.w =
-                max (1, (int)(r.w*breadth.now));
+                max (2, (int)(r.w*breadth.now));
                 image.coord = r;
             }
         }

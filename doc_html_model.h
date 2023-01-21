@@ -173,7 +173,13 @@ namespace doc::html
                             measure(val);
             }
             else
-            if (entity.name == "code") {
+            if (entity.name == "center")
+            {
+                // ???
+            }
+            else
+            if (entity.name == "code")
+            {
                 style.font.face = "monospace";
             }
             else
