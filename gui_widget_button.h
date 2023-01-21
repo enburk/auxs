@@ -180,4 +180,59 @@ namespace gui
             }
         };
     };
+
+    struct toolbar:
+    widget<toolbar>
+    {
+        canvas canvas;
+
+        void on_change (void* what) override
+        {
+            if (what == &coord)
+            canvas.coord = coord.now.local();
+
+            if (what == &skin)
+            canvas.color = gui::skins[skin].light.first;
+        }
+    };
+
+    struct selector:
+    widget<selector>
+    {
+        canvas canvas;
+        radio::group buttons;
+        property<int> maxwidth = metrics::text::height*5;
+        property<int> selected = -1;
+
+        void on_change (void* what) override
+        {
+            if (what == &maxwidth
+            or  what == &coord and
+                coord.was.size !=
+                coord.now.size)
+            {
+                canvas.coord  = coord.now.local();
+                buttons.coord = coord.now.local();
+
+                int i = 0;
+                int w = coord.now.w;
+                int h = coord.now.h;
+                w = min(maxwidth.now, w/buttons.size());
+                for (auto& button: buttons)
+                button.coord = xywh((i++)*w, 0, w, h);
+            }
+
+            if (what == &skin)
+            canvas.color = gui::skins[skin].light.first;
+
+            if (what == &selected)
+            buttons(selected.now).on = true;
+
+            if (what == &buttons)
+            selected = buttons.notifier_index;
+
+            if (what == &buttons)
+            notify();
+        }
+    };
 }
