@@ -259,7 +259,7 @@ namespace pix
         if (fore == XRGB(0xA0A0A0)) return XRGB(0x707070); // light
         if (fore == XRGB(0xC0C0C0)) return XRGB(0x505050); // silver
         if (fore == XRGB(0x008000)) return XRGB(0x00C000); // green 
-        if (fore == XRGB(0x000080)) return XRGB(0x29B6F6); // navy  
+        if (fore == XRGB(0x000080)) return XRGB(0x80CBC4); // navy  
         if (fore == XRGB(0x800080)) return XRGB(0xBB86FC); // purple
         if (fore == XRGB(0x808000)) return XRGB(0xD0D000); // olive 
         if (fore == XRGB(0x008080)) return XRGB(0x00D0D0); // teal  

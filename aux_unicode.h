@@ -115,12 +115,10 @@ namespace aux::unicode
             glyph g; int n = 0;
             char c = *i++; g.cc[n++] = c;
             auto u = static_cast<uint8_t>(c);
-
             if ((u & 0b11000000) == 0b11000000) { check(i); g.cc[n++] = *i++; // 110xxxxx 10xxxxxx
             if ((u & 0b11100000) == 0b11100000) { check(i); g.cc[n++] = *i++; // 1110xxxx 10xxxxxx 10xxxxxx
             if ((u & 0b11110000) == 0b11110000) { check(i); g.cc[n++] = *i++; // 11110xxx 10xxxxxx 10xxxxxx 10xxxxxx
             }}}
-                
             co_yield g;
         }
     }
@@ -143,15 +141,23 @@ namespace aux::unicode
 
     int length (str s)
     {
-        int n = 0;
-        for (auto i = s.begin(); i != s.end(); )
+        int  n = 0;
+        auto i = s.begin();
+        auto e = s.end();
+        auto c = [&i](){ return static_cast<uint8_t>(*i); };
+        while (i != e)
         {
-            char c = *i++; n++;
-            uint8_t u = static_cast<uint8_t>(c);
-            if ((u & 0b11000000) == 0b11000000) { if (i == s.end()) break; n++; i++;
-            if ((u & 0b11100000) == 0b11100000) { if (i == s.end()) break; n++; i++;
-            if ((u & 0b11110000) == 0b11110000) { if (i == s.end()) break; n++; i++;
+            if ((c() == 0xCC)) { i++; // Combining Diacritical Marks
+            if ((c() >= 0x80)) { i++; continue; } else i--; }
+            if ((c() == 0xCD)) { i++; // Combining Diacritical Marks
+            if ((c() <= 0xAF)) { i++; continue; } else i--; }
+
+            if ((c() & 0b11000000) == 0b11000000) { i++; if (i == e) break;
+            if ((c() & 0b11100000) == 0b11100000) { i++; if (i == e) break;
+            if ((c() & 0b11110000) == 0b11110000) { i++; if (i == e) break;
             }}}
+            i++;
+            n++;
         }
         return n;
     }
@@ -165,4 +171,17 @@ namespace aux::unicode
     }
 
     str what (str); // std::exception::what to UTF-8
+}
+namespace aux
+{
+    void str::align_left (int n, char padding)
+    {
+        int m = unicode::length(*this);
+        if (m < n) *this += str(padding, n-m);
+    }
+    void str::align_right (int n, char padding)
+    {
+        int m = unicode::length(*this);
+        if (m < n) *this = str(padding, n-m) + *this;
+    }
 }

@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "aux_abc.h"
 #include "aux_unittest.h"
 namespace aux::unittest
@@ -150,34 +150,44 @@ namespace aux::unittest
             oops( str s = "abcba"; s.trimr("ba"); out(s) ) { "abc" };
             oops( str s = "abcba"; s.strip("ba"); out(s) ) { "c" };
         }
-//        test("string.split");
-//        {
-//            ASSERT_ANY_THROW(str("").split_by(""));
-//            ASSERT_ANY_THROW(str("|").split_by(""));
-//            ASSERT_EQ(str("").split_by("|").size(), 1);
-//            ASSERT_EQ(str("a").split_by("|").size(), 1);
-//            ASSERT_EQ(str("|").split_by("|").size(), 2);
-//            ASSERT_EQ(str("a|").split_by("|").size(), 2);
-//            ASSERT_EQ(str("|b").split_by("|").size(), 2);
-//            ASSERT_EQ(str("a|b").split_by("|").size(), 2);
-//
-//            oops( out(str("").split_by("|")[0], "");
-//            oops( out(str("a").split_by("|")[0], "a");
-//            oops( out(str("|").split_by("|")[0], "");
-//            oops( out(str("|").split_by("|")[1], "");
-//            oops( out(str("a|").split_by("|")[0], "a");
-//            oops( out(str("a|").split_by("|")[1], "");
-//            oops( out(str("|b").split_by("|")[0], "");
-//            oops( out(str("|b").split_by("|")[1], "b");
-//            oops( out(str("a|b").split_by("|")[0], "a");
-//            oops( out(str("a|b").split_by("|")[1], "b");
-//
-//            str  a,b;
-//            str("a|b").split_by("|", a, b, str::delimiter::to_the_left);  oops( out(a, "a|") << "split 1";
-//            str("a|b").split_by("|", a, b, str::delimiter::to_the_left);  oops( out(b, "b" ) << "split 2";
-//            str("a|b").split_by("|", a, b, str::delimiter::to_the_right); oops( out(a, "a" ) << "split 3";
-//            str("a|b").split_by("|", a, b, str::delimiter::to_the_right); oops( out(b, "|b") << "split 4";
-//        }
+        test("string.split");
+        {
+            oops( out(str(""   ).split_by("|").size()) ) { "0" };
+            oops( out(str("a"  ).split_by("|")[0]) ) { "a" };
+            oops( out(str("|"  ).split_by("|")[0]) ) { ""  };
+            oops( out(str("|"  ).split_by("|")[1]) ) { ""  };
+            oops( out(str("a|" ).split_by("|")[0]) ) { "a" };
+            oops( out(str("a|" ).split_by("|")[1]) ) { ""  };
+            oops( out(str("|b" ).split_by("|")[0]) ) { ""  };
+            oops( out(str("|b" ).split_by("|")[1]) ) { "b" };
+            oops( out(str("a|b").split_by("|")[0]) ) { "a" };
+            oops( out(str("a|b").split_by("|")[1]) ) { "b" };
+
+            str  a,b;
+            str("a|b").split_by("|", a, b, str::delimiter::to_the_left);  oops( out(a) ) { "a|" };
+            str("a|b").split_by("|", a, b, str::delimiter::to_the_left);  oops( out(b) ) { "b"  };
+            str("a|b").split_by("|", a, b, str::delimiter::to_the_right); oops( out(a) ) { "a"  };
+            str("a|b").split_by("|", a, b, str::delimiter::to_the_right); oops( out(b) ) { "|b" };
+        }
+        test("string.unicode");
+        {
+            str creme_brulee = u8"crème brûlée";
+            str matreska = u8"матрёшка";
+            str paprika = u8"па́прика"; // cc 81 // COMBINING ACUTE ACCENT
+            str T = u8"Ͳ"; // cd b2 // GREEK CAPITAL LETTER ARCHAIC SAMPI
+            oops( out(unicode::length(""          )) ) {  "0" };
+            oops( out(unicode::length("abc"       )) ) {  "3" };
+            oops( out(unicode::length(creme_brulee)) ) { "12" };
+            oops( out(unicode::length(matreska    )) ) {  "8" };
+            oops( out(unicode::length(paprika     )) ) {  "7" };
+            oops( out(unicode::length(T           )) ) {  "1" };
+            oops( out(str(""          ). left_aligned(8)) ) {       "        "  };
+            oops( out(str("abc"       ). left_aligned(8)) ) {       "abc     "  };
+            oops( out(str(creme_brulee). left_aligned(8)) ) { str(u8"crème brûlée") };
+            oops( out(str(matreska    ).right_aligned(8)) ) { str(u8"матрёшка") };
+            oops( out(str(paprika     ).right_aligned(8)) ) { str(u8" па́прика") };
+            oops( out(str(T           ).right_aligned(8)) ) { str(u8"       Ͳ") };
+        }
     }
     catch(assertion_failed){}
 }

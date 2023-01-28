@@ -74,12 +74,8 @@ namespace aux
              triml(chars);
         }
 
-        void align_left (int n, char padding = ' ') {
-            if (size() < n) *this += str(padding, n - size());
-        }
-        void align_right (int n, char padding = ' ') {
-            if (size() < n) *this = str(padding, n - size()) + *this;
-        }
+        void align_left   (int n, char padding = ' '); // defined in aux_unicode.h
+        void align_right  (int n, char padding = ' '); // defined in aux_unicode.h
         str left_aligned  (int n, char padding = ' ') { str s = *this; s.align_left (n, padding); return s; }
         str right_aligned (int n, char padding = ' ') { str s = *this; s.align_right(n, padding); return s; }
 
