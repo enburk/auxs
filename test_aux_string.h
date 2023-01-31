@@ -188,6 +188,29 @@ namespace aux::unittest
             oops( out(str(paprika     ).right_aligned(8)) ) { str(u8" па́прика") };
             oops( out(str(T           ).right_aligned(8)) ) { str(u8"       Ͳ") };
         }
+        test("string.brackets");
+        {
+            oops( out(str(""         ).debracketed("{","}")) ) { "" };
+            oops( out(str("{"        ).debracketed("{","}")) ) { "{" };
+            oops( out(str("}"        ).debracketed("{","}")) ) { "}" };
+            oops( out(str("{}"       ).debracketed("{","}")) ) { "" };
+            oops( out(str(" {}"      ).debracketed("{","}")) ) { "" };
+            oops( out(str("{} "      ).debracketed("{","}")) ) { " " };
+            oops( out(str("a(b)"     ).debracketed("(",")")) ) { "a" };
+            oops( out(str("a(b)c"    ).debracketed("(",")")) ) { "ac" };
+            oops( out(str("a (b)"    ).debracketed("(",")")) ) { "a" };
+            oops( out(str("a (b) c"  ).debracketed("(",")")) ) { "a c" };
+            oops( out(str("a (b), c" ).debracketed("(",")")) ) { "a, c" };
+            oops( out(str("a (bb)"   ).debracketed("(",")")) ) { "a" };
+            oops( out(str("a (bb) c" ).debracketed("(",")")) ) { "a c" };
+            oops( out(str("a (bb), c").debracketed("(",")")) ) { "a, c" };
+            oops( out(str("a [[bb]]"   ).debracketed("[[","]]")) ) { "a" };
+            oops( out(str("a [[bb]] c" ).debracketed("[[","]]")) ) { "a c" };
+            oops( out(str("a [[bb]], c").debracketed("[[","]]")) ) { "a, c" };
+            oops( out(str("a (bb)"   ).rebracketed("(",")","<i>","</i>")) ) { "a <i>(bb)</i>" };
+            oops( out(str("a (bb) c" ).rebracketed("(",")","<i>","</i>")) ) { "a <i>(bb)</i> c" };
+            oops( out(str("a (bb), c").rebracketed("(",")","<i>","</i>")) ) { "a <i>(bb)</i>, c" };
+        }
     }
     catch(assertion_failed){}
 }

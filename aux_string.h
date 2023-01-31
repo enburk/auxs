@@ -73,6 +73,7 @@ namespace aux
              trimr(chars);
              triml(chars);
         }
+        str stripped () const { str s = *this; s.strip(); return s; }
 
         void align_left   (int n, char padding = ' '); // defined in aux_unicode.h
         void align_right  (int n, char padding = ' '); // defined in aux_unicode.h
@@ -108,6 +109,39 @@ namespace aux
                 }
             }
             return nn;
+        }
+
+        void rebracket (str opening, str closing, auto lambda, bool despace = false)
+        {
+            int b = 0, e = 0; while (true)
+            {
+                auto r1 = from(b).first(opening); if (not r1) break; b = r1.offset();
+                auto r2 = from(b).first(closing); if (not r2) break; e = r2.offset();
+
+                str s = lambda(from(b).upto(e + closing.size()));
+
+                if (despace and b > 0 and at(b-1) == ' ') b--;
+
+                from(b).upto(e + closing.size()).replace_by(s);
+
+                b += s.size();
+            }
+        }
+        void rebracket (str opening, str closing, str before, str after)
+        {
+             rebracket (opening, closing, [=](str s){ return before + s + after; });
+        }
+        void debracket (str opening, str closing)
+        {
+             rebracket (opening, closing, [](str s){ return ""; }, true);
+        }
+        str rebracketed (str o, str c, str b, str a)
+        {
+            str s = *this; s.rebracket(o, c, b, a); return s;
+        }
+        str debracketed (str o, str c)
+        {
+            str s = *this; s.debracket(o, c); return s;
         }
     
         enum class delimiter { exclude, to_the_left, to_the_right };
