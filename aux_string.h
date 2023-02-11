@@ -84,12 +84,11 @@ namespace aux
         void replace_by (const char * r) {
                 return replace_by(str(r)); }
 
-        using base::replace_all;
-        int replace_all (const char * what, const char * with) { return
-            replace_all (str(what), str(with)); }
+        int replace_all (str what, str with) { return base::
+            replace_all (what, with); }
 
-        str replaced (const char * what, const char * with) {
-            str s = *this; s.replace_all(str(what), str(with));
+        str replaced (str what, str with) {
+            str s = *this; s.replace_all(what, with);
             return s; }
 
         int replace_all (char c, int ccc, str to) // c repeated exactly ccc times
