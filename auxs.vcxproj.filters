@@ -306,6 +306,12 @@
     <ClInclude Include="aux_graph.h">
       <Filter>aux</Filter>
     </ClInclude>
+    <ClInclude Include="sys_in.h">
+      <Filter>sys</Filter>
+    </ClInclude>
+    <ClInclude Include="sys_out.h">
+      <Filter>sys</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="test.cpp">

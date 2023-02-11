@@ -26,6 +26,14 @@ namespace gui
             addon += std::move(s);
         }
 
+        void operator << (array<str> ss)
+        {
+            if (ss.empty()) return;
+            for (auto& s: ss) s += "<br>";
+            std::lock_guard guard{mutex};
+            addon += std::move(ss);
+        }
+
         void clear ()
         {
             std::lock_guard guard{mutex};
