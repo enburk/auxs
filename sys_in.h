@@ -42,6 +42,14 @@ namespace sys::in
     catch (std::exception const& e) {
     return aux::error(e.what()); }
 
+    auto optional_text (path path)
+    {
+        auto result = text(path);
+        if (result.ok()) return
+            result.value();
+        return array<str>{};
+    }
+
     inline int32_t endianness = 0;
 
     struct pool
