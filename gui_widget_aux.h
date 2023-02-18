@@ -20,9 +20,9 @@ namespace gui
         void on_change (void* what) override
         {
             if (what == &color)
-                if (color.was.a != 0 or
-                    color.now.a != 0 )
-                    update();
+            if (color.was.a != 0 or
+                color.now.a != 0 )
+                update();
         }
     };
 
@@ -113,53 +113,6 @@ namespace gui
                 notify();
             }
             notify(what);
-        }
-    };
-
-    struct splitter:
-    widget<splitter>
-    {
-        property<int> lower;
-        property<int> upper;
-        bool touched = false;
-        xy touch_point;
-        int middle = 0;
-
-        void on_change (void* what) override
-        {
-            if (what == &coord and coord.was.size != coord.now.size )
-                mouse_image = coord.now.size.x > coord.now.size.y ?
-                    "horizontal splitter" : "vertical splitter";
-        }
-
-        bool mouse_sensible (xy p) override { return true; }
-
-        void on_mouse_click (xy p, str button, bool down) override
-        {
-            if (button != "left") return;
-            if (down && !touched) touch_point = p;
-            touched = down;
-        }
-        void on_mouse_hover (xy p) override
-        {
-            if (!touched) return;
-
-            if (coord.now.size.x > coord.now.size.y)
-            {
-                int y = coord.now.origin.y + p.y - touch_point.y;
-                y = max (y, lower.now);
-                y = min (y, upper.now);
-                middle = y + coord.now.h/2;
-                notify();
-            }
-            else
-            {
-                int x = coord.now.origin.x + p.x - touch_point.x;
-                x = max (x, lower.now);
-                x = min (x, upper.now);
-                middle = x + coord.now.w/2;
-                notify();
-            }
         }
     };
 }

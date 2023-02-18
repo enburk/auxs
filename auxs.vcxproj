@@ -58,6 +58,7 @@
     <ClInclude Include="gui_widget_image.h" />
     <ClInclude Include="gui_widget_player.h" />
     <ClInclude Include="gui_widget_scroller.h" />
+    <ClInclude Include="gui_widget_splitter.h" />
     <ClInclude Include="gui_widget_text_aux.h" />
     <ClInclude Include="gui_widget_text_box.h" />
     <ClInclude Include="gui_widget_text_cell.h" />

@@ -1,6 +1,7 @@
 #pragma once
 #include "aux_unittest.h"
 #include "gui_widget_console.h"
+#include "gui_widget_splitter.h"
 #include "gui_widget_text_editline.h"
 #include "gui_widget_text_editor.h"
 using gui::widget;
