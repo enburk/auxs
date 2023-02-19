@@ -234,7 +234,7 @@ expected<image<rgba>> FromImage (Image* gdimage)
 
 Image* MakeImage (frame<rgba> frame)
 {
-    image<rgba> copy; if (frame.size.x != frame.image->size.x)
+    image<rgba> copy; if (frame.size.x != frame.img->size.x)
     {
         copy = image<rgba>(frame); frame = copy;
     }

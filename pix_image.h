@@ -25,8 +25,10 @@ namespace pix
         explicit operator xywh () const { return xywh(0, 0, size.x, size.y); }
         explicit operator xyxy () const { return xyxy(0, 0, size.x, size.y); }
 
-        frame<type> crop (      ) { return frame<type>(*this); }
-        frame<type> crop (xywh r) { return crop().crop(r); }
+        const frame<type> crop (      ) const { return *this; }
+        /***/ frame<type> crop (      )       { return *this; }
+        const frame<type> crop (xywh r) const { return crop().crop(r); }
+        /***/ frame<type> crop (xywh r)       { return crop().crop(r); }
 
         void resize (xy Size)
         {

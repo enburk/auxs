@@ -97,7 +97,7 @@ void sys::window::render (xywh r, uint8_t alpha, frame<rgba> frame)
     struct texture { unsigned handle = max<unsigned>(); };
     static std::map<pix::image<rgba>*, texture> textures;
 
-    auto & [handle] = textures[frame.image];
+    auto & [handle] = textures[frame.img];
     if (handle == max<unsigned>()) glGenTextures(1, &handle);
     glEnable(GL_TEXTURE_2D);
     glBindTexture(GL_TEXTURE_2D, handle); glcheck("bind texture");
@@ -105,10 +105,10 @@ void sys::window::render (xywh r, uint8_t alpha, frame<rgba> frame)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    if (frame.image->updates.size() > 0) {
-        frame.image->updates.clear();
-        int w = frame.image->size.x;
-        int h = frame.image->size.y;
+    if (frame.img->updates.size() > 0) {
+        frame.img->updates.clear();
+        int w = frame.img->size.x;
+        int h = frame.img->size.y;
         int W = 1; while (W < w) W *= 2;
         int H = 1; while (H < h) H *= 2;
         int mipmap = 0; int border = 0;
@@ -118,7 +118,7 @@ void sys::window::render (xywh r, uint8_t alpha, frame<rgba> frame)
         glcheck("init texture");
         glTexSubImage2D(GL_TEXTURE_2D, mipmap, 0,0, w,h,
             GL_BGRA_EXT, GL_UNSIGNED_BYTE,
-            frame.image->data.data());
+            frame.img->data.data());
         glcheck("load texture");
         glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
     }

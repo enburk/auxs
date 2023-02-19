@@ -301,7 +301,9 @@ namespace aux
     {
         v p1, p2;
 
-        v normal () requires (v.dim == 2 ){ return (p2-p1).rotated(pi/2); }
+        v normal () { // requires (v.dim == 2 ){
+            return (p2-p1).rotated(pi/2).
+                normalized(); }
 
         auto intersection (line a, line b) -> optional<v> requires (v.dim == 2)
         {

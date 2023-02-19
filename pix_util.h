@@ -11,7 +11,8 @@ namespace pix::util
         text::token t(s, style);
         int w = t.width();
         int h = t.height();
-        int r = d>0 ? d/2: int(0.6 * sqrt(w*w + h*h) + 4);
+        int r = d > 0 ? d/2 :
+        int(0.6 * sqrt(w*w + h*h) + 4);
         image image(xy(2*r+2,2*r+2), rgba{});
         frame frame = image.crop();
         frame.copy(circle{{r+1,r+1}, double(r-1)}, inner);
@@ -21,6 +22,38 @@ namespace pix::util
         int dx = t.lborder;
         int dy = t.Ascent - t.ascent;
         t.render(frame, xy(r+1-w/2-dx, r+1-h/2-dy));
+        return image;
+    }
+    auto rect (xy size, double radius, rgba color)
+    {
+        image image(size, rgba{});
+        frame frame = image.crop();
+        
+        return image;
+    }
+    auto icon (str s, xy size, rgba color)
+    {
+        image image(size, rgba{});
+        frame frame = image.crop();
+        
+        if (s == "play.play")
+        {
+        }
+        else
+        {
+            auto d = min(size.x/4, size.y/4);
+            xyxy r {xy{}, size};  r.deflate(d);
+            vector lt {r.l, r.t}; vector rt {r.r, r.t};
+            vector lb {r.l, r.b}; vector rb {r.r, r.b};
+            frame.copy(line{lt, rb}, rgba::white, d);
+            frame.copy(line{lt, rb}, rgba::white, d);
+            frame.copy(line{rt, lb}, rgba::white, d);
+            frame.copy(line{rt, lb}, rgba::white, d);
+            frame.copy(line{lt, rb}, rgba::red, d/2);
+            frame.copy(line{lt, rb}, rgba::red, d/2);
+            frame.copy(line{rt, lb}, rgba::red, d/2);
+            frame.copy(line{rt, lb}, rgba::red, d/2);
+        }
         return image;
     }
 }

@@ -505,6 +505,36 @@ namespace pix
 
         void draw (line line, rgba color, double width, auto ProcessPixel)
         {
+            if (width > 2.1)
+            {
+                auto w = width;
+                auto a = line.p1;
+                auto p = line.p1;
+                auto b = line.p2;
+                auto q = line.p2;
+                auto n = line.normal();
+                if (true)
+                {
+                    draw(pix::line{a,b}, color, 2, ProcessPixel);
+                }
+                while (w > 2)
+                {
+                    w -= 2;
+                    a += n; b += n;
+                    p -= n; q -= n;
+                    draw(pix::line{a,b}, color, 2, ProcessPixel);
+                    draw(pix::line{p,q}, color, 2, ProcessPixel);
+                }
+                if (w > 0.2)
+                {
+                    a += n; b += n;
+                    p -= n; q -= n;
+                    draw(pix::line{a,b}, color, w, ProcessPixel);
+                    draw(pix::line{p,q}, color, w, ProcessPixel);
+                }
+                return;
+            }
+
             init_tables(width);
 
             aa_vertex v1, v2;

@@ -271,23 +271,17 @@ widget<TestPixDraw>
             auto cc = int(255*a/2/pi);
 
             frame1.blend(line{{r,r},
-                vector{r,0}.rotated(-a) +
-                vector{r,r}}, rgba::white, w1);
+            vector{r,0}.rotated(-a) + vector{r,r}}, rgba::white, w1*5);
             frame2.copy (line{{r,r},
-                vector{r,0}.rotated(-a) +
-                vector{r,r}}, rgba::white, w2);
+            vector{r,0}.rotated(-a) + vector{r,r}}, rgba::white, w2*5);
 
-            threads += std::jthread([&frame1,&frame2,r,rr,w1,w2](){
-            frame1.blend(circle{{3*r,r}, rr},
-                rgba::white, w1);
-            frame2.copy (circle{{3*r,r}, rr},
-                rgba::white, w2);
-            });
+            threads += 
+            std::jthread([&frame1,&frame2,r,rr,w1,w2](){
+            frame1.blend(circle{{3*r,r}, rr}, rgba::white, w1);
+            frame2.copy (circle{{3*r,r}, rr}, rgba::white, w2); });
 
-            frame1.blend(circle{{5*r,r}, rr},
-                rgba(cc,0,0));
-            frame2.copy (circle{{5*r,r}, rr},
-                rgba(255 - cc,0,0));
+            frame1.blend(circle{{5*r,r}, rr}, rgba(cc,0,0));
+            frame2.copy (circle{{5*r,r}, rr}, rgba(255 - cc,0,0));
         }
         for (auto& t: threads) t.join();
         image.crop().blend_from(
@@ -635,16 +629,23 @@ widget<TestPixUtil>
         auto frame1 = image.crop(xywh(0,0,w,h));
         auto frame2 = image.crop(xywh(0,h,w,h));
         frame1.fill(rgba::white);
-        frame2.fill(rgba::black);
+        frame2.fill(gui::skins["gray+"].ultralight.first);
 
-        int x = 10;
+        int d = 9;
+        int x = d;
         for (int i=u/2; i<=u*4/3; i++)
         {
+            int y = d;
             auto node = pix::util::node("13",
             rgba::red, rgba::white, rgba::black, 0, font{"",i});
-            frame1.from(x,10).blend_from(node);
-            frame2.from(x,10).blend_from(node);
-            x += node.size.x*3/2;
+            frame1.from(x,y).blend_from(node);
+            frame2.from(x,y).blend_from(node);
+            int z = node.size.x;
+            y += z + d;
+            frame1.from(x,y).blend_from(pix::util::icon("play", xy{z,z}, rgba::black));
+            frame2.from(x,y).blend_from(pix::util::icon("play", xy{z,z}, rgba::white));
+            y += z + d;
+            x += z + d;
         }
     }
 };

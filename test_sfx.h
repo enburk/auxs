@@ -35,6 +35,8 @@ widget<TestSfxTrees>
     sfx::trees::binary::avl avl;
     sfx::trees::binary::bst* bst = nullptr;
 
+    rgba black = gui::skins["gray+"].ultralight.first;
+
     void on_change (void* what) override
     {
         if (what == &coord and
@@ -58,8 +60,7 @@ widget<TestSfxTrees>
                 buttons(i++).text.text = "AVL";
                 buttons(i++).text.text = "pause";
                 buttons.front().on = true;
-                canvas.color =
-                rgba::black;
+                canvas.color = black;
             }
 
             int y = 0; for (auto& button: buttons) {
@@ -121,7 +122,7 @@ widget<TestSfxTrees>
                 Image.coord = r;
                 Image.source = image.crop();
                 auto frame = image.crop();
-                frame.fill(rgba::black);
+                frame.fill(black);
 
                 for (auto& node: tree.post_order())
                 {
