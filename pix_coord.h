@@ -211,6 +211,7 @@ namespace pix
     using vector  = aux::vector<2>;
     using line    = aux::line<vector>;
     using segment = aux::segment<vector>;
+    using polygon = aux::array<vector>;
     using circle  = aux::circle;
 
     ////////////////////////////////

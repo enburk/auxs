@@ -118,6 +118,12 @@ namespace pix
         frame& blend (line, color, double width=1);
         frame& copy  (segment s, color c) { return copy (line{s.p1, s.p2}, c); }
         frame& blend (segment s, color c) { return blend(line{s.p1, s.p2}, c); }
+        frame& copy  (polygon, color, double roundness, double width);
+        frame& blend (polygon, color, double roundness, double width);
+        frame& copy  (polygon, color, double roundness);
+        frame& blend (polygon, color, double roundness);
+        frame& copy  (circle, color, double width, double a1, double a2);
+        frame& blend (circle, color, double width, double a1, double a2);
         frame& copy  (circle, color, double width);
         frame& blend (circle, color, double width);
         frame& copy  (circle, color);

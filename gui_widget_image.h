@@ -107,7 +107,8 @@ namespace gui
 
         void on_change (void* what) override
         {
-            if (what == &coord or what == &padding)
+            if (what == &coord
+            or  what == &padding)
             {
                 image.coord = coord.now.local()
                     + padding;
@@ -128,7 +129,9 @@ namespace gui
                 rgba & dst = tinted(x,y);
                 dst = src;
 
-                if (src.r == 0 and src.g == 0 and src.b == 0) {
+                if (src.r == 0
+                and src.g == 0
+                and src.b == 0) {
                     dst.r = color.now.r;
                     dst.g = color.now.g;
                     dst.b = color.now.b;

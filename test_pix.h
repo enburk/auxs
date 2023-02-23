@@ -280,8 +280,13 @@ widget<TestPixDraw>
             frame1.blend(circle{{3*r,r}, rr}, rgba::white, w1);
             frame2.copy (circle{{3*r,r}, rr}, rgba::white, w2); });
 
-            frame1.blend(circle{{5*r,r}, rr}, rgba(cc,0,0));
-            frame2.copy (circle{{5*r,r}, rr}, rgba(255 - cc,0,0));
+            threads += 
+            std::jthread([&frame1,&frame2,r,rr,w1,w2](){
+            frame1.blend(circle{{5*r,r}, rr}, rgba::white, w1, w1*pi/2, w1*pi);
+            frame2.copy (circle{{5*r,r}, rr}, rgba::white, w2, w2*pi/2, w2*pi); });
+
+            frame1.blend(circle{{7*r,r}, rr}, rgba(cc,0,0));
+            frame2.copy (circle{{7*r,r}, rr}, rgba(255 - cc,0,0));
         }
         for (auto& t: threads) t.join();
         image.crop().blend_from(
@@ -642,9 +647,14 @@ widget<TestPixUtil>
             frame2.from(x,y).blend_from(node);
             int z = node.size.x;
             y += z + d;
-            frame1.from(x,y).blend_from(pix::util::icon("play", xy{z,z}, rgba::black));
-            frame2.from(x,y).blend_from(pix::util::icon("play", xy{z,z}, rgba::white));
+            frame1.from(x,y).blend_from(pix::util::icon("play.play", xy{z,z}, rgba::black, z/4));
+            frame2.from(x,y).blend_from(pix::util::icon("play.play", xy{z,z}, rgba::white, z/4));
             y += z + d;
+            frame1.from(x,y).blend_from(pix::util::icon("play.stop", xy{z,z}, rgba::black, z/4));
+            frame2.from(x,y).blend_from(pix::util::icon("play.stop", xy{z,z}, rgba::white, z/4));
+            y += z + d;
+            frame1.from(x,y).blend_from(pix::util::icon("", xy{z,z}, rgba::black));
+            frame2.from(x,y).blend_from(pix::util::icon("", xy{z,z}, rgba::white));
             x += z + d;
         }
     }
