@@ -40,7 +40,7 @@ namespace pix::util
             c - 0.9*x - 0.9*y,
             c + 0.9*x + 0.0*y,
             c - 0.9*x + 0.9*y},
-            color, roundness, 2);
+            color, roundness);
         }
         else
         if (s == "play.stop")
@@ -50,7 +50,7 @@ namespace pix::util
             c + 0.8*x - 0.8*y, 
             c + 0.8*x + 0.8*y,
             c - 0.8*x + 0.8*y},
-            color, roundness, 2);
+            color, roundness);
         }
         else
         {

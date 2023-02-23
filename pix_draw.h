@@ -149,9 +149,43 @@ namespace pix
     }
 
     void draw (
-    frame<rgba> f, auto draw,
+    frame<rgba> f, auto Draw,
     polygon points, rgba color, double roundness)
     {
+        draw(f, Draw, points, color, roundness, 0.5);
+
+        if (points.empty()) return;
+        
+        xy p;
+        for (vector v: points)
+        p += xy{(int)(v.x), (int)(v.y)};
+        p /= points.
+             size();
+
+        array<xy> queue;
+        Draw(p.x, p.y, color);
+        queue += p;
+
+        auto proceed = [&](int x, int y)
+        {
+            if (x < 0 or f.size.x <= x
+            or  y < 0 or f.size.y <= y
+            or  f(x,y).a != 0) return;
+            Draw(x, y, color);
+            queue += xy(x,y);
+        };
+
+        while(not queue.empty())
+        {
+            p = queue.back();
+            queue.pop_back();
+            proceed(p.x+1, p.y);
+            proceed(p.x-1, p.y);
+            proceed(p.x, p.y+1);
+            proceed(p.x, p.y-1);
+        }
+
+        draw(f, Draw, points, color, roundness, 2);
     }
 
     void copy (frame<rgba> f, auto... args)
