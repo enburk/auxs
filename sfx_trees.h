@@ -1,5 +1,5 @@
 #pragma once
-#include "sfx.h"
+#include "sfx_graph.h"
 namespace sfx::trees::binary
 {
     struct node : sfx::node

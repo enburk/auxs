@@ -85,6 +85,7 @@
     <ClInclude Include="pix_text_token.h" />
     <ClInclude Include="pix_util.h" />
     <ClInclude Include="sfx.h" />
+    <ClInclude Include="sfx_graph.h" />
     <ClInclude Include="sfx_playback.h" />
     <ClInclude Include="sfx_trees.h" />
     <ClInclude Include="sfx_trees_bbst.h" />

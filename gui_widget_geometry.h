@@ -19,7 +19,7 @@ namespace gui
             if (alpha > 0 and color.now.a > 0)
             window.render(r, alpha, color.now,
                 offset, geo, points,
-                geo == geo::lines?
+                geo == pix::geo::lines?
                 4 : 8);
         }
 

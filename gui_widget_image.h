@@ -94,6 +94,12 @@ namespace gui
             original.crop().copy_from(frame);
             refresh();
         }
+        void load (pix::image<rgba> image)
+        {
+            original.resize(image.size);
+            original.crop().copy_from(image);
+            refresh();
+        }
         void load (array<sys::byte>::range_type range)
         {
             original = pix::unpack(range).value();

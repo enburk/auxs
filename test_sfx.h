@@ -1,5 +1,6 @@
 #pragma once
 #include "aux_unittest.h"
+#include "sfx_playback.h"
 #include "sfx_trees_bst.h"
 #include "sfx_trees_bbst_avl.h"
 #include "sfx_trees_bbst_splay.h"
@@ -11,6 +12,36 @@ using gui::widget;
 struct TestSfx:
 widget<TestSfx>
 {
+    gui::toolbar canvas;
+    sfx::playback play;
+    gui::property<double> scale = 1.0;
+    gui::property<double> round = 0.2;
+    
+    void on_change (void* what) override
+    {
+        if (what == &scale
+        or  what == &round
+        or  what == &coord and
+            coord.was.size !=
+            coord.now.size)
+        {
+            int W = coord.now.w; if (W <= 0) return;
+            int H = coord.now.h; if (H <= 0) return;
+            int w = gui::metrics::text::height*10;
+            int h = gui::metrics::text::height*13/10;
+            w = (int)(w*scale.now);
+            h = (int)(h*scale.now);
+
+            canvas.coord = xywh(0,0,W,H);
+            play.coord = xywh(0,0,2*w,h*2);
+            play.roundness = round.now;
+            skin = "gray+";
+        }
+        if (what == &play.Next) scale = scale.now*1.1;
+        if (what == &play.Prev) scale = scale.now*0.9;
+        if (what == &play.next) round = round.now*1.1;
+        if (what == &play.prev) round = round.now*0.9;
+    }
 };
 
 struct TestSfxTrees:

@@ -37,19 +37,103 @@ namespace pix::util
         if (s == "play.play")
         {
             frame.copy(polygon{
-            c - 0.9*x - 0.9*y,
-            c + 0.9*x + 0.0*y,
-            c - 0.9*x + 0.9*y},
+            c - 0.4*x - 0.8*y,
+            c + 0.8*x + 0.0*y,
+            c - 0.4*x + 0.8*y},
             color, roundness);
         }
         else
         if (s == "play.stop")
         {
             frame.copy(polygon{
+            c - 0.7*x - 0.7*y,
+            c + 0.7*x - 0.7*y, 
+            c + 0.7*x + 0.7*y,
+            c - 0.7*x + 0.7*y},
+            color, roundness);
+        }
+        else
+        if (s == "play.pause")
+        {
+            frame.copy(polygon{
+            c - 0.6*x - 0.7*y,
+            c - 0.1*x - 0.7*y, 
+            c - 0.1*x + 0.7*y,
+            c - 0.6*x + 0.7*y},
+            color, roundness);
+            frame.copy(polygon{
+            c + 0.1*x - 0.7*y,
+            c + 0.6*x - 0.7*y, 
+            c + 0.6*x + 0.7*y,
+            c + 0.1*x + 0.7*y},
+            color, roundness);
+        }
+        else
+        if (s == "play.next")
+        {
+            frame.copy(polygon{
             c - 0.8*x - 0.8*y,
-            c + 0.8*x - 0.8*y, 
-            c + 0.8*x + 0.8*y,
+            c + 0.1*x + 0.0*y,
             c - 0.8*x + 0.8*y},
+            color, roundness);
+            frame.copy(polygon{
+            c - 0.0*x - 0.8*y,
+            c + 0.8*x + 0.0*y,
+            c - 0.0*x + 0.8*y},
+            color, roundness);
+        }
+        else
+        if (s == "play.prev")
+        {
+            frame.copy(polygon{
+            c + 0.8*x - 0.8*y,
+            c - 0.1*x + 0.0*y,
+            c + 0.8*x + 0.8*y},
+            color, roundness);
+            frame.copy(polygon{
+            c + 0.0*x - 0.8*y,
+            c - 0.8*x + 0.0*y,
+            c + 0.0*x + 0.8*y},
+            color, roundness);
+        }
+        else
+        if (s == "play.Next")
+        {
+            frame.copy(polygon{
+            c - 0.8*x - 0.8*y,
+            c - 0.1*x + 0.0*y,
+            c - 0.8*x + 0.8*y},
+            color, roundness);
+            frame.copy(polygon{
+            c - 0.2*x - 0.8*y,
+            c + 0.5*x + 0.0*y,
+            c - 0.2*x + 0.8*y},
+            color, roundness);
+            frame.copy(polygon{
+            c + 0.5*x - 0.7*y,
+            c + 0.7*x - 0.7*y, 
+            c + 0.7*x + 0.7*y,
+            c + 0.5*x + 0.7*y},
+            color, roundness);
+        }
+        else
+        if (s == "play.Prev")
+        {
+            frame.copy(polygon{
+            c + 0.8*x - 0.8*y,
+            c + 0.1*x + 0.0*y,
+            c + 0.8*x + 0.8*y},
+            color, roundness);
+            frame.copy(polygon{
+            c + 0.2*x - 0.8*y,
+            c - 0.5*x + 0.0*y,
+            c + 0.2*x + 0.8*y},
+            color, roundness);
+            frame.copy(polygon{
+            c - 0.5*x - 0.7*y,
+            c - 0.7*x - 0.7*y, 
+            c - 0.7*x + 0.7*y,
+            c - 0.5*x + 0.7*y},
             color, roundness);
         }
         else
