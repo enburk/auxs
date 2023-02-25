@@ -10,7 +10,6 @@ namespace gui
         bool touched = false;
         xy touch_point;
         int middle = 0;
-        str name;
 
         int set (str name, int lo, int mid, int hi)
         {
@@ -93,8 +92,8 @@ namespace gui
                 y = max (y, lower.now);
                 y = min (y, upper.now);
                 middle = y + coord.now.h/2;
-                if (name != "") sys::settings::save(
-                    name + ".permyriad",
+                if (name.now != "") sys::settings::save(
+                    name.now + ".permyriad",
                     middle * 100'00 / h);
             }
             else
@@ -104,8 +103,8 @@ namespace gui
                 x = max (x, lower.now);
                 x = min (x, upper.now);
                 middle = x + coord.now.w/2;
-                if (name != "") sys::settings::save(
-                    name + ".permyriad",
+                if (name.now != "") sys::settings::save(
+                    name.now + ".permyriad",
                     middle * 100'00 / w);
             }
 

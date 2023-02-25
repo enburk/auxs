@@ -8,7 +8,6 @@ namespace sfx
     using gui::property;
     using gui::unary_property;
     using gui::binary_property;
-    using text = gui::text::view;
     using gui::line;
     using gui::oval;
     using gui::time;

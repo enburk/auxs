@@ -3,6 +3,7 @@
 #include <cmath>
 #include <random>
 #include <numeric>
+#include <unordered_set>
 #include <algorithm>
 #include <stdexcept>
 #include <variant>

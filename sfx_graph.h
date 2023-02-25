@@ -2,6 +2,8 @@
 #include "sfx.h"
 namespace sfx
 {
+    using text = gui::text::view;
+
     struct node:
     widget<node>
     {

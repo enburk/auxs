@@ -321,6 +321,9 @@
     <ClInclude Include="sfx_graph.h">
       <Filter>sfx</Filter>
     </ClInclude>
+    <ClInclude Include="sfx_contents.h">
+      <Filter>sfx</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="test.cpp">
