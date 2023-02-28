@@ -142,6 +142,11 @@ namespace sys::in
             n = get_int();
             return *this;
         }
+        pool& operator >> (uint32_t& n)
+        {
+            n = (uint32_t)get_int();
+            return *this;
+        }
         pool& operator >> (str& s)
         {
             s = get_string();

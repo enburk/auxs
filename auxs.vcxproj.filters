@@ -306,12 +306,6 @@
     <ClInclude Include="aux_graph.h">
       <Filter>aux</Filter>
     </ClInclude>
-    <ClInclude Include="sys_in.h">
-      <Filter>sys</Filter>
-    </ClInclude>
-    <ClInclude Include="sys_out.h">
-      <Filter>sys</Filter>
-    </ClInclude>
     <ClInclude Include="gui_widget_splitter.h">
       <Filter>gui</Filter>
     </ClInclude>
@@ -323,6 +317,12 @@
     </ClInclude>
     <ClInclude Include="sfx_contents.h">
       <Filter>sfx</Filter>
+    </ClInclude>
+    <ClInclude Include="sys_io_in.h">
+      <Filter>sys</Filter>
+    </ClInclude>
+    <ClInclude Include="sys_io_out.h">
+      <Filter>sys</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

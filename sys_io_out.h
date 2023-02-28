@@ -38,6 +38,14 @@ namespace sys::out
             bytes.end(), data, data+size);
             return *this;
         }
+        pool& operator << (uint32_t n)
+        {
+            int size = sizeof(n);
+            byte* data = (byte*)(&n);
+            bytes.container::insert(
+            bytes.end(), data, data+size);
+            return *this;
+        }
         pool& operator << (str const& s)
         {
             *this << s.size();
