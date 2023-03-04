@@ -330,6 +330,8 @@ namespace sys::audio
         LPDIRECTSOUNDBUFFER B1 = nullptr; // secondary buffer
         LPDIRECTSOUNDBUFFER B2 = nullptr; // secondary buffer
 
+        int bytes = 0;
+
         DATA ()
         {
             HRESULT hr;
@@ -370,6 +372,7 @@ namespace sys::audio
     {
         if (!data_) data_ = new DATA;
         DATA & data = *(DATA*)(data_);
+        data.bytes = input.size();
 
         int align = channels * bps / 8;
         duration = (double) input.size() / (align*samples);
@@ -413,19 +416,68 @@ namespace sys::audio
         data.B1->Unlock(p1, s1, p2, s2);
         data.B1->SetCurrentPosition(0);
     }
-    void player::play(double rise, double fade)
+    void player::play()
     {
-        DATA & data = *(DATA*)(data_);
+        DATA& data = *(DATA*)(data_);
         if (data_ and
             data.B1)
-            data.B1->Play(0, 0, 0);
+            data.B1->Play(0,0,0);
     }
-    void player::stop(double fade)
+    void player::stop()
     {
-        DATA & data = *(DATA*)(data_);
+        DATA& data = *(DATA*)(data_);
         if (data_ and
             data.B1)
             data.B1->Stop();
+    }
+    void player::volume(double O_1)
+    {
+        DATA& data = *(DATA*)(data_);
+        if (data_ and
+            data.B1)
+            data.B1->SetVolume(
+            DSBVOLUME_MIN + (LONG)((
+            DSBVOLUME_MAX -
+            DSBVOLUME_MIN ) *
+            O_1));
+    }
+    auto player::volume() -> double
+    {
+        DATA& data = *(DATA*)(data_);
+        if (!data_
+        or  !data.B1)
+            return 0.0;
+            LONG volume;
+            data.B1->GetVolume(&volume);
+            return (double)(volume -
+            DSBVOLUME_MIN) / (
+            DSBVOLUME_MAX -
+            DSBVOLUME_MIN );
+    }
+    void player::position (double sec)
+    {
+        DATA& data = *(DATA*)(data_);
+        if (data_ and
+            data.B1)
+            data.B1->SetCurrentPosition(
+            max(0, min(data.bytes-1, (int)
+            (data.bytes*sec/duration))));
+    }
+    auto player::position () -> double
+    {
+        DATA& data = *(DATA*)(data_);
+        if (!data_
+        or  !data.B1
+        or  !data.bytes)
+            return 0.0;
+        DWORD dwCurrentPlayCursor;
+        DWORD dwCurrentWriteCursor;
+        data.B1->GetCurrentPosition(
+        &dwCurrentPlayCursor,
+        &dwCurrentWriteCursor);
+        return duration*
+        dwCurrentPlayCursor/
+            data.bytes;
     }
 }
 

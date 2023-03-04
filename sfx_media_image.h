@@ -94,7 +94,7 @@ namespace sfx::media::image
                     frames[current].coord =
                     coord.now.local();
             }
-            if (what == &timer and frame_ready)
+            if (what == &timer and frame_ready and not pause)
             {
                 frame_ready = false;
                 frames[current].hide(); current = (current + 1) % 2;
@@ -104,14 +104,15 @@ namespace sfx::media::image
             }
             if (what == &timer and thread.done)
             {
-                timer.go(time{},time{});
                 try {
                 thread.join();
                 thread.check(); }
                 catch (std::exception const& e) {
-                    status = state::failed;
-                    error = e.what();
-                }
+                status = state::failed;
+                error = e.what(); }
+                timer.go(
+                time{},
+                time{});
             }
         }
     };

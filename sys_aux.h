@@ -120,8 +120,12 @@ namespace sys
            ~player();
 
             void load (array<byte>, int channels, int samples, int bps);
-            void play (double rise = 0.0, double fade = 0.0);
-            void stop (double fade = 0.0);
+            void play ();
+            void stop ();
+            void position (double sec);
+            auto position () -> double;
+            void volume   (double O_1);
+            auto volume   () -> double;
             double duration = 0.0;
 
             void* data_ = nullptr;
