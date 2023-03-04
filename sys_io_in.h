@@ -9,8 +9,7 @@ namespace sys::in
     using std::filesystem::exists;
     using aux::expected;
 
-    auto bytes (path path) ->
-    expected<array<byte>> try
+    auto bytes (path path)
     {
         std::ifstream
         ifstream(path, std::ios::binary);
@@ -24,11 +23,21 @@ namespace sys::in
         (pool.data()), size);
         return pool;
     }
-    catch (std::exception const& e) {
-    return aux::error(e.what()); }
 
-    auto text (path path) ->
-    expected<array<str>> try
+    auto bytes (path path, int offset, int size)
+    {
+        std::ifstream
+        ifstream(path, std::ios::binary);
+        ifstream.seekg(offset, std::ios::beg);
+
+        array<byte> pool;
+        pool.resize(size);
+        ifstream.read((char*)
+        (pool.data()), size);
+        return pool;
+    }
+
+    auto text (path path)
     {
         std::ifstream stream(path); str text = std::string{
         std::istreambuf_iterator<char>(stream),
@@ -37,17 +46,13 @@ namespace sys::in
         if (text.starts_with(
         "\xEF""\xBB""\xBF")) // UTF-8 BOM
         text.upto(3).erase();
-        return text.split_by("\n");
+        return text;
     }
-    catch (std::exception const& e) {
-    return aux::error(e.what()); }
 
     auto optional_text (path path)
     {
-        auto result = text(path);
-        if (result.ok()) return
-            result.value();
-        return array<str>{};
+        return exists(path) ?
+        text(path) : "";
     }
 
     inline int32_t endianness = 0;
@@ -62,7 +67,7 @@ namespace sys::in
         pool (path path) {
             name = path.string();
             if (not exists(path)) return;
-            bytes = sys::in::bytes(path).value();
+            bytes = sys::in::bytes(path);
         }
 
         void get_endianness () {

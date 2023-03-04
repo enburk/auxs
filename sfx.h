@@ -1,4 +1,5 @@
 #pragma once
+#include "gui_widget_image.h"
 #include "gui_widget_geometry.h"
 #include "gui_widget_text_editline.h"
 namespace sfx

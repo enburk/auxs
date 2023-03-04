@@ -56,7 +56,6 @@
     <ClInclude Include="gui_widget_console.h" />
     <ClInclude Include="gui_widget_geometry.h" />
     <ClInclude Include="gui_widget_image.h" />
-    <ClInclude Include="gui_widget_player.h" />
     <ClInclude Include="gui_widget_scroller.h" />
     <ClInclude Include="gui_widget_splitter.h" />
     <ClInclude Include="gui_widget_text_aux.h" />
@@ -87,7 +86,11 @@
     <ClInclude Include="sfx.h" />
     <ClInclude Include="sfx_contents.h" />
     <ClInclude Include="sfx_graph.h" />
-    <ClInclude Include="sfx_playback.h" />
+    <ClInclude Include="sfx_media.h" />
+    <ClInclude Include="sfx_media_audio.h" />
+    <ClInclude Include="sfx_media_image.h" />
+    <ClInclude Include="sfx_media_video.h" />
+    <ClInclude Include="sfx_media_vudio.h" />
     <ClInclude Include="sfx_trees.h" />
     <ClInclude Include="sfx_trees_bbst.h" />
     <ClInclude Include="sfx_trees_bbst_avl.h" />

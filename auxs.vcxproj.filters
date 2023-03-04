@@ -114,9 +114,6 @@
     <ClInclude Include="gui_widget_image.h">
       <Filter>gui</Filter>
     </ClInclude>
-    <ClInclude Include="gui_widget_player.h">
-      <Filter>gui</Filter>
-    </ClInclude>
     <ClInclude Include="gui_widget_scroller.h">
       <Filter>gui</Filter>
     </ClInclude>
@@ -309,9 +306,6 @@
     <ClInclude Include="gui_widget_splitter.h">
       <Filter>gui</Filter>
     </ClInclude>
-    <ClInclude Include="sfx_playback.h">
-      <Filter>sfx</Filter>
-    </ClInclude>
     <ClInclude Include="sfx_graph.h">
       <Filter>sfx</Filter>
     </ClInclude>
@@ -323,6 +317,21 @@
     </ClInclude>
     <ClInclude Include="sys_io_out.h">
       <Filter>sys</Filter>
+    </ClInclude>
+    <ClInclude Include="sfx_media.h">
+      <Filter>sfx</Filter>
+    </ClInclude>
+    <ClInclude Include="sfx_media_image.h">
+      <Filter>sfx</Filter>
+    </ClInclude>
+    <ClInclude Include="sfx_media_audio.h">
+      <Filter>sfx</Filter>
+    </ClInclude>
+    <ClInclude Include="sfx_media_video.h">
+      <Filter>sfx</Filter>
+    </ClInclude>
+    <ClInclude Include="sfx_media_vudio.h">
+      <Filter>sfx</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

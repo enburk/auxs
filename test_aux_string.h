@@ -152,16 +152,12 @@ namespace aux::unittest
         }
         test("string.split");
         {
-            oops( out(str(""   ).split_by("|").size()) ) { "0" };
-            oops( out(str("a"  ).split_by("|")[0]) ) { "a" };
-            oops( out(str("|"  ).split_by("|")[0]) ) { ""  };
-            oops( out(str("|"  ).split_by("|")[1]) ) { ""  };
-            oops( out(str("a|" ).split_by("|")[0]) ) { "a" };
-            oops( out(str("a|" ).split_by("|")[1]) ) { ""  };
-            oops( out(str("|b" ).split_by("|")[0]) ) { ""  };
-            oops( out(str("|b" ).split_by("|")[1]) ) { "b" };
-            oops( out(str("a|b").split_by("|")[0]) ) { "a" };
-            oops( out(str("a|b").split_by("|")[1]) ) { "b" };
+            oops( out(str(""   ).split_by("|"), ",") ) { "" };
+            oops( out(str("a"  ).split_by("|"), ",") ) { "a" };
+            oops( out(str("|"  ).split_by("|"), ",") ) { "," };
+            oops( out(str("a|" ).split_by("|"), ",") ) { "a," };
+            oops( out(str("|b" ).split_by("|"), ",") ) { ",b" };
+            oops( out(str("a|b").split_by("|"), ",") ) { "a,b" };
 
             str  a,b;
             str("a|b").split_by("|", a, b, str::delimiter::to_the_left);  oops( out(a) ) { "a|" };

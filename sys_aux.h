@@ -36,14 +36,14 @@ namespace sys
     struct thread
     {
         std::thread th;
-        std::exception_ptr exception = nullptr;
+        std::atomic<bool> done = true;
         std::atomic<bool> stop = false;
-        std::atomic<bool> done = false;
+        std::exception_ptr exception = nullptr;
         std::chrono::high_resolution_clock::
         duration duration;
 
         thread () = default;
-        thread (auto f) { *this = std::move(f); }
+        thread (auto&& f) { *this = std::forward(f); }
        ~thread () { stop = true; join(); }
 
         void join ()
@@ -53,7 +53,6 @@ namespace sys
         }
         void check ()
         {
-            done = false;
             if (exception) {
             auto e = exception;
             exception = nullptr;
@@ -63,6 +62,7 @@ namespace sys
         {
             stop = true; join();
             stop = false;
+            done = false;
             check();
 
             th = std::thread([this,f]()
@@ -125,6 +125,16 @@ namespace sys
             double duration = 0.0;
 
             void* data_ = nullptr;
+        };
+
+        struct decoder
+        {
+            decoder (const
+            array<byte>& input);
+            array<byte> output;
+            int channels = 0;
+            int samples = 0;
+            int bps = 0;
         };
     }
 }

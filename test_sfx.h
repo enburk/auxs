@@ -1,6 +1,6 @@
 #pragma once
 #include "aux_unittest.h"
-#include "sfx_playback.h"
+#include "sfx_media.h"
 #include "sfx_trees_bst.h"
 #include "sfx_trees_bbst_avl.h"
 #include "sfx_trees_bbst_splay.h"
@@ -13,7 +13,7 @@ struct TestSfx:
 widget<TestSfx>
 {
     gui::toolbar canvas;
-    sfx::playback play;
+    sfx::media::playback play;
     gui::property<double> scale = 1.0;
     gui::property<double> round = 0.2;
     

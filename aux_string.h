@@ -154,20 +154,23 @@ namespace aux
             str2 = std::move(s2); // could be this
             return m > 0;
         }
-        array<str> split_by (str pattern) const
+        auto split_by (str pattern) const -> generator<str>
         {
             array<str> result;
-            if (size() == 0) return result;
-            int start = 0; while (true) {
-                auto range = (int)container::find(pattern, start);
-                bool found = range != std::string::npos;
-                result += from(start).span(found ? range - start : size() - start);
-                if (!found) range = size();
-                start = range + pattern.size();
-                if (start >= size()) { if (found) result += ""; break; }
+            if (size() == 0) co_return;
+            int start = 0; while (true)
+            {
+                auto next = (int)container::find(pattern, start);
+                bool found = next != std::string::npos;
+                if (not found) next = size();
+                co_yield from(start).upto(next);
+                start = next + pattern.size();
+                if (start >= size()) {
+                if (found) co_yield "";
+                break; }
             }
-            return result;
         }
+        auto lines () const { return split_by("\n"); }
 
         void canonicalize ()
         {

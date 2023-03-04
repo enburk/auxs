@@ -34,6 +34,7 @@ namespace aux
         constexpr array (const base  &c) : base(c) {}
         constexpr array (      base &&c) : base(std::move(c)) {}
         constexpr array (std::initializer_list<type> list) : base(list) {}
+        constexpr array (generator<type> g) { for (auto&& x: g) *this += x; }
 
         auto& operator =  (const array  & a) { base::operator = (a); return *this; }
         auto& operator =  (      array && a) { base::operator = (std::move(a)); return *this; }

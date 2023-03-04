@@ -1,7 +1,14 @@
 #pragma once
+#include <fstream>
+#include "sys_aux.h"
+#include "pix_sampling.h"
 #include "sfx.h"
-namespace sfx
+namespace sfx::media
 {
+    enum class state {
+    loading, ready, playing,
+    finished, failed };
+
     struct playback:
     widget<playback>
     {

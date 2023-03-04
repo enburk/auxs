@@ -26,22 +26,26 @@ namespace gui
                 r.size.x, r.size.y));
 
             if (frame.size.x > 0
-            &&  frame.size.y > 0)
-                window.render(r, alpha, frame);
+            and frame.size.y > 0)
+                window.render(r,
+                alpha, frame);
         }
 
         void on_change (void* what) override
         {
-            if((what == &coord && coord.was.size != coord.now.size)
-            ||  what == &source
-            ||  what == &fit)
+            if (what == &fit
+            or  what == &source
+            or  what == &coord and
+                coord.was.size !=
+                coord.now.size)
             {
                 if (source.now.size.x == 0
-                ||  source.now.size.y == 0
-                ||  source.now.size == coord.now.size
-                ||  fit.now == none || (fit.now == scale_down
-                &&  source.now.size.x <= coord.now.size.x
-                &&  source.now.size.y <= coord.now.size.y))
+                or  source.now.size.y == 0
+                or  source.now.size == coord.now.size
+                or  fit.now == none
+                or  fit.now == scale_down
+                and source.now.size.x <= coord.now.size.x
+                and source.now.size.y <= coord.now.size.y)
                 {
                     resized_image.resize(xy());
                     resized_frame = source.now;
