@@ -4,6 +4,7 @@
 #include "gui_widget_text_editline.h"
 namespace sfx
 {
+    using sys::byte;
     using gui::widget;
     using gui::widgetarium;
     using gui::property;

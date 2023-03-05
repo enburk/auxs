@@ -6,7 +6,8 @@
 namespace sfx::media
 {
     enum class state {
-    loading, ready, playing,
+    loading,  ready,
+    playing,  paused,
     finished, failed };
 
     struct playback:

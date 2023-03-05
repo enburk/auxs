@@ -430,6 +430,17 @@ namespace sys::audio
             data.B1)
             data.B1->Stop();
     }
+    bool player::playing()
+    {
+        DATA& data = *(DATA*)(data_);
+        if (!data_
+        or  !data.B1)
+            return false;
+            DWORD status;
+            data.B1->GetStatus(&status);
+            return status &
+            DSBSTATUS_PLAYING;
+    }
     void player::volume(double O_1)
     {
         DATA& data = *(DATA*)(data_);

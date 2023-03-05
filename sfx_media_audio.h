@@ -7,15 +7,14 @@ namespace sfx::media::audio
     {
         std::atomic<state>
         status = state::finished;
-        property<bool> pause = false;
-        property<bool> mute = false;
+        property<byte> volume = 255;
         time duration;
         time elapsed;
         str error;
 
         sys::thread thread;
-        property<time> timer;
-        using byte = sys::byte;
+        property<time> loading;
+        property<time> playing;
         sys::audio::player audio;
 
         ~player () { reset(); }
@@ -38,83 +37,34 @@ namespace sfx::media::audio
 
                 status = state::ready;
             };
-            timer.go(
+            loading.go(
             time::infinity,
             time::infinity);
         }
 
-        void play (time rise = time{}, time fade = time{})
+        void play ()
         {
-        }
-
-        void stop (time fade = time{})
-        {
-        }
-
-                void play ()
-        {
-            switch(status) {
-            case state::ready:
-            case state::finished:
-            {
-                start = time::now;
-                status = state::playing;
-
-                if (muted) {
-                    timer.go (time{0}, time{0});
-                    timer.go (time{1}, time{3*stay.ms});
-                    break; }
-
-                auto duration = time{(int)(audio.duration*1000)};
-                duration = max(duration, stay);
-                audio.play(0.0, 0.0);
-                timer.go (time{0}, time{0});
-                timer.go (time{1}, duration);
-                break;
-            }
-            default: break;
-            }
+            if (
+            status != state::ready and
+            status != state::paused and
+            status != state::finished) return;
+            status  = state::playing;
+            audio.play();
+            playing.go(
+            time::infinity,
+            time::infinity);
         }
 
         void stop ()
         {
-            switch(status) {
-            case state::ready:
-            case state::playing:
-
-                audio.stop(0.0);
-                status = state::finished;
-                timer.go (time{},
-                          time{});
-                break;
-
-            default: break;
-            }
+            if (
+            status != state::playing) return;
+            status  = state::paused;
+            audio.stop();
+            playing.go(
+            time{},
+            time{});
         }
-
-        void mute (bool mute)
-        {
-            if (status == state::playing)
-            {
-                if (mute)
-                {
-                    audio.stop(0.0);
-                }
-                else
-                {
-                    start = time::now;
-                    auto duration = time{(int)(audio.duration*1000)};
-                    duration = max(duration, stay);
-                    audio.play(0.0, 0.0);
-                    timer.go (time{0}, time{0});
-                    timer.go (time{1}, duration);
-                }
-            }
-            muted = mute;
-        }
-
-        void play () { pause = false; }
-        void stop () { pause = true;  }
 
         void reset ()
         {
@@ -124,6 +74,7 @@ namespace sfx::media::audio
             thread.check(); }
             catch (...) {}
 
+            stop();
             duration = time{};
             elapsed = time{};
             status = state::finished;
@@ -131,15 +82,19 @@ namespace sfx::media::audio
 
         void on_change (void* what) override
         {
-            if (what == &timer and frame_ready and not pause)
+            if (what == &playing)
             {
-                frame_ready = false;
-                frames[current].hide(); current = (current + 1) % 2;
-                frames[current].source = sources[current].crop();
-                frames[current].coord = coord.now.local();
-                frames[current].show();
+                if (not audio.playing())
+                {
+                    status = state::finished;
+                    playing.go(
+                    time{},
+                    time{});
+                }
+                elapsed = time{(int)(audio.
+                position()*1000)};
             }
-            if (what == &timer and thread.done)
+            if (what == &loading and thread.done)
             {
                 try {
                 thread.join();
@@ -147,31 +102,10 @@ namespace sfx::media::audio
                 catch (std::exception const& e) {
                 status = state::failed;
                 error = e.what(); }
-                timer.go(
-                time{},
-                time{});
-            }
-        }
 
-
-
-        void reset (media::media_index index_, array<str> links_)
-        {
-
-            stop();
-
-            status = state::loading;
-        }
-
-
-        void on_change (void* what) override
-        {
-            if (what == &timer and timer == time{1})
-            {
-                if (text.link != "") {
-                timer.go(time{0}, 0s);
-                timer.go(time{1}, 1s); }
-                else status = state::finished;
+                loading.go(time{},time{});
+                duration = time{(int)(audio.
+                duration*1000)};
             }
         }
     };

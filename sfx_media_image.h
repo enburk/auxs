@@ -7,7 +7,6 @@ namespace sfx::media::image
     {
         std::atomic<state>
         status = state::finished;
-        property<bool> pause = false;
         xy resolution;
         time duration;
         time elapsed;
@@ -16,11 +15,12 @@ namespace sfx::media::image
         gui::image frames[2];
         pix::image<rgba> sources[2];
         std::atomic<bool> frame_ready = false;
+        std::atomic<bool> pause = false;
         int current = 0;
 
         sys::thread thread;
-        property<time> timer;
-        using byte = sys::byte;
+        property<time> loading;
+        property<time> playing;
 
         ~player () { reset(); }
 
@@ -60,13 +60,35 @@ namespace sfx::media::image
                     frame_ready = true;
                 }
             };
-            timer.go(
+            loading.go(
             time::infinity,
             time::infinity);
         }
 
-        void play () { pause = false; }
-        void stop () { pause = true;  }
+        void play ()
+        {
+            if (
+            status != state::ready and
+            status != state::paused and
+            status != state::finished) return;
+            status  = state::playing;
+            pause = false;
+            playing.go(
+            time::infinity,
+            time::infinity);
+        }
+
+        void stop ()
+        {
+            if (
+            status != state::playing) return;
+            status  = state::paused;
+            pause = true;
+            playing.go(
+            time{},
+            time{});
+        }
+
 
         void reset ()
         {
@@ -76,6 +98,7 @@ namespace sfx::media::image
             thread.check(); }
             catch (...) {}
 
+            stop();
             resolution = xy{};
             duration = time{};
             elapsed = time{};
@@ -94,7 +117,9 @@ namespace sfx::media::image
                     frames[current].coord =
                     coord.now.local();
             }
-            if (what == &timer and frame_ready and not pause)
+            if (what == &loading
+            or  what == &playing)
+            if (frame_ready and not pause)
             {
                 frame_ready = false;
                 frames[current].hide(); current = (current + 1) % 2;
@@ -102,7 +127,7 @@ namespace sfx::media::image
                 frames[current].coord = coord.now.local();
                 frames[current].show();
             }
-            if (what == &timer and thread.done)
+            if (what == &loading and thread.done)
             {
                 try {
                 thread.join();
@@ -110,7 +135,7 @@ namespace sfx::media::image
                 catch (std::exception const& e) {
                 status = state::failed;
                 error = e.what(); }
-                timer.go(
+                loading.go(
                 time{},
                 time{});
             }
