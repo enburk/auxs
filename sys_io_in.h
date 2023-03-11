@@ -17,6 +17,10 @@ namespace sys::in
         int size = (int)ifstream.tellg();
         ifstream.seekg(0, std::ios::beg);
 
+        if (ifstream.fail())
+        throw std::runtime_error(
+        "couldn't read " + path.string());
+
         array<byte> pool;
         pool.resize(size);
         ifstream.read((char*)
@@ -29,6 +33,10 @@ namespace sys::in
         std::ifstream
         ifstream(path, std::ios::binary);
         ifstream.seekg(offset, std::ios::beg);
+
+        if (ifstream.fail())
+        throw std::runtime_error(
+        "couldn't read " + path.string());
 
         array<byte> pool;
         pool.resize(size);

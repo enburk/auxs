@@ -5,39 +5,37 @@ namespace sfx::media::image
     struct player:
     widget<player>
     {
-        std::atomic<state>
-        status = state::finished;
-        xy resolution;
-        time duration;
-        time elapsed;
-        str error;
-
+        int current = 0;
         gui::image frames[2];
         pix::image<rgba> sources[2];
         std::atomic<bool> frame_ready = false;
-        std::atomic<bool> pause = false;
-        int current = 0;
-
+        std::atomic<bool> frame_last = false;
+        std::atomic<bool> pause = true;
         sys::thread thread;
-        property<time> loading;
-        property<time> playing;
+        medio medio;
+
+#define using(x) decltype(medio.x)& x = medio.x;
+        using(mute)
+        using(volume)
+        using(loading)
+        using(playing)
+        using(resolution)
+        using(duration)
+        using(elapsed)
+        using(status)
+        using(error)
+        #undef using
 
         ~player () { reset(); }
 
-        void load (pix::frame<rgba> frame)
-        {
-            reset();
-            int next = (current + 1) % 2;
-            sources[next].resize(frame.size);
-            sources[next].crop().copy_from(frame);
-            resolution = sources[next].size;
-            status = state::finished;
-            frame_ready = true;
-        }
         void load (array<byte> bytes)
         {
             reset();
-            status = state::loading;
+            if (bytes.empty()) {
+                medio.stay();
+                return; }
+
+            medio.load();
             thread = [this, data = std::move(bytes)](auto& cancel)
             {
                 if (data.size() > 5  
@@ -53,42 +51,25 @@ namespace sfx::media::image
                 }
                 else
                 {
-                    int next = (current + 1) % 2;
-                    sources[next] = pix::unpack(data.from(0)).value();
-                    resolution = sources[next].size;
-                    status = state::ready;
+                    sources[1] = pix::unpack(
+                    data.from(0)).value();
                     frame_ready = true;
+                    frame_last = true;
                 }
             };
-            loading.go(
-            time::infinity,
-            time::infinity);
         }
 
         void play ()
         {
-            if (
-            status != state::ready and
-            status != state::paused and
-            status != state::finished) return;
-            status  = state::playing;
             pause = false;
-            playing.go(
-            time::infinity,
-            time::infinity);
+            medio.play();
         }
 
         void stop ()
         {
-            if (
-            status != state::playing) return;
-            status  = state::paused;
             pause = true;
-            playing.go(
-            time{},
-            time{});
+            medio.stop();
         }
-
 
         void reset ()
         {
@@ -97,15 +78,13 @@ namespace sfx::media::image
             thread.join();
             thread.check(); }
             catch (...) {}
-
-            stop();
-            resolution = xy{};
-            duration = time{};
-            elapsed = time{};
-            status = state::finished;
+            medio.done();
             frame_ready = false;
+            frame_last = false;
             frames[0].hide();
             frames[1].hide();
+            sources[0].resize(xy{});
+            sources[1].resize(xy{});
             current = 0;
         }
 
@@ -117,28 +96,32 @@ namespace sfx::media::image
                     frames[current].coord =
                     coord.now.local();
             }
-            if (what == &loading
-            or  what == &playing)
-            if (frame_ready and not pause)
+            if (what == &playing and frame_ready and not pause)
             {
                 frame_ready = false;
                 frames[current].hide(); current = (current + 1) % 2;
                 frames[current].source = sources[current].crop();
                 frames[current].coord = coord.now.local();
                 frames[current].show();
+
+                if (frame_last)
+                medio.done();
             }
             if (what == &loading and thread.done)
             {
+                resolution = sources[1].size;
+
                 try {
                 thread.join();
-                thread.check(); }
+                thread.check();
+                medio.stay(); }
                 catch (std::exception const& e) {
-                status = state::failed;
-                error = e.what(); }
-                loading.go(
-                time{},
-                time{});
+                medio.fail(e.what()); }
             }
         }
     };
+}
+namespace sfx::image {
+    using sfx::media::
+        image::player;
 }

@@ -5,24 +5,32 @@ namespace sfx::media::audio
     struct player:
     widget<player>
     {
-        std::atomic<state>
-        status = state::finished;
-        property<byte> volume = 255;
-        time duration;
-        time elapsed;
-        str error;
-
         sys::thread thread;
-        property<time> loading;
-        property<time> playing;
         sys::audio::player audio;
+        medio medio;
+
+#define using(x) decltype(medio.x)& x = medio.x;
+        using(mute)
+        using(volume)
+        using(loading)
+        using(playing)
+        using(resolution)
+        using(duration)
+        using(elapsed)
+        using(status)
+        using(error)
+        #undef using
 
         ~player () { reset(); }
 
         void load (array<byte> bytes)
         {
             reset();
-            status = state::loading;
+            if (bytes.empty()) {
+                medio.stay();
+                return; }
+
+            medio.load();
             thread = [this, data = std::move(bytes)](auto& cancel)
             {
                 sys::audio::decoder decoder(data);
@@ -34,36 +42,26 @@ namespace sfx::media::audio
                 decoder.channels,
                 decoder.samples,
                 decoder.bps);
-
-                status = state::ready;
             };
-            loading.go(
-            time::infinity,
-            time::infinity);
         }
 
         void play ()
         {
-            if (
-            status != state::ready and
-            status != state::paused and
-            status != state::finished) return;
-            status  = state::playing;
-            audio.play();
-            playing.go(
-            time::infinity,
-            time::infinity);
+            if (medio.play())
+            {
+                audio.volume(
+                mute.now? 0.0:
+                volume.now/
+                255.0);
+
+                audio.play();
+            }
         }
 
         void stop ()
         {
-            if (
-            status != state::playing) return;
-            status  = state::paused;
-            audio.stop();
-            playing.go(
-            time{},
-            time{});
+            if (medio.stop())
+                audio.stop();
         }
 
         void reset ()
@@ -73,41 +71,37 @@ namespace sfx::media::audio
             thread.join();
             thread.check(); }
             catch (...) {}
-
-            stop();
-            duration = time{};
-            elapsed = time{};
-            status = state::finished;
+            medio.done();
         }
 
         void on_change (void* what) override
         {
             if (what == &playing)
             {
-                if (not audio.playing())
-                {
-                    status = state::finished;
-                    playing.go(
-                    time{},
-                    time{});
-                }
+                if (not
+                audio.playing())
+                medio.done();
+
                 elapsed = time{(int)(audio.
                 position()*1000)};
             }
             if (what == &loading and thread.done)
             {
-                try {
-                thread.join();
-                thread.check(); }
-                catch (std::exception const& e) {
-                status = state::failed;
-                error = e.what(); }
-
-                loading.go(time{},time{});
                 duration = time{(int)(audio.
                 duration*1000)};
+
+                try {
+                thread.join();
+                thread.check();
+                medio.stay(); }
+                catch (std::exception const& e) {
+                medio.fail(e.what()); }
             }
         }
     };
+}
+namespace sfx::audio {
+    using sfx::media::
+        audio::player;
 }
 

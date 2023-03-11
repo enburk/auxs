@@ -333,6 +333,9 @@
     <ClInclude Include="sfx_media_vudio.h">
       <Filter>sfx</Filter>
     </ClInclude>
+    <ClInclude Include="sfx_medio_sequencer.h">
+      <Filter>sfx</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="test.cpp">

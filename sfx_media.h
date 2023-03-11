@@ -10,6 +10,83 @@ namespace sfx::media
     playing,  paused,
     finished, failed };
 
+    struct medio:
+    widget<medio>
+    {
+        state status = state::finished;
+        property<bool> mute = false;
+        property<byte> volume = 255;
+        property<time> loading;
+        property<time> playing;
+        xy resolution;
+        time duration;
+        time elapsed;
+        str error;
+
+        void load ()
+        {
+            loading.go(
+            time::infinity,
+            time::infinity);
+            status = state::loading;
+            resolution = xy{};
+            duration = time{};
+            elapsed = time{};
+            error = "";
+        }
+        void stay ()
+        {
+            loading.go(
+            time{},
+            time{});
+            status = state::ready;
+        }
+        bool play ()
+        {
+            if (status != state::ready and
+                status != state::paused and
+                status != state::finished)
+                return false;
+
+            playing.go(
+            time::infinity,
+            time::infinity);
+            status = state::playing;
+            return true;
+        }
+        bool stop ()
+        {
+            playing.go(
+            time{},
+            time{});
+
+            if (status != state::playing)
+                return false;
+
+            status = state::paused;
+            return true;
+        }
+        void done ()
+        {
+            stay();
+            stop();
+            status = state::finished;
+        }
+        void fail (str what)
+        {
+            stay();
+            stop();
+            status = state::failed;
+            error = what;
+        }
+        void on_change (void* what) override
+        {
+            if (what == &loading
+            or  what == &playing)
+            notify(what);
+        }
+    };
+
     struct playback:
     widget<playback>
     {
