@@ -57,10 +57,23 @@ namespace sys::in
         return text;
     }
 
+    auto text_lines (path path)
+    {
+        array<str> ss = text(path).lines();
+        return ss;
+    }
+
     auto optional_text (path path)
     {
         return exists(path) ?
         text(path) : "";
+    }
+
+    auto optional_text_lines (path path)
+    {
+        return exists(path) ?
+            text_lines(path) :
+            array<str>{};
     }
 
     inline int32_t endianness = 0;

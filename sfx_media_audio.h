@@ -50,8 +50,8 @@ namespace sfx::media::audio
             if (medio.play())
             {
                 audio.volume(
-                mute.now? 0.0:
-                volume.now/
+                mute? 0.0:
+                volume/
                 255.0);
 
                 audio.play();
@@ -76,14 +76,15 @@ namespace sfx::media::audio
 
         void on_change (void* what) override
         {
-            if (what == &playing)
+            if (what == &playing and playing.to != time{})
             {
-                if (not
-                audio.playing())
-                medio.done();
+                elapsed = time{(int)(
+                audio.position()*1000)};
 
-                elapsed = time{(int)(audio.
-                position()*1000)};
+                if (
+                not audio.playing()
+                and elapsed == time{})
+                medio.done();
             }
             if (what == &loading and thread.done)
             {
@@ -96,6 +97,19 @@ namespace sfx::media::audio
                 medio.stay(); }
                 catch (std::exception const& e) {
                 medio.fail(e.what()); }
+            }
+            if (what == &mute
+            and status == state::playing)
+            {
+                audio.position(0);
+            }
+            if (what == &volume
+            or  what == &mute)
+            {
+                audio.volume(
+                mute? 0.0:
+                volume/
+                255.0);
             }
         }
     };

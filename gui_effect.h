@@ -113,7 +113,8 @@ namespace gui
 
         template<typename X>
         void operator = (X value) { go(value, time{}); }
-        void operator = (property const& x) { go(x.now, time{}); }
+        void operator = (property const& x) {
+            go(x.now, time{}); }
 
         void go (type to_) { go(to_, transition_time); }
 
@@ -155,6 +156,9 @@ namespace gui
 
         operator type const& () { return now; }
 
+        auto operator = (binary_property const& x) -> binary_property&
+            { *this = x.now; return *this; }
+
         template<typename X>
         void operator = (X value) {
             was = std::move(now);
@@ -176,6 +180,9 @@ namespace gui
 
         operator type const& () { return now; }
 
+        auto operator = (unary_property const& x) -> unary_property&
+            { *this = x.now; return *this; }
+
         template<typename X>
         void operator = (X value) {
             if (now != value) {
@@ -195,6 +202,9 @@ namespace gui
         property (bool value) : now(value) {}
 
         operator bool () { return now; }
+
+        auto operator = (property const& x) -> property&
+            { *this = x.now; return *this; }
 
         void operator = (bool value) {
             if (now != value) {

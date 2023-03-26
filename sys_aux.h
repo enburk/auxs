@@ -123,6 +123,7 @@ namespace sys
             void play ();
             void stop ();
             bool playing  ();
+            bool finished ();
             void position (double sec);
             auto position () -> double;
             void volume   (double O_1);

@@ -18,6 +18,7 @@ namespace sfx::media
         time instantly = 50ms;
         time smoothly = 500ms;
         time swiftly  = 100ms;
+        bool playing  = false;
         bool playall  = false;
         bool repeat   = false;
         int  current  = 0;
@@ -26,16 +27,22 @@ namespace sfx::media
 
         void play ()
         {
+            if (players.empty()) return;
+            if (players[current].status == state::finished)
+                players[current].play();
+
+            playall = false;
+            playing = true;
             timer.go(
             time::infinity,
             time::infinity);
-            playall = false;
         }
         void stop ()
         {
             if (
             players.empty()) return;
             players[current].stop();
+            playing = false;
             timer.go(
             time{},
             time{});
@@ -49,6 +56,7 @@ namespace sfx::media
         {
             stop();
             if (current == 0) return;
+            if (players.empty()) return;
             players[current].hide(smoothly); current = 0;
             players[current].show(smoothly);
         }
@@ -62,7 +70,7 @@ namespace sfx::media
             players.empty()) return;
             players[current].stop();
             players[current].hide(instantly); currprev();
-            players[current].show(instantly); if (playall)
+            players[current].show(instantly); if (playing)
             players[current].play();
         }
         void next ()
@@ -71,7 +79,7 @@ namespace sfx::media
             players.empty()) return;
             players[current].stop();
             players[current].hide(instantly); currnext();
-            players[current].show(instantly); if (playall)
+            players[current].show(instantly); if (playing)
             players[current].play();
         }
 
@@ -94,8 +102,9 @@ namespace sfx::media
                 notify();
             }
 
-            if (what == &timer)
+            if (what == &timer and timer.to != time{})
             {
+                if (not players.empty())
                 switch(players[current].status) {
                 case state::failed:
                     if (
@@ -113,12 +122,13 @@ namespace sfx::media
                     break;
                 case state::finished:
                     if (players.size() < 2
-                        or not playall)
-                        break;
+                        or not playall) {
+                        stop(); break; }
                     players[current].stop();
                     players[current].hide(smoothly); currnext();
                     players[current].show(smoothly); if (repeat or current > 0)
-                    players[current].play(); else Stop();
+                    players[current].play();
+                    else Stop();
                     break;
                 default:
                     break;
@@ -130,14 +140,14 @@ namespace sfx::media
                 for (auto&
                 player: players)
                 player.volume =
-                    volume;
+                volume;
             }
             if (what == &mute)
             {
                 for (auto&
                 player: players)
                 player.mute =
-                    mute;
+                mute;
             }
         }
     };

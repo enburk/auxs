@@ -81,8 +81,6 @@ namespace sfx::media
         }
         void on_change (void* what) override
         {
-            if (what == &loading
-            or  what == &playing)
             notify(what);
         }
     };

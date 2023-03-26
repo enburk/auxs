@@ -104,6 +104,11 @@ namespace gui
             original.crop().copy_from(image);
             refresh();
         }
+        void load (array<sys::byte> const& array)
+        {
+            original = pix::unpack(array.from(0)).value();
+            refresh();
+        }
         void load (array<sys::byte>::range_type range)
         {
             original = pix::unpack(range).value();

@@ -181,21 +181,6 @@ namespace gui
         };
     };
 
-    struct toolbar:
-    widget<toolbar>
-    {
-        canvas canvas;
-
-        void on_change (void* what) override
-        {
-            if (what == &coord)
-            canvas.coord = coord.now.local();
-
-            if (what == &skin)
-            canvas.color = gui::skins[skin].light.first;
-        }
-    };
-
     struct selector:
     widget<selector>
     {

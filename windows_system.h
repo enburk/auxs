@@ -394,7 +394,7 @@ namespace sys::audio
         ZeroMemory (&desc, sizeof(desc));
         desc.dwSize          = sizeof(desc);
         desc.guid3DAlgorithm = GUID_NULL;
-        desc.dwFlags         = 0;
+        desc.dwFlags         = DSBCAPS_CTRLVOLUME;
         desc.dwBufferBytes   = input.size();
         desc.lpwfxFormat     = & wfmt;
 
@@ -441,11 +441,25 @@ namespace sys::audio
             return status &
             DSBSTATUS_PLAYING;
     }
-    void player::volume(double O_1)
+    bool player::finished()
     {
         DATA& data = *(DATA*)(data_);
+        if (!data_
+        or  !data.B1
+        or  !data.bytes)
+            return true;
+        DWORD dwCurrentPlayCursor;
+        data.B1->GetCurrentPosition(
+        &dwCurrentPlayCursor, nullptr);
+        return (DWORD)data.bytes <=
+        dwCurrentPlayCursor;
+    }
+    void player::volume(double O_1)
+    {
+        HRESULT hr;
+        DATA& data = *(DATA*)(data_);
         if (data_ and
-            data.B1)
+            data.B1) hr =
             data.B1->SetVolume(
             DSBVOLUME_MIN + (LONG)((
             DSBVOLUME_MAX -

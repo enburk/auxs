@@ -170,7 +170,29 @@ namespace aux
                 break; }
             }
         }
+
         auto lines () const { return split_by("\n"); }
+
+        auto split_strip_by (str pattern) const -> generator<str>
+        {
+            for (str s: split_by(pattern)) {
+                s.strip(); co_yield s; }
+        }
+
+        auto extract_from (str pattern)
+        {
+            str s;
+            split_by(pattern, *this, s);
+            trimr(); s.triml();
+            return s;
+        }
+        auto extract_upto (str pattern)
+        {
+            str s;
+            split_by(pattern, s, *this);
+            s.trimr(); triml();
+            return s;
+        }
 
         void canonicalize ()
         {
