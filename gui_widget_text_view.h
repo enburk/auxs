@@ -57,13 +57,18 @@ namespace gui::text
                 coord.was.size !=
                 coord.now.size)
             {
+                if (coord.now.size.x <= 0
+                or  coord.now.size.y <= 0)
+                    return;
+
                 pix::text::format f;
                 f.lwrap = lwrap.now;
                 f.rwrap = rwrap.now;
                 f.alignment = alignment.now;
                 f.wordwrap = wordwrap.now;
                 f.ellipsis = ellipsis.now;
-                f.width  = coord.now.size.x;
+                f.width = coord.now.size.x -
+                3*gui::metrics::line::width; // for caret
                 
                 if (ellipsis.now
                 and wordwrap.now)

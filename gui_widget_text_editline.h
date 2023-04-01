@@ -14,8 +14,11 @@ namespace gui::text
         using(color)
         using(font)
         using(style)
-        using(alignment)
+        using(scroll)
         using(padding)
+        using(ellipsis)
+        using(wordwrap)
+        using(alignment)
         using(update_text)
         using(update_colors)
         using(update_layout)
@@ -28,10 +31,10 @@ namespace gui::text
 
         one_line_editor ()
         {
-            editor.ellipsis = false;
-            editor.wordwrap = false;
-            editor.scroll.x.mode = gui::scroll::mode::none;
-            editor.scroll.y.mode = gui::scroll::mode::none;
+            ellipsis = false;
+            wordwrap = false;
+            scroll.x.mode = gui::scroll::mode::none;
+            scroll.y.mode = gui::scroll::mode::none;
         }
 
         void on_change (void* what) override

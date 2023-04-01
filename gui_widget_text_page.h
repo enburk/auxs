@@ -19,7 +19,11 @@ namespace gui::text
         binary_property<xyxy> padding;
         str link;
 
-        page() { focusable.now = true; }
+        page()
+        {
+            focusable.now = true;
+            scroll.x.mode = scroll::mode::none;
+        }
 
 #define using(x) decltype(view.x)& x = view.x;
         using(text)
