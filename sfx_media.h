@@ -16,8 +16,8 @@ namespace sfx::media
         state status = state::finished;
         property<bool> mute = false;
         property<byte> volume = 255;
-        property<time> loading;
-        property<time> playing;
+        gui::timer loading;
+        gui::timer playing;
         xy resolution;
         time duration;
         time elapsed;
@@ -25,9 +25,7 @@ namespace sfx::media
 
         void load ()
         {
-            loading.go(
-            time::infinity,
-            time::infinity);
+            loading.start();
             status = state::loading;
             resolution = xy{};
             duration = time{};
@@ -36,32 +34,26 @@ namespace sfx::media
         }
         void stay ()
         {
-            loading.go(
-            time{},
-            time{});
+            loading.stop();
             status = state::ready;
         }
         bool play ()
         {
-            if (status != state::ready and
-                status != state::paused and
-                status != state::finished)
-                return false;
+            if (status != state::ready
+            and status != state::paused
+            and status != state::finished)
+            return false;
 
-            playing.go(
-            time::infinity,
-            time::infinity);
+            playing.start();
             status = state::playing;
             return true;
         }
         bool stop ()
         {
-            playing.go(
-            time{},
-            time{});
+            playing.stop();
 
             if (status != state::playing)
-                return false;
+            return false;
 
             status = state::paused;
             return true;

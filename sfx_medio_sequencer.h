@@ -14,7 +14,6 @@ namespace sfx::media
         widgetarium<Player> players;
         property<byte> volume = 255;
         property<bool> mute = false;
-        property<time> timer;
         time instantly = 50ms;
         time smoothly = 500ms;
         time swiftly  = 100ms;
@@ -23,6 +22,7 @@ namespace sfx::media
         bool repeat   = false;
         int  current  = 0;
         int  clicked  = 0;
+        gui::timer timer;
         str  error;
 
         void play ()
@@ -33,9 +33,7 @@ namespace sfx::media
 
             playall = false;
             playing = true;
-            timer.go(
-            time::infinity,
-            time::infinity);
+            timer.start();
         }
         void stop ()
         {
@@ -43,9 +41,7 @@ namespace sfx::media
             players.empty()) return;
             players[current].stop();
             playing = false;
-            timer.go(
-            time{},
-            time{});
+            timer.stop();
         }
         void Play ()
         {
@@ -102,7 +98,7 @@ namespace sfx::media
                 notify();
             }
 
-            if (what == &timer and timer.to != time{})
+            if (what == &timer)
             {
                 if (not players.empty())
                 switch(players[current].status) {

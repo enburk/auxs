@@ -76,7 +76,7 @@ namespace sfx::media::audio
 
         void on_change (void* what) override
         {
-            if (what == &playing and playing.to != time{})
+            if (what == &playing)
             {
                 elapsed = time{(int)(
                 audio.position()*1000)};

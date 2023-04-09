@@ -216,4 +216,13 @@ namespace gui
             }
         }
     };
+
+    struct timer : protected property<time>
+    {
+        void setup (time t) { now = time{}; go(time{1}, t); }
+
+        void start () { now = time{}; go(time::infinity, time::infinity); }
+
+        void stop () { was = from = to = now = time{}; } // no notify
+    };
 }
