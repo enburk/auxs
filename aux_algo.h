@@ -193,3 +193,9 @@ bool contains_only (one_not_of<T> r) const
     requires std::same_as<typename T::value_type, value_type> {
     return not contains(one_of(r));
 }
+
+auto stable_partition (auto predicat)
+{
+    return std::stable_partition(
+        begin(), end(), predicat);
+}

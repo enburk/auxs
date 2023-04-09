@@ -105,6 +105,20 @@ namespace gui
             indices.begin());
         }
 
+        int stable_partition (int f, int l, auto p)
+        {
+            auto n =  l - f;
+            if  (n == 0) return f;
+            if  (n == 1) return f +
+                (p(deque[f])? 1:0);
+    
+            auto m = f + (n / 2);
+
+            return rotate (
+            stable_partition(f, m, p), m,
+            stable_partition(m, l, p));
+        }
+
         void erase (int pos)
         {
             deque[indices[pos]].reset();
