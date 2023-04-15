@@ -6,6 +6,36 @@
 #include "gui_widgetarium.h"
 namespace gui
 {
+    struct Image:
+    widget<Image>
+    {
+        unary_property<pix::frame<rgba>> source;
+
+        void on_render (sys::window& window, xywh r, xy offset, uint8_t alpha) override
+        {
+            xy size = coord.now.size;
+            xy src = source.now.size;
+
+            auto frame = source.now
+                .crop(xywh(
+                offset.x * src.x/size.x,
+                offset.y * src.y/size.y,
+                r.size.x * src.x/size.x,
+                r.size.y * src.y/size.y));
+
+            if (frame.size.x > 0
+            and frame.size.y > 0)
+                window.render(r,
+                alpha, frame);
+        }
+
+        void on_change (void* what) override
+        {
+            if (what == &source)
+                update();
+        }
+    };
+
     struct image:
     widget<image>
     {

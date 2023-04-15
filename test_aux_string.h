@@ -206,6 +206,37 @@ namespace aux::unittest
             oops( out(str("a (bb)"   ).rebracketed("(",")","<i>","</i>")) ) { "a <i>(bb)</i>" };
             oops( out(str("a (bb) c" ).rebracketed("(",")","<i>","</i>")) ) { "a <i>(bb)</i> c" };
             oops( out(str("a (bb), c").rebracketed("(",")","<i>","</i>")) ) { "a <i>(bb)</i>, c" };
+
+            struct result
+            {
+                str s;
+                array<str> ss;
+                bool ok = true;
+            };
+            auto pass = [](str s)
+            {
+                result r;
+                r.s  = s;
+                r.ok = r.s.rebracket("{","}",
+                [&](str x){ x.erase(0); x.truncate(); r.ss += x; return x; });
+                return r;
+            };
+
+            oops( out(pass(""    ).ok) ) { "1" };
+            oops( out(pass("{}"  ).ok) ) { "1" };
+            oops( out(pass("{{}}").ok) ) { "1" };
+            oops( out(pass("{{}" ).ok) ) { "0" };
+            oops( out(pass("{}}" ).ok) ) { "0" };
+            oops( out(pass("{"   ).ok) ) { "0" };
+            oops( out(pass("}"   ).ok) ) { "0" };
+
+            oops( out(pass("a{b{c}d}e").s) ) { "abcde" };
+            oops( out(pass("a{{bc}d}e").s) ) { "abcde" };
+            oops( out(pass("a{{b}}cde").s) ) { "abcde" };
+
+            oops( out(str::list(pass("a{b{c}d}e").ss)) ) { "c, bcd" };
+            oops( out(str::list(pass("a{{bc}d}e").ss)) ) { "bc, bcd" };
+            oops( out(str::list(pass("a{{b}}cde").ss)) ) { "b, b" };
         }
     }
     catch(assertion_failed){}

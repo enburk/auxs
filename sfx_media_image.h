@@ -6,7 +6,7 @@ namespace sfx::media::image
     widget<player>
     {
         int current = 0;
-        gui::image frames[2];
+        gui::Image frames[2];
         pix::image<rgba> sources[2];
         std::atomic<bool> frame_ready = false;
         std::atomic<bool> frame_last = false;

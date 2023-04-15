@@ -1,4 +1,5 @@
 #pragma once
+#include <stack> 
 #include <string> 
 #include <variant> 
 #include <stdexcept> 
@@ -110,21 +111,37 @@ namespace aux
             return nn;
         }
 
-        void rebracket (str opening, str closing, auto lambda, bool despace = false)
+        bool rebracket (str opening, str closing, auto lambda, bool despace = false)
         {
-            int b = 0, e = 0; while (true)
+            int pos = 0;
+            
+            std::stack<int> lefts; 
+
+            while (pos < size())
             {
-                auto r1 = from(b).first(opening); if (not r1) break; b = r1.offset();
-                auto r2 = from(b).first(closing); if (not r2) break; e = r2.offset();
+                if (from(pos).starts_with(opening))
+                {
+                    lefts.push(pos);
+                    pos += opening.size();
+                }
+                else
+                if (from(pos).starts_with(closing))
+                {
+                    if (lefts.empty()) return false;
 
-                str s = lambda(from(b).upto(e + closing.size()));
+                    int b = lefts.top(); lefts.pop();
+                    int e = pos + closing.size();
+                    str s = lambda(from(b).upto(e));
 
-                if (despace and b > 0 and at(b-1) == ' ') b--;
+                    if (despace and b > 0 and at(b-1) == ' ') b--;
 
-                from(b).upto(e + closing.size()).replace_by(s);
+                    from(b).upto(e).replace_by(s);
 
-                b += s.size();
+                    pos = b + s.size();
+                }
+                else pos++;
             }
+            return lefts.size() == 0;
         }
         void rebracket (str opening, str closing, str before, str after)
         {

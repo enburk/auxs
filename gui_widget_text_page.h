@@ -352,6 +352,10 @@ namespace gui::text
 
         bool on_mouse_wheel (xy, int delta) override
         {
+            if (scroll.y.mode ==
+                scroll::mode::none)
+                return false;
+
             delta /= 20;
             delta *= gui::metrics::text::height;
             int sign = delta < 0 ? -1 : 1;
