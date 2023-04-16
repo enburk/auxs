@@ -82,6 +82,40 @@ namespace gui
         }
     };
 
+    struct Frame:
+    widget<Frame>
+    {
+        frame frame1;
+        frame frame2;
+        frame frame3;
+
+        void on_change (void* what) override
+        {
+            if (what == &coord and
+                coord.was.size !=
+                coord.now.size)
+            {
+                int d1 = frame1.thickness.now;
+                int d2 = frame2.thickness.now;
+                int d3 = frame3.thickness.now;
+                int dd = 2*d1 + 2*d2 + 2*d3;
+                xywh r = coord.now.local();
+                if (r.w < dd or r.h < dd)
+                {
+                    frame1.coord = xywh{};
+                    frame2.coord = xywh{};
+                    frame3.coord = xywh{};
+                }
+                else
+                {
+                    frame1.coord = r; r.deflate(d1);
+                    frame2.coord = r; r.deflate(d2);
+                    frame3.coord = r; r.deflate(d3);
+                }
+            }
+        }
+    };
+
     template
     <class X>
     struct area :
