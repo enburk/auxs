@@ -32,6 +32,7 @@ namespace sfx::media::image
         {
             reset();
             if (bytes.empty()) {
+                resolution = xy{};
                 frame_ready = true;
                 frame_last = true;
                 medio.stay();

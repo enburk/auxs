@@ -356,11 +356,12 @@ namespace gui::text
                 scroll::mode::none)
                 return false;
 
+            int sign =
+            delta < 0 ? -1 : 1;
             delta /= 20;
             delta *= gui::metrics::text::height;
-            int sign = delta < 0 ? -1 : 1;
             if (sys::keyboard::shift) delta = sign * coord.now.h;
-            if (sys::keyboard::ctrl) delta *= 5;
+            if (sys::keyboard::ctrl ) delta *= 5;
             int d = view.coord.now.h - view.cell.coord.now.h; // could be negative
             int y = view.shift.now.y + delta;
             if (y < d) y = d;

@@ -27,6 +27,7 @@ namespace sfx::media::audio
         {
             reset();
             if (bytes.empty()) {
+                audio = sys::audio::player{};
                 medio.stay();
                 return; }
 
