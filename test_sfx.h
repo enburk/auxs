@@ -128,10 +128,6 @@ widget<TestSfxTrees>
             zoom_   .repeat_lapse = 0ms;
             speed   .repeat_lapse = 0ms;
             speed_  .repeat_lapse = 0ms;
-            zoom    .repeating = true;
-            zoom_   .repeating = true;
-            speed   .repeating = true;
-            speed_  .repeating = true;
         }
 
         if (what == &buttons)

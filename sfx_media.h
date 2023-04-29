@@ -90,10 +90,10 @@ namespace sfx::media
         playback ()
         {
             stop.hide();
-            prev.repeating = true;
-            Prev.repeating = true;
-            next.repeating = true;
-            Next.repeating = true;
+            prev.repeat_lapse = 60ms;
+            Prev.repeat_lapse = 60ms;
+            next.repeat_lapse = 60ms;
+            Next.repeat_lapse = 60ms;
         }
 
         void on_change (void* what) override

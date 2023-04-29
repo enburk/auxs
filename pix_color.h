@@ -271,6 +271,8 @@ namespace pix
         if (fore == XRGB(0xBF360C)) return XRGB(0xFFB74D); // yellow   
         if (fore == XRGB(0x00FFFF)) return XRGB(0x00FFFF); // aqua     
         if (fore == XRGB(0xFFBF00)) return XRGB(0xFFD54F); // amber     
+        if (fore == XRGB(0xFFECB3)) return XRGB(0xFF8F00); // amber
+        if (fore == XRGB(0xFF8F00)) return XRGB(0xFFECB3); // amber
         if (fore == XRGB(0xB00020)) return XRGB(0xEF5350); // error     
         }
 

@@ -91,6 +91,15 @@ namespace sfx::media::image
             current = 0;
         }
 
+        void show_next_frame ()
+        {
+            frame_ready = false;
+            frames[current].hide(); current = (current + 1) % 2;
+            frames[current].source = sources[current].crop();
+            frames[current].coord = coord.now.local();
+            frames[current].show();
+        }
+
         void on_change (void* what) override
         {
             if (what == &coord)
@@ -101,18 +110,16 @@ namespace sfx::media::image
             }
             if (what == &playing and frame_ready and not pause)
             {
-                frame_ready = false;
-                frames[current].hide(); current = (current + 1) % 2;
-                frames[current].source = sources[current].crop();
-                frames[current].coord = coord.now.local();
-                frames[current].show();
-
+                show_next_frame();
                 if (frame_last)
                 medio.done();
             }
             if (what == &loading and thread.done)
             {
                 resolution = sources[1].size;
+
+                if (frame_ready)
+                show_next_frame();
 
                 try {
                 thread.join();

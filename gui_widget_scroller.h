@@ -46,12 +46,12 @@ namespace gui
         {
             up.text.text = (char*)(u8"\u25B2");
             down.text.text = (char*)(u8"\u25BC");
-            up.repeating = true;
-            down.repeating = true;
+            up.repeat_lapse = 40ms;
+            down.repeat_lapse = 40ms;
+            page_up.repeat_lapse = 40ms;
+            page_down.repeat_lapse = 40ms;
             page_up.on_change_state = [](){};
             page_down.on_change_state = [](){};
-            page_up.repeating = true;
-            page_down.repeating = true;
         }
 
         void on_change (void* what) override
@@ -157,12 +157,12 @@ namespace gui
         {
             left.text.text = (char*)(u8"\u25C0");
             right.text.text = (char*)(u8"\u25B6");
-            left.repeating = true;
-            right.repeating = true;
+            left.repeat_lapse = 40ms;
+            right.repeat_lapse = 40ms;
+            page_left.repeat_lapse = 40ms;
+            page_right.repeat_lapse = 40ms;
             page_left.on_change_state = [](){};
             page_right.on_change_state = [](){};
-            page_left.repeating = true;
-            page_right.repeating = true;
         }
 
         void on_change (void* what) override

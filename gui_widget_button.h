@@ -14,11 +14,10 @@ namespace gui
         enum {normal, toggle, sticky} kind = normal;
         bool notify_hover = false;
         bool notify_off = false;
-        bool repeating = false;
-        time repeat_delay = 500ms;
-        time repeat_lapse = 100ms;
+        time repeat_lapse = time::infinity;
+        time repeat_delay = 200ms;
         time repeat_notch;
-        property<time> timer;
+        timer timer;
 
         frame frame;
         canvas canvas;
@@ -84,6 +83,9 @@ namespace gui
             if (notify_hover)
                 notify();
 
+            if (what == &text.update_text)
+                notify(what);
+
             if (what == &timer)
             if (repeat_notch < time::now) {
                 if (mouse_clicked.now) notify(); // can take some time
@@ -112,10 +114,10 @@ namespace gui
             if (kind == normal && !down)
                 on = false; // do not stick when disabled on notify
 
-            if (repeating) {
+            if (repeat_lapse != time::infinity) {
                 repeat_notch = time::now + repeat_delay;
-                timer.go (down ? time::infinity : time(),
-                          down ? time::infinity : time());
+                if (down) timer.start();
+                    else  timer.stop();
             }
         }
 
