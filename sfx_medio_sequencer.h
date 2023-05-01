@@ -31,6 +31,7 @@ namespace sfx::media
             if (players[current].status == state::finished)
                 players[current].play();
 
+            players[current].show(smoothly);
             playall = false;
             playing = true;
             timer.start();

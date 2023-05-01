@@ -5,7 +5,7 @@
 #include <windows.h>
 #include <windowsx.h>
 
-std::wstring acpstr(std::string s)
+std::wstring sys::acpstr(std::string s)
 {
     std::wstring ss;
     auto p = s.data();
@@ -15,7 +15,7 @@ std::wstring acpstr(std::string s)
     ::MultiByteToWideChar(CP_ACP, 0, p, l, ss.data(), n);
     return ss;
 }
-std::wstring winstr(std::string s)
+std::wstring sys::winstr(std::string s)
 {
     std::wstring ss;
     auto p = s.data();
@@ -25,7 +25,7 @@ std::wstring winstr(std::string s)
     ::MultiByteToWideChar(CP_UTF8, 0, p, l, ss.data(), n);
     return ss;
 }
-std::string unwinstr(std::wstring ss)
+std::string sys::unwinstr(std::wstring ss)
 {
     std::string s;
     auto p = ss.data();
@@ -35,6 +35,11 @@ std::string unwinstr(std::wstring ss)
     ::WideCharToMultiByte(CP_UTF8, 0, p, l, s.data(), n, NULL, NULL);
     return s;
 }
+
+using sys::acpstr;
+using sys::winstr;
+using sys::unwinstr;
+
 std::string GetErrorMessage(DWORD dwErrorCode)
 {
     LPWSTR s = nullptr;

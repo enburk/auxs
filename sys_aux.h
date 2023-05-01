@@ -11,6 +11,7 @@ namespace sys
     using pix::frame;
     using pix::image;
     using pix::rgba;
+    using std::filesystem::path;
 
     namespace clipboard
     {
@@ -83,7 +84,7 @@ namespace sys
         size_t handle = 0;
         struct options
         {
-            std::filesystem::path out;
+            path out;
             int ms_wait_for_input_idle = 0;
             bool hidden = false;
             bool ascii = false;
@@ -91,8 +92,8 @@ namespace sys
         process () noexcept = default;
         process (const process&) = delete;
         process (process&& p) noexcept { handle = p.handle; }
-        process (std::filesystem::path, str args, options);
-        process (std::filesystem::path, str args);
+        process (path, str args, options);
+        process (path, str args);
        ~process ();
 
         bool wait (int ms = max<int>());
@@ -100,7 +101,7 @@ namespace sys
 
     struct directory_watcher
     {
-        using path = std::filesystem::path; path dir;
+        path dir;
         std::function<void(path, str)> action = [](path, str){};
         std::function<void(aux::error)> error = [](aux::error){};
         std::thread thread; void watch(); void cancel();
@@ -143,14 +144,22 @@ namespace sys
             int bps = 0;
         };
     }
+
+    std::wstring acpstr(std::string s);
+    std::wstring winstr(std::string s);
+    std::string unwinstr(std::wstring ss);
+
+    auto str2path (str  s) { return path(winstr(s)); }
+    auto path2str (path p) { return str(unwinstr(p.wstring())); }
 }
 
 namespace pix
 {
     using byte = sys::byte;
+    using std::filesystem::path;
 
-    expected<image<rgba>> read   (std::filesystem::path);
-    expected<nothing>     write  (frame<rgba>, std::filesystem::path, int quality = -1);
+    expected<image<rgba>> read   (path);
+    expected<nothing>     write  (frame<rgba>, path, int quality = -1);
     expected<array<byte>> pack   (frame<rgba>, str format, int quality = -1);
     expected<image<rgba>> unpack (byte* buffer, int size);
     expected<image<rgba>> unpack (array<byte>::range_type);

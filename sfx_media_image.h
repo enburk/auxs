@@ -98,6 +98,8 @@ namespace sfx::media::image
             frames[current].source = sources[current].crop();
             frames[current].coord = coord.now.local();
             frames[current].show();
+            if (frame_last)
+            medio.done();
         }
 
         void on_change (void* what) override
@@ -111,8 +113,15 @@ namespace sfx::media::image
             if (what == &playing and frame_ready and not pause)
             {
                 show_next_frame();
-                if (frame_last)
-                medio.done();
+            }
+            if (what == &playing and thread.done)
+            {
+                try {
+                thread.join();
+                thread.check();
+                medio.done(); }
+                catch (std::exception const& e) {
+                medio.fail(e.what()); }
             }
             if (what == &loading and thread.done)
             {
