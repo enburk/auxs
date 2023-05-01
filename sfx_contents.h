@@ -239,7 +239,7 @@ namespace sfx
         property<time> timer;
 
         std::function<bool(path)> filter = [](path p){
-            return not p.filename().string().
+            return not str(p.filename()).
                 starts_with("."); };
 
         Records fill(path dir, int level = 1)
@@ -255,8 +255,8 @@ namespace sfx
                     continue;
 
                 record r;
-                r.path = p.string();
-                r.name = p.filename().string();
+                r.path = str(p);
+                r.name = str(p.filename());
                 r.open = is_regular_file(p);
                 r.file = is_regular_file(p);
                 r.level = level;
@@ -300,13 +300,15 @@ namespace sfx
             }
 
             if (what == &contents)
-                selected = contents.
-                selected.now.c_str();
+            {
+                selected = str2path(contents.
+                selected);
+            }
 
             if (what == &selected)
             {
-                contents.selected =
-                selected.now.string();
+                contents.selected = str(
+                selected);
                 notify();
             }
         }

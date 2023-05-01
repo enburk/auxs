@@ -56,10 +56,11 @@ catch(...){ return error("pix::unpack: EXCEPTION"); }
 expected<pix::image<rgba>> pix::read (std::filesystem::path path) try
 {
     if (!std::filesystem::exists(path))
-        return error("pix::read: not exists: " + path.string());
+    return error("pix::read: not exists: " +
+        str(path));
 
     GDI_PLUS_INIT;
-    Image* image = new Image (winstr(path.string()).c_str());
+    Image* image = new Image (winstr(str(path)).c_str());
     auto result = FromImage(image);
     delete image;
     GDI_PLUS_DONE;
@@ -67,7 +68,7 @@ expected<pix::image<rgba>> pix::read (std::filesystem::path path) try
     return result;
 }
 catch(std::exception & e) { return error("pix::read: " + str(e.what())); }
-catch(...){ return error("pix::read: EXCEPTION " + path.string()); }
+catch(...){ return error("pix::read: EXCEPTION " + str(path)); }
 
 
 expected<nothing> pix::write (frame<rgba> frame, std::filesystem::path path, int quality) try
@@ -93,21 +94,21 @@ expected<nothing> pix::write (frame<rgba> frame, std::filesystem::path path, int
         ext == ".tiff" ? "image/tiff" :
         ext == ".jpg"  ? "image/jpeg" :
         ext == ".jpeg" ? "image/jpeg" : "";
-    if (encoder == "") return error("pix::write: unsupported format: " + path.string());
+    if (encoder == "") return error("pix::write: unsupported format: " + str(path));
     auto parameters = encoder == "image/jpeg" ? &encoderParameters : nullptr;
 
     GDI_PLUS_INIT;
     CLSID clsid; GetEncoderClsid(winstr(encoder).c_str(), &clsid);
     Image* image = MakeImage(frame);
-    Status rc = image->Save(winstr(path.string()).c_str(), &clsid, parameters);
+    Status rc = image->Save(winstr(str(path)).c_str(), &clsid, parameters);
     delete image;
     GDI_PLUS_DONE;
 
     if (rc == Ok) return nothing{};
-    else return error("pix::write: error: " + path.string());
+    else return error("pix::write: error: " + str(path));
 }
 catch(std::exception & e) { return error("pix::write: " + str(e.what())); }
-catch(...){ return error("pix::write: EXCEPTION " + path.string()); }
+catch(...){ return error("pix::write: EXCEPTION " + str(path)); }
 
 
 expected<array<sys::byte>> pix::pack (frame<rgba> frame, str format, int quality) try

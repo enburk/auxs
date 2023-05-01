@@ -19,7 +19,7 @@ namespace sys::in
 
         if (ifstream.fail())
         throw std::runtime_error(
-        "couldn't read " + path.string());
+        "couldn't read " + str(path));
 
         array<byte> pool;
         pool.resize(size);
@@ -36,7 +36,7 @@ namespace sys::in
 
         if (ifstream.fail())
         throw std::runtime_error(
-        "couldn't read " + path.string());
+        "couldn't read " + str(path));
 
         array<byte> pool;
         pool.resize(size);
@@ -86,7 +86,7 @@ namespace sys::in
 
         pool () = default;
         pool (path path) {
-            name = path.string();
+            name = str(path);
             if (not exists(path)) return;
             bytes = sys::in::bytes(path);
         }

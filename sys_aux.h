@@ -145,12 +145,12 @@ namespace sys
         };
     }
 
-    std::wstring acpstr(std::string s);
-    std::wstring winstr(std::string s);
+    std::wstring acpstr (std::string s);
+    std::wstring winstr (std::string s);
     std::string unwinstr(std::wstring ss);
 
-    auto str2path (str  s) { return path(winstr(s)); }
-    auto path2str (path p) { return str(unwinstr(p.wstring())); }
+    auto str2path (str  s) { return path((char8_t*)(s.c_str())); }
+    auto path2str (path p) { return str(p.u8string().c_str()); }
 }
 
 namespace pix

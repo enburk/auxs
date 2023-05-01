@@ -88,7 +88,7 @@ namespace gui
         {
             int i = index % 21;
             rgba* color = nullptr;
-            if (i == 0) name = s + str("+"); else
+            if (i == 0) name = str() + s + "+"; else
             if (i < 11) color = &palettes[name][9 - (i- 1)].first; else
             if (i < 21) color = &palettes[name][9 - (i-11)].second;
             if (color) { *color = pix::ARGB(std::strtoul(s, nullptr, 16));

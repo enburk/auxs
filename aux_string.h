@@ -4,6 +4,7 @@
 #include <variant> 
 #include <stdexcept> 
 #include <functional>
+#include <filesystem>
 #include "aux_array.h"
 namespace aux
 {
@@ -21,6 +22,7 @@ namespace aux
         constexpr str (std::string_view s) : base(std::string(s)) {}
         constexpr str (const_iterator f, const_iterator l) : base(std::string(f, l)) {}
         constexpr str (const char *   f, const char *   l) : base(std::string(f, l)) {}
+        explicit  str (std::filesystem::path p) : str(p.u8string().c_str()) {}
 
         explicit  str (array<char> text) { *this = std::string(text.data(), text.data()+text.size()); }
         explicit  str (array<str> lines, str delimiter = "\n") {
