@@ -218,7 +218,7 @@ namespace aux::unittest
                 result r;
                 r.s  = s;
                 r.ok = r.s.rebracket("{","}",
-                [&](str x){ x.erase(0); x.truncate(); r.ss += x; return x; });
+                [&](str x){ r.ss += x; return x; });
                 return r;
             };
 

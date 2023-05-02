@@ -133,9 +133,14 @@ namespace aux
 
                     int b = lefts.top(); lefts.pop();
                     int e = pos + closing.size();
-                    str s = lambda(from(b).upto(e));
+                    str s = lambda(from(b +
+                        opening.size()).
+                        upto(pos));
 
-                    if (despace and b > 0 and at(b-1) == ' ') b--;
+                    if (despace
+                    and b > 0 and
+                    at (b-1) == ' ')
+                        b--;
 
                     from(b).upto(e).replace_by(s);
 

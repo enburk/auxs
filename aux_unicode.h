@@ -107,8 +107,9 @@ namespace aux::unicode
     generator<glyph> glyphs (str const& s)
     {
         auto check = [&s](auto i){ if (i == s.end() or
-            (static_cast<uint8_t>(*i) & 0b11000000) != 0b10000000 )
-                throw std::runtime_error("unicode: broken UTF-8"); };
+            (static_cast<uint8_t>(*i) & 0b11000000) != 0b10000000)
+            throw std::runtime_error("unicode: broken UTF-8");
+        };
 
         for (auto i = s.begin(); i != s.end(); )
         {
