@@ -9,6 +9,7 @@ namespace sys
     namespace screen
     {
         inline xy size;
+        pix::image<rgba> snapshot();
     }
     namespace keyboard
     {
@@ -51,6 +52,9 @@ namespace sys
         void create (str title);
         void update ();
         void timing ();
+
+        void show ();
+        void hide ();
 
         str dialog (str title, str text, choice choice) {
             return sys::dialog(title, text, choice,
@@ -199,6 +203,8 @@ namespace sys
         str title;
         virtual void constructor() = 0;
         virtual void destructor () = 0;
+        virtual void show () = 0;
+        virtual void hide () = 0;
     };
     struct app_instance
     {
@@ -226,5 +232,7 @@ namespace sys
             <decltype(*winptr)>::type{};
             winptr->create(title);
         }
+        void show () override { winptr->show(); }
+        void hide () override { winptr->hide(); }
     };
 }

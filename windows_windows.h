@@ -10,6 +10,47 @@ processorArchitecture='*' publicKeyToken='6595b64144ccf1df' \
 language='*'\"")
 #endif
 
+auto sys::screen::snapshot() -> pix::image<rgba>
+{
+    int x1 = GetSystemMetrics(SM_XVIRTUALSCREEN);
+    int y1 = GetSystemMetrics(SM_YVIRTUALSCREEN);
+    int x2 = GetSystemMetrics(SM_CXVIRTUALSCREEN);
+    int y2 = GetSystemMetrics(SM_CYVIRTUALSCREEN);
+
+    int w = x2 - x1; if (w <= 0) return image<rgba>();
+    int h = y2 - y1; if (h <= 0) return image<rgba>();
+
+    BITMAPINFO bi;
+    ZeroMemory(&bi,               sizeof(bi));
+    bi.bmiHeader.biSize         = sizeof(BITMAPINFOHEADER);
+    bi.bmiHeader.biWidth        = w;
+    bi.bmiHeader.biHeight       = -h;
+    bi.bmiHeader.biPlanes       = 1;
+    bi.bmiHeader.biBitCount     = 32; 
+    bi.bmiHeader.biCompression  = BI_RGB;
+    bi.bmiHeader.biSizeImage    = w*h*4;
+
+    HDC screen = ::GetDC(NULL);
+    HDC dc = ::CreateCompatibleDC(NULL);
+
+    LPVOID  bits = NULL;
+    HBITMAP bmp  = ::CreateDIBSection(NULL, (BITMAPINFO*)&bi, DIB_RGB_COLORS, &bits, NULL, NULL);
+    HGDIOBJ old  = ::SelectObject(dc, bmp);
+
+    ::BitBlt(dc, 0, 0, w, h, screen, x1, y1, SRCCOPY);
+
+    image<rgba> image(xy(w,h));
+   
+    ::memcpy(image.data.data(), bits, w*h*4);
+
+    ::ReleaseDC(NULL, screen);
+    ::SelectObject (dc, old);
+    ::DeleteObject (bmp);
+    ::DeleteDC     (dc);
+
+    return image;
+}
+
 str sys::dialog (str title, str text, sys::choice choice, void* handle)
 {
     UINT type = MB_OK;
@@ -387,6 +428,14 @@ void sys::window::update()
 void sys::window::timing()
 {
     ::PostMessage((HWND)(native_handle1), WM_COMMAND, 11111, 0);
+}
+void sys::window::show()
+{
+    ::ShowWindow((HWND)(native_handle1), SW_SHOW);
+}
+void sys::window::hide()
+{
+    ::ShowWindow((HWND)(native_handle1), SW_HIDE);
 }
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPTSTR pCmdLine, int nCmdShow)
