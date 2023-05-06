@@ -85,6 +85,16 @@ namespace doc::html::syntax
                     t.text.replace_all("&amp;" , "&");
                     t.text.replace_all("&lt;"  , "<");
                     t.text.replace_all("&gt;"  , ">");
+
+                    auto& symbols = lexica::symbols;
+
+                    t.text.rebracket("&", ";", [&symbols](str s)
+                    {
+                        auto it = symbols.find(s);
+                        if (it == symbols.end())
+                        return str("&"+ s +";");
+                        return str(it->second);
+                    });
                 }
             }
             co_yield e;

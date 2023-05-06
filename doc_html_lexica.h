@@ -298,6 +298,7 @@ namespace doc::html::lexica
         { "scaron", u8"š" },
         { "sdot", u8"⋅" },
         { "sect", u8"§" },
+        { "sharp", u8"#" },
         { "shy", u8"\u00AD" }, // u8"\xC2\xAD" },
         { "sigma", u8"σ" },
         { "sigmaf", u8"ς" },
