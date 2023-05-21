@@ -57,6 +57,9 @@ namespace aux
         auto last (const char* s) const { return last(str(s)); }
         auto last (const char* s) { return last(str(s)); }
 
+        str upto_first (str s) { return upto(first(s).offset()); }
+        str from_first (str s) { return from(first(s).offset()); }
+
         /////////////////////////////////////////////////
 
         using base::insert;

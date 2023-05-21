@@ -98,6 +98,7 @@ namespace doc::html::lexica
         { "Chi", u8"Χ" },
         { "Dagger", u8"‡" },
         { "Delta", u8"Δ" },
+        { "eq", u8"=" },
         { "ETH", u8"Ð" },
         { "Eacute", u8"É" },
         { "Ecirc", u8"Ê" },
