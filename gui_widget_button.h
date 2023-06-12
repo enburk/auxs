@@ -188,25 +188,32 @@ namespace gui
     {
         canvas canvas;
         radio::group buttons;
-        property<int> maxwidth = metrics::text::height*5;
         property<int> selected = -1;
 
         void on_change (void* what) override
         {
-            if (what == &maxwidth
-            or  what == &coord and
+            if (what == &coord and
                 coord.was.size !=
                 coord.now.size)
             {
                 canvas.coord  = coord.now.local();
                 buttons.coord = coord.now.local();
 
-                int i = 0;
-                int w = coord.now.w;
-                int h = coord.now.h;
-                w = min(maxwidth.now, w/buttons.size());
+                int W = coord.now.w;
+                int H = coord.now.h;
+                int w = W/buttons.size();
+                int e = W - w;
+                int x = 0;
+
                 for (auto& button: buttons)
-                button.coord = xywh((i++)*w, 0, w, h);
+                {
+                    int v = w;
+                    if (e > 0) v++;
+                    if (e > 0) e--;
+                    button.coord = xywh(
+                    x, 0, v, H);
+                    x += v;
+                }
             }
 
             if (what == &skin)

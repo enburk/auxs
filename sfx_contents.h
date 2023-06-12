@@ -35,6 +35,11 @@ namespace sfx
         typedef array<record> Records;
         binary_property<Records> records;
         binary_property<str> selected;
+        property<bool> selected_open = false;
+
+        std::function<str(record)> pretty = [](record r){
+            return r.file ? r.name:
+            "<b>"+ r.name +"</b>"; };
 
         void refresh ()
         {
@@ -67,7 +72,8 @@ namespace sfx
         void replane ()
         {
             array<record*> stack;
-            if  (selected.now != "")
+            if  (selected.now != ""
+            and  selected_open.now)
             for (auto& record: records.now)
             {
                 if (record.file)
@@ -90,10 +96,13 @@ namespace sfx
                 not stack.empty()
                 and stack.back()->level == record.level)
                     stack.back() = &record;
-                else
-                if (
-                not stack.empty())
+                else {
+                while (
+                not stack.empty()
+                and stack.back()->level >= record.level)
                     stack.pop_back();
+                    stack += &record;
+                }
             }
 
             int n = 0;
@@ -116,8 +125,7 @@ namespace sfx
                 str html;
                 for (int i=0; i<record.level-1; i++) html += mspace;
                 html += record.file ? mspace : record.open ? minus : "+ ";
-                html += record.file ? record.name:
-                "<b>" + record.name + "</b>";
+                html += pretty(record);
 
                 flist.indices += index;
                 auto& it = flist.list(n++);
@@ -278,6 +286,11 @@ namespace sfx
             if (what == &coord)
                 contents.coord =
                 coord.now.local();
+
+            if (what == &name)
+                contents.
+                name =
+                name;
 
             if (what == &root)
             {
