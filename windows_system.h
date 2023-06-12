@@ -171,10 +171,10 @@ void sys::directory_watcher::watch ()
 void sys::directory_watcher::cancel ()
 {
     stop = true;
-    if (thread.joinable()) {
-        ::CancelSynchronousIo(thread.native_handle());
+    if (thread.joinable()) ::CancelSynchronousIo(
+        thread.native_handle()),
         thread.join();
-    }
+    stop = false;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
