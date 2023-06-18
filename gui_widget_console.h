@@ -103,9 +103,7 @@ namespace gui
             }
 
             if (what == &link)
-            {
-                notify(&link);
-            }
+                notify (&link);
         }
     };
 } 
