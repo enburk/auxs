@@ -6,6 +6,7 @@
 #include "test_aux_hask.h"
 #include "test_aux_math.h"
 #include "test_aux_string.h"
+#include "test_aux_utils.h"
 using namespace pix;
 using gui::widget;
 
@@ -50,7 +51,7 @@ widget<TestAux>
             aux::unittest::results; ok &= 
             aux::unittest::all_ok;
 
-            aux::unittest::test("-");
+            aux::unittest::test_utils();
             aux::unittest::test("");
             console3.object.page.html = 
             aux::unittest::results; ok &= 

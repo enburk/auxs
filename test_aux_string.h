@@ -203,9 +203,9 @@ namespace aux::unittest
             oops( out(str("a [[bb]]"   ).debracketed("[[","]]")) ) { "a" };
             oops( out(str("a [[bb]] c" ).debracketed("[[","]]")) ) { "a c" };
             oops( out(str("a [[bb]], c").debracketed("[[","]]")) ) { "a, c" };
-            oops( out(str("a (bb)"   ).rebracketed("(",")","<i>","</i>")) ) { "a <i>(bb)</i>" };
-            oops( out(str("a (bb) c" ).rebracketed("(",")","<i>","</i>")) ) { "a <i>(bb)</i> c" };
-            oops( out(str("a (bb), c").rebracketed("(",")","<i>","</i>")) ) { "a <i>(bb)</i>, c" };
+            oops( out(str("a (bb)"   ).rebracketed("(",")","<i>","</i>")) ) { "a <i>bb</i>" };
+            oops( out(str("a (bb) c" ).rebracketed("(",")","<i>","</i>")) ) { "a <i>bb</i> c" };
+            oops( out(str("a (bb), c").rebracketed("(",")","<i>","</i>")) ) { "a <i>bb</i>, c" };
 
             struct result
             {

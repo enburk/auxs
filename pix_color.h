@@ -19,7 +19,6 @@ namespace pix
         rgba (int r, int g, int b, int a = 255) : b(b), g(g), r(r), a(a) {}
 
         bool operator == (const rgba & c) const { return value == c.value; }
-        bool operator != (const rgba & c) const { return value != c.value; }
         bool operator <  (const rgba & c) const { return value <  c.value; }
 
         static const int color_channels = 3;

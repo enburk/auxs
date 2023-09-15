@@ -12,25 +12,29 @@ namespace aux::unittest
     std::vector<string> log;
     bool all_ok = true;
 
+    template<class x> str default_delimiter() { return ", "; }
+    template<> str default_delimiter<char>() { return ""; }
+
     using std::to_string;
     auto to_string (string s) { return s; }
+    auto to_string (char c) { return string(1,c); }
+
+    auto to_string (input_range auto r, string delimiter) {
+        string s;
+        for (auto x: r) s += to_string(x) + delimiter;
+        if (s != "") s.resize(s.size() - delimiter.size());
+        return s; }
+
+    auto to_string (input_range auto r) {
+        return to_string(r, default_delimiter<
+            std::ranges::range_value_t<
+                decltype(r)>>()); }
 
     void out (auto   x) { log.push_back(to_string(x)); }
     void out (string s) { log.push_back(std::move(s)); }
-
-    template<class X>
-    void out (X r)
-        requires input_range<X> and
-        std::same_as<typename X::value_type, char> {
-        string s;
-        for (auto x : r) s += x;
-        out(s); }
-
-    void out (input_range auto r, string delimiter = ", ") {
-        string s;
-        for (auto x : r) s += to_string(x) + delimiter;
-        if (s != "") s.resize(s.size() - delimiter.size());
-        out(s); }
+    void out (auto&& x, string delimiter) {
+        log.push_back(to_string(
+        std::move(x), delimiter)); }
 
     void commit () { for (auto s : log) results += s + "<br>"; log.clear(); }
     void print (string s) { out(s); commit(); }

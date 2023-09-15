@@ -2,6 +2,7 @@
 #include <format>
 #include "aux_unittest.h"
 #include "gui_widget_console.h"
+#include "sys_io_in.h"
 using namespace pix;
 using gui::widget;
 
@@ -184,7 +185,36 @@ namespace aux::unittest
 
     void test_pix2 () try
     {
-         test("-");
+        test("gif");
+        {
+            {
+                array<byte> bytes;
+                for (str s: array<str>(str("47 49 46 38 39 61 "
+                "0A 00 0A 00 91 00 00 FF FF FF FF 00 00 00 00 FF 00 00 00 "
+                "21 F9 04 00 00 00 00 00 2C 00 00 00 00 0A 00 0A 00 00 02 "
+                "16 8C 2D 99 87 2A 1C DC 33 A0 02 75 EC 95 FA A8 DE 60 8C "
+                "04 91 4C 01 00 3B").split_by(" ")))
+                    bytes += (byte)std::strtoul(
+                        s.c_str(), nullptr, 16);
+
+                gif::decoder x(bytes.whole());
+
+                ouch(out(x.Images.size())) { "1" };
+
+                x.Images[0].unpack(x.gct);
+
+                oops(out("ok")) { "ok" };
+            }
+            {
+                auto bytes =
+                sys::in::bytes("../data/xtest.gif");
+                if (not bytes.empty())
+                {
+                    gif::decoder x(bytes.whole());
+                }
+                oops(out("ok")) { "ok" };
+            }
+        }
     }
     catch(assertion_failed){}
 }

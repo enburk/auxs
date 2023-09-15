@@ -84,6 +84,7 @@ namespace aux
             iterator  end   () /***/ { return host.begin() + end_; }
             iterator_ end   () const { return host.begin() + end_; }
 
+            auto data   () const { return &*begin(); }
             auto size   () const { return (int)(end() - begin()); }
             auto offset () const { return (int)(begin() - host.begin()); }
             bool empty  () const { return size() == 0; }

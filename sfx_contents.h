@@ -263,7 +263,7 @@ namespace sfx
                     continue;
 
                 record r;
-                r.path = str(p);
+                r.path = str(relative(p));
                 r.name = str(p.filename());
                 r.open = is_regular_file(p);
                 r.file = is_regular_file(p);

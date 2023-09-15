@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include "pix_frame.h"
+#include "pix_draw_gif.h"
 #include "pix_draw_line.h"
 namespace pix
 {

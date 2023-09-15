@@ -336,6 +336,12 @@
     <ClInclude Include="sfx_medio_sequencer.h">
       <Filter>sfx</Filter>
     </ClInclude>
+    <ClInclude Include="test_aux_utils.h">
+      <Filter>test</Filter>
+    </ClInclude>
+    <ClInclude Include="pix_draw_gif.h">
+      <Filter>pix</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="test.cpp">

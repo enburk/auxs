@@ -70,6 +70,7 @@
     <ClInclude Include="pix_color.h" />
     <ClInclude Include="pix_coord.h" />
     <ClInclude Include="pix_draw.h" />
+    <ClInclude Include="pix_draw_gif.h" />
     <ClInclude Include="pix_draw_line.h" />
     <ClInclude Include="pix_frame.h" />
     <ClInclude Include="pix_image.h" />
@@ -109,6 +110,7 @@
     <ClInclude Include="test_aux_hask.h" />
     <ClInclude Include="test_aux_math.h" />
     <ClInclude Include="test_aux_string.h" />
+    <ClInclude Include="test_aux_utils.h" />
     <ClInclude Include="test_doc.h" />
     <ClInclude Include="test_doc_text_a.h" />
     <ClInclude Include="test_doc_text_b.h" />
@@ -212,6 +214,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <Optimization>Disabled</Optimization>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -242,7 +245,7 @@
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpplatest</LanguageStandard>
-      <Optimization>MaxSpeed</Optimization>
+      <Optimization>Disabled</Optimization>
       <TreatWarningAsError>true</TreatWarningAsError>
     </ClCompile>
     <Link>
