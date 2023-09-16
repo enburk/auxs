@@ -75,7 +75,10 @@ namespace sfx::media
             if (what == &playing)
             {
                 if (video.status == state::finished
-                and audio.status == state::finished)
+                and audio.status == state::finished
+                or  audio.status == state::finished
+                and video.status == state::playing
+                and video.frame_last)
                     medio.done();
 
                 elapsed = max(video.

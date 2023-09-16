@@ -16,14 +16,16 @@ namespace pix::gif
     
     struct lsd // logical screen descriptor
     {
-        uint16_t w = 0; // canvas width
-        uint16_t h = 0; // canvas height
-        unsigned char gct_size : 3  = 0; // global color table size
-        unsigned char gct_sort : 1  = 0; // global color table sorted
-        unsigned char color_resolution : 3 = 0; // color_resolution
-        unsigned char gct_flag : 1  = 0; // global color table present
+        word w = 0; // canvas width
+        word h = 0; // canvas height
+        byte bits = 0; // packed field
         byte background_color_index = 0;
         byte pixel_aspect_ratio = 0;
+
+        byte gct_size () { return (bits >> 0) & 0b111; } // global color table size
+        byte gct_sort () { return (bits >> 3) & 0b001; } // global color table sorted
+        byte colorres () { return (bits >> 4) & 0b111; } // color_resolution
+        byte gct_flag () { return (bits >> 7) & 0b001; } // global color table present
         void normalize ()
         {
             if (std::endian::native !=
@@ -36,13 +38,15 @@ namespace pix::gif
     struct gce // graphics control extension
     {
         byte size = 4; // block size;
-        unsigned char transparent : 1  = 0; // transparent color flag
-        unsigned char user_input  : 1  = 0; // user input flag
-        unsigned char disposal    : 3  = 0; // disposal method
-        unsigned char reserved    : 3  = 0; // reserved for future use
-        uint16_t delay = 0; // delay time
+        byte bits = 0; // packed field
+        word delay = 0; // delay time
         byte transparent_color = 0; // transparent color index
         byte zero = 0; // terminator
+
+        unsigned char transparent () { return (bits >> 0) & 0b001; } // transparent color flag
+        unsigned char user_input  () { return (bits >> 1) & 0b001; } // user input flag
+        unsigned char disposal    () { return (bits >> 2) & 0b111; } // disposal method
+        unsigned char reserved    () { return (bits >> 5) & 0b111; } // reserved for future use
         void normalize ()
         {
             if (std::endian::native !=
@@ -54,15 +58,17 @@ namespace pix::gif
 
     struct descriptor // image decriptor
     {
-        uint16_t x = 0; // image left
-        uint16_t y = 0; // image right
-        uint16_t w = 0; // image width
-        uint16_t h = 0; // image height
-        unsigned char lct_size  : 3 = 0; // local color table size
-        unsigned char reserved  : 2 = 0; // reserved for future use
-        unsigned char sorted    : 1 = 0; // sort flag
-        unsigned char interlace : 1 = 0; // interlace flag
-        unsigned char lct_flag  : 1 = 0; // local color table flag
+        word x = 0; // image left
+        word y = 0; // image right
+        word w = 0; // image width
+        word h = 0; // image height
+        byte bits = 0; // packed field
+
+        unsigned char lct_size  () { return (bits >> 0) & 0b111; } // local color table size
+        unsigned char reserved  () { return (bits >> 3) & 0b011; } // reserved for future use
+        unsigned char sorted    () { return (bits >> 5) & 0b001; } // sort flag
+        unsigned char interlace () { return (bits >> 6) & 0b001; } // interlace flag
+        unsigned char lct_flag  () { return (bits >> 7) & 0b001; } // local color table flag
         void normalize ()
         {
             if (std::endian::native !=
@@ -102,8 +108,10 @@ namespace pix::gif
                 npix = size.x * size.y;
             }
 
-            const array<rgba>& palette =
-            not lct.empty() ? lct : gct;
+            if (lct.empty()) lct = gct;
+            if (gce.transparent()) lct[
+                gce.transparent_color] =
+                rgba{};
 
             const int MAX_SIZE = 4096;
             word prefix[MAX_SIZE];
@@ -191,7 +199,7 @@ namespace pix::gif
                 }
                 // Pop a pixel off the pixel stack.
                 top--;
-                *dst++ = palette[colors[top]];
+                *dst++ = lct[colors[top]];
                 i++;
             }
         }
@@ -202,23 +210,31 @@ namespace pix::gif
         array<byte> source;
         array<Image> Images;
         pix::image<rgba> image;
-        int repeats = 10000000;
         int current = 0;
+        int loops = 0; // infifnite
         bool last = false;
         array<rgba> gct;
+        lsd lsd;
 
         bool next (std::atomic<bool>& cancel)
         {
             if (cancel) return false;
             if (Images.size() == 0) return false;
-            if (Images.size() == current and repeats == 0) return false;
-            if (Images.size() == current and repeats == 1) last = true;
+            if (Images.size() == current and loops == 1) return false;
+            if (Images.size() == current) last = true;
+            if (Images.size() == current) loops--;
             if (Images.size() == current) current = 0;
 
             aux::timing t0;
             auto& img = Images[current++];
             img.unpack(gct);
-            image.crop().from({img.descriptor.x,img.descriptor.y}).copy_from(img.image.crop());
+
+            if (img.gce.disposal() == 2
+            and lsd.background_color_index < gct.size()) image.fill(
+            gct[lsd.background_color_index]);
+
+            image.crop().from({img.descriptor.x,img.descriptor.y}).
+            blend_from(img.image.crop());
             aux::timing t1;
 
             using namespace std::chrono;
@@ -277,13 +293,15 @@ namespace pix::gif
             and header.string() != "GIF89a")
                 error("not a gif");
 
-            lsd lsd; read(lsd);
+            read(lsd);
             lsd.normalize();
-            if (lsd.gct_flag)
+            if (lsd.gct_flag())
                 gct = read_color_table(
-                lsd.gct_size);
+                lsd.gct_size());
 
             image.resize({lsd.w, lsd.h});
+            if (lsd.background_color_index < gct.size()) image.fill(
+            gct[lsd.background_color_index]);
 
             gce gce;
 
@@ -298,6 +316,27 @@ namespace pix::gif
                         read(gce);
                         gce.normalize();
                     }
+                    else
+                    if (label == 0xFF // application extension
+                    and data.size() >= 17
+                    and data[ 0] == 0x0B
+                    and data[ 1] == 0x4E // N
+                    and data[ 2] == 0x45 // E
+                    and data[ 3] == 0x54 // T
+                    and data[ 4] == 0x53 // S
+                    and data[ 5] == 0x43 // C
+                    and data[ 6] == 0x41 // A
+                    and data[ 7] == 0x50 // P
+                    and data[ 8] == 0x45 // E
+                    and data[ 9] == 0x32 // 2
+                    and data[10] == 0x2E // .
+                    and data[11] == 0x30 // 0
+                    and data[12] == 0x03
+                    and data[13] == 0x01)
+                    {
+                        loops = (data[14] << 8) + data[15];
+                        skip_block();
+                    }
                     else skip_block();
                     continue;
                 }
@@ -309,9 +348,9 @@ namespace pix::gif
                 Image.gce = gce;
                 read(Image.descriptor);
                 Image.descriptor.normalize();
-                if (Image.descriptor.lct_flag)
+                if (Image.descriptor.lct_flag())
                     Image.lct = read_color_table(
-                    Image.descriptor.lct_size);
+                    Image.descriptor.lct_size());
 
                 read(Image.lzw_min_size);
                 Image.source = data.data();

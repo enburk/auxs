@@ -52,8 +52,9 @@ namespace sfx::media::image
                     &&  data[4] == 0x39  // 9
                     &&  data[5] == 0x61) // a
                     {
-                        pix::gif::decoder gif(std::move(data));
-                        while (not frame_last)
+                        pix::gif::decoder
+                        gif(std::move(data));
+                        while (true)
                         {
                             frame_ready.wait(true); // until it's false
                             if (not gif.next(cancel)) break;
@@ -116,8 +117,6 @@ namespace sfx::media::image
             frames[current].show();
             frame_ready = false;
             frame_ready.notify_all();
-            if (frame_last)
-            medio.done();
         }
 
         void on_change (void* what) override
