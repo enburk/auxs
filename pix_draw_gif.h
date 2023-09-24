@@ -211,7 +211,7 @@ namespace pix::gif
         array<Image> Images;
         pix::image<rgba> image;
         int current = 0;
-        int loops = 0; // infifnite
+        int loops = 1;
         bool last = false;
         array<rgba> gct;
         lsd lsd;
