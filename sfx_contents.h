@@ -314,7 +314,7 @@ namespace sfx
 
             if (what == &contents)
             {
-                selected = str2path(contents.
+                selected = sys::str2path(contents.
                 selected);
             }
 
