@@ -342,6 +342,9 @@
     <ClInclude Include="pix_draw_gif.h">
       <Filter>pix</Filter>
     </ClInclude>
+    <ClInclude Include="sfx_media_audios.h">
+      <Filter>sfx</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="test.cpp">

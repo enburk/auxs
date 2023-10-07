@@ -27,6 +27,15 @@ namespace pix::coord
         friend xy operator * (T n, xy v) { v *= n; return v; }
         friend xy operator * (xy v, T n) { v *= n; return v; }
         friend xy operator / (xy v, T n) { v /= n; return v; }
+
+        xy fit (xy size)
+        {
+            double kx = double(size.x) / x;
+            double ky = double(size.y) / y;
+            return kx < ky ?
+            *this * size.x / x:
+            *this * size.y / y;
+        }
     };
     template<class T> struct xyxy
     {

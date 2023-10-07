@@ -96,6 +96,51 @@ namespace aux::unittest
             oops( a.upto(3).replace_by(b.upto(3)); out(a) ) { "4, 5, 6" };
             oops( a.upto(0).replace_by(b.from(0)); out(a) ) { "4, 5, 6, 4, 5, 6" };
         }
+        test("array.performance");
+        {
+            using std::vector;
+            using std::string;
+            using ele = element;
+            vector<string> cd   = { "ctor: a", "dtor: a", };
+            vector<string> ccdd = { "ctor: a", "copy: a", "dtor: a", "dtor: a", };
+            vector<string> cmdd = { "ctor: a", "move: a", "dtor: " , "dtor: a", };
+
+            oops([]{ vector<ele> a(1, 'a'); }();) {ccdd};
+            oops([]{ vector<ele> a = {'a'}; }();) {ccdd};
+            oops([]{ vector<ele> a(1, ele('a')); }();) {ccdd};
+            oops([]{ vector<ele> a = {ele('a')}; }();) {ccdd};
+            oops([]{ vector<ele> a; a.emplace_back('a'); }();) {cd};
+            oops([]{ vector<ele> a; a.push_back('a'); }();) {cmdd};
+
+            oops([]{ array<ele> a('a'); }();) {cmdd};
+            oops([]{ array<array<ele>> a(array<ele>('a')); }();) {cmdd};
+            oops([]{ auto a = array<ele>('a'); }();) {cmdd};
+
+            oops([]{ auto a = 'a' + array<ele>('b'); }();) 
+            {
+                "ctor: b", "move: b", 
+                "ctor: a", "move: a", 
+                "copy: b", "dtor: b", 
+                "dtor: " , "dtor: " , 
+                "dtor: b", "dtor: a"
+            };
+            oops([]{ auto a = array<ele>('a') + 'b'; }();)
+            {
+                "ctor: b", "ctor: a", 
+                "move: a", "move: b", 
+                "copy: a", "dtor: a", 
+                "dtor: " , "dtor: " , 
+                "dtor: a", "dtor: b"
+            };
+            oops([]{ auto a = array<ele>('a') * array<ele>('b'); }();)
+            {
+                "ctor: b", "move: b", 
+                "ctor: a", "move: a", "move: b", 
+                "copy: a", "dtor: a", 
+                "dtor: " , "dtor: " , "dtor: " , 
+                "dtor: a", "dtor: b"
+            };
+        }
     }
     catch(assertion_failed){}
 }

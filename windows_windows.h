@@ -109,9 +109,9 @@ void sys::mouse::position(xy p)
 static str wm_key (WPARAM wparam, LPARAM, bool down)
 {
     str s;
-    if (0x30 <= wparam && wparam <= 0x39) s = '0' + (char)wparam-0x30; else
-    if (0x41 <= wparam && wparam <= 0x5A) s = 'A' + (char)wparam-0x41; else
-    if (0x70 <= wparam && wparam <= 0x7B) s = "F" + std::to_string(wparam-0x70+1); else
+    if (0x30 <= wparam && wparam <= 0x39) s += '0' + (char)wparam-0x30; else
+    if (0x41 <= wparam && wparam <= 0x5A) s += 'A' + (char)wparam-0x41; else
+    if (0x70 <= wparam && wparam <= 0x7B) s += "F" + std::to_string(wparam-0x70+1); else
     switch(wparam){
     case VK_BACK    : s = "backspace"; break;
     case VK_TAB     : s = "tab"; break;

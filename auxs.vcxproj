@@ -89,6 +89,7 @@
     <ClInclude Include="sfx_graph.h" />
     <ClInclude Include="sfx_media.h" />
     <ClInclude Include="sfx_media_audio.h" />
+    <ClInclude Include="sfx_media_audios.h" />
     <ClInclude Include="sfx_media_image.h" />
     <ClInclude Include="sfx_media_video.h" />
     <ClInclude Include="sfx_media_vudio.h" />

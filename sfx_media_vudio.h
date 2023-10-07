@@ -2,6 +2,7 @@
 #include "sfx_media_audio.h"
 #include "sfx_media_image.h"
 #include "sfx_media_video.h"
+#include "sfx_medio_sequencer.h"
 namespace sfx::media
 {
     struct player:
@@ -9,6 +10,7 @@ namespace sfx::media
     {
         image::player video;
         audio::player audio;
+//        sequencer<audio::player> audio;
         medio medio;
 
 #define using(x) decltype(medio.x)& x = medio.x;
@@ -26,6 +28,7 @@ namespace sfx::media
         ~player () { reset(); }
 
         void load (array<byte> video_bytes, array<byte> audio_bytes)
+//        void load (array<byte> video_bytes, array<array<byte>> audio_bytes)
         {
             reset();
             video.load(std::move(video_bytes));

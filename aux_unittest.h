@@ -134,7 +134,7 @@ namespace aux::unittest
     {
         string s;
 
-       ~element () noexcept(false)         { out("dtor: " + s ); }
+      ~ element () noexcept(false)         { out("dtor: " + s ); }
         element () noexcept(false) :s("_") { out("ctor: " + s ); }
         element (char           c) :s(1,c) { out("ctor: " + s ); }
         element (element const& e) :s(e.s) { out("copy: " + s ); }
@@ -147,36 +147,36 @@ namespace aux::unittest
     };
     struct copyable : element
     {
-       ~ copyable             (                 ) = default;
-         copyable             (                 ) = default;
-         copyable             (element  const& e) : element(e) {}
-         copyable             (element      && e) : element(std::move(e)) {}
-         copyable             (copyable const& e) = default;
-         copyable             (copyable     && e) = delete;
-         copyable& operator = (copyable const& e) = default;
-         copyable& operator = (copyable     && e) = delete;
+      ~ copyable             (                 ) = default;
+        copyable             (                 ) = default;
+        copyable             (element  const& e) : element(e) {}
+        copyable             (element      && e) : element(std::move(e)) {}
+        copyable             (copyable const& e) = default;
+        copyable             (copyable     && e) = delete;
+        copyable& operator = (copyable const& e) = default;
+        copyable& operator = (copyable     && e) = delete;
     };
     struct moveable : element
     {
-       ~ moveable             (                 ) = default;
-         moveable             (                 ) = default;
-         moveable             (element  const& e) : element (e) {}
-         moveable             (element      && e) : element (std::move(e)) {}
-         moveable             (moveable const& e) = delete;
-         moveable             (moveable     && e) = default;
-         moveable& operator = (moveable const& e) = delete;
-         moveable& operator = (moveable     && e) = default;
+      ~ moveable             (                 ) = default;
+        moveable             (                 ) = default;
+        moveable             (element  const& e) : element (e) {}
+        moveable             (element      && e) : element (std::move(e)) {}
+        moveable             (moveable const& e) = delete;
+        moveable             (moveable     && e) = default;
+        moveable& operator = (moveable const& e) = delete;
+        moveable& operator = (moveable     && e) = default;
     };
     struct makeable : element
     {
-       ~ makeable             (                 ) = default;
-         makeable             (                 ) = default;
-         makeable             (element  const& e) : element (e) {}
-         makeable             (element      && e) : element (std::move(e)) {}
-         makeable             (makeable const& e) = delete;
-         makeable             (makeable     && e) = delete;
-         makeable& operator = (makeable const& e) = delete;
-         makeable& operator = (makeable     && e) = delete;
+      ~ makeable             (                 ) = default;
+        makeable             (                 ) = default;
+        makeable             (element  const& e) : element (e) {}
+        makeable             (element      && e) : element (std::move(e)) {}
+        makeable             (makeable const& e) = delete;
+        makeable             (makeable     && e) = delete;
+        makeable& operator = (makeable const& e) = delete;
+        makeable& operator = (makeable     && e) = delete;
     };
     using neither_copyable_nor_movable = makeable;
     using movable = moveable;

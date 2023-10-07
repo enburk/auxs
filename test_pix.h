@@ -185,6 +185,19 @@ namespace aux::unittest
 
     void test_pix2 () try
     {
+        test("fit");
+        {
+            auto s = [](xy p) { return
+                 to_string(p.x) + "," +
+                 to_string(p.y); };
+
+            oops(out(s(xy(1,1).fit(xy(5,5))))) { "5,5" };
+            oops(out(s(xy(1,2).fit(xy(5,5))))) { "2,5" };
+            oops(out(s(xy(2,1).fit(xy(5,5))))) { "5,2" };
+            oops(out(s(xy(5,5).fit(xy(5,5))))) { "5,5" };
+            oops(out(s(xy(5,9).fit(xy(5,5))))) { "2,5" };
+            oops(out(s(xy(9,5).fit(xy(5,5))))) { "5,2" };
+        }
         test("gif");
         {
             {

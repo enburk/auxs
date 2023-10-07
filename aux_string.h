@@ -18,7 +18,7 @@ namespace aux
 
         constexpr str (const char * s ) : base(s) {}
         constexpr str (const char8_t * s ) : base((char*)s) {}
-        constexpr str (char c, int n=1) { if (n > 0) *this = std::string(n,c); }
+        constexpr str (char c, int n) { if (n > 0) *this = std::string(n,c); }
         constexpr str (std::string_view s) : base(std::string(s)) {}
         constexpr str (const_iterator f, const_iterator l) : base(std::string(f, l)) {}
         constexpr str (const char *   f, const char *   l) : base(std::string(f, l)) {}
