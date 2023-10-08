@@ -6,8 +6,8 @@ namespace sfx::media::audios
     widget<player>
     {
         widgetarium<sfx::audio::player> audios;
-        medio medio;
         int current = 0;
+        medio medio;
 
 #define using(x) decltype(medio.x)& x = medio.x;
         using(mute)
@@ -28,94 +28,86 @@ namespace sfx::media::audios
             audios(i).load(std::move(bytess[i]));
             audios.truncate(n);
             medio.load();
-
-
-            //reset();
-            //if (bytes.empty()) {
-            //    audio = sys::audio::player{};
-            //    medio.stay();
-            //    return; }
-            //
-            //thread = [this, data = std::move(bytes)](auto& cancel)
-            //{
-            //    sys::audio::decoder decoder(data);
-            //
-            //    if (cancel) return;
-            //
-            //    audio.load(
-            //    decoder.output,
-            //    decoder.channels,
-            //    decoder.samples,
-            //    decoder.bps);
-            //};
+            current = 0;
         }
 
         void play ()
         {
-            //if (medio.play())
-            //{
-            //    audio.volume(
-            //    mute? 0.0:
-            //    volume/
-            //    255.0);
-            //
-            //    audio.play();
-            //}
+            if (medio.play()
+            and audios.size() > current)
+                audios[current].play();
         }
 
         void stop ()
         {
-            //if (medio.stop())
-            //    audio.stop();
+            if (medio.stop()
+            and audios.size() > current)
+                audios[current].stop();
         }
 
         void reset ()
         {
-            //try {
-            //thread.stop = true;
-            //thread.join();
-            //thread.check(); }
-            //catch (...) {}
-            //medio.done();
+            audios.clear();
+            medio.done();
         }
 
         void on_change (void* what) override
         {
-            //if (what == &playing)
-            //{
-            //    elapsed = time{(int)(
-            //    audio.position()*1000)};
-            //
-            //    if (
-            //    not audio.playing()
-            //    and elapsed == time{})
-            //    medio.done();
-            //}
-            //if (what == &loading and thread.done)
-            //{
-            //    duration = time{(int)(audio.
-            //    duration*1000)};
-            //
-            //    try {
-            //    thread.join();
-            //    thread.check();
-            //    medio.stay(); }
-            //    catch (std::exception const& e) {
-            //    medio.fail(e.what()); }
-            //}
-            //if (what == &mute
-            //and status == state::playing)
-            //{
-            //    audio.position(0);
-            //}
-            //if (what == &volume
-            //or  what == &mute)
-            //{
-            //    audio.volume(
-            //    mute? 0.0:
-            //    volume/
-            //    255.0);
-            //}
+            if (what == &playing
+            and audios.size() > current)
+            {
+                elapsed = time{};
+                for (auto& audio: audios)
+                elapsed += audio.
+                elapsed;
+
+                if (audios[current].status ==
+                    state::playing)
+                    return;
+
+                if (audios[current].status ==
+                    state::failed) { medio.fail(
+                    audios[current].error);
+                    return; }
+
+                current++;
+                if (audios.size() > current)
+                    audios[current].play();
+                    else medio.done();
+            }
+            if (what == &loading)
+            {
+                for (auto& audio: audios)
+                    if (audio.status == state::failed) {
+                        medio.fail(audio.error);
+                        return; }
+
+                for (auto& audio: audios)
+                    if (audio.status == state::loading)
+                        return;
+
+                elapsed  = time{};
+                duration = time{};
+                for (auto& audio: audios)
+                duration += audio.
+                duration;
+
+                medio.stay();
+            }
+            if (what == &volume)
+            {
+                for (auto&
+                audio: audios)
+                audio.volume =
+                volume;
+            }
+            if (what == &mute)
+            {
+                for (auto&
+                audio: audios)
+                audio.mute =
+                mute;
+            }
         }
     };
 }

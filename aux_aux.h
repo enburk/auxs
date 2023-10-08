@@ -91,6 +91,6 @@ namespace aux
             f(it); }
 }
 
-#define not !  // anti-intellisense
-#define and && // anti-intellisense
-#define or  || // anti-intellisense
+//#define not !  // anti-intellisense
+//#define and && // anti-intellisense
+//#define or  || // anti-intellisense

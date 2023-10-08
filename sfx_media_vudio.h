@@ -1,16 +1,14 @@
 #pragma once
-#include "sfx_media_audio.h"
+#include "sfx_media_audios.h"
 #include "sfx_media_image.h"
 #include "sfx_media_video.h"
-#include "sfx_medio_sequencer.h"
 namespace sfx::media
 {
     struct player:
     widget<player>
     {
         image::player video;
-        audio::player audio;
-//        sequencer<audio::player> audio;
+        audios::player audio;
         medio medio;
 
 #define using(x) decltype(medio.x)& x = medio.x;
@@ -27,13 +25,30 @@ namespace sfx::media
 
         ~player () { reset(); }
 
-        void load (array<byte> video_bytes, array<byte> audio_bytes)
-//        void load (array<byte> video_bytes, array<array<byte>> audio_bytes)
+        void load (array<byte> video_bytes, array<array<byte>> audio_bytes)
         {
             reset();
             video.load(std::move(video_bytes));
             audio.load(std::move(audio_bytes));
             medio.load();
+        }
+
+        template<class... array_of_bytes>
+        void load (array<byte> video_bytes, array_of_bytes... audio_bytes)
+        {
+            array<array<byte>> audio_bytess;
+            audio_bytess.reserve(sizeof...(audio_bytes));
+            ([&]
+            {
+                if (not
+                audio_bytes.empty())
+                audio_bytess += std::move(
+                audio_bytes);
+            }
+            (), ...);
+            load(
+            std::move(video_bytes),
+            std::move(audio_bytess));
         }
 
         void play ()
