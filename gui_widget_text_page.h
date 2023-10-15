@@ -506,7 +506,6 @@ namespace gui::text
             tooltip.on = false;
         }
 
-
         void on_key (str key, bool down, bool input) override
         {
             if (!down) return;
@@ -560,5 +559,7 @@ namespace gui::text
 
             {}
         }
+
+        xy textsize () { return model.now->block.size; }
     };
 } 

@@ -100,43 +100,58 @@ namespace aux::unittest
         {
             using std::vector;
             using std::string;
-            using ele = element;
+            using e = element;
+            using V = vector<e>;
+            using A = array <e>;
+
             vector<string> cd   = { "ctor: a", "dtor: a", };
             vector<string> ccdd = { "ctor: a", "copy: a", "dtor: a", "dtor: a", };
             vector<string> cmdd = { "ctor: a", "move: a", "dtor: " , "dtor: a", };
 
-            oops([]{ vector<ele> a(1, 'a'); }();) {ccdd};
-            oops([]{ vector<ele> a = {'a'}; }();) {ccdd};
-            oops([]{ vector<ele> a(1, ele('a')); }();) {ccdd};
-            oops([]{ vector<ele> a = {ele('a')}; }();) {ccdd};
-            oops([]{ vector<ele> a; a.emplace_back('a'); }();) {cd};
-            oops([]{ vector<ele> a; a.push_back('a'); }();) {cmdd};
+            oops([]{ V a(1, 'a'); }();) {ccdd};
+            oops([]{ V a = {'a'}; }();) {ccdd};
+            oops([]{ V a(1, e('a')); }();) {ccdd};
+            oops([]{ V a = {e('a')}; }();) {ccdd};
+            oops([]{ V a; a.emplace_back('a'); }();) {cd};
+            oops([]{ V a; a.push_back('a'); }();) {cmdd};
 
-            oops([]{ array<ele> a('a'); }();) {cmdd};
-            oops([]{ array<array<ele>> a(array<ele>('a')); }();) {cmdd};
-            oops([]{ auto a = array<ele>('a'); }();) {cmdd};
+            oops([]{ A a('a'); }();) {cmdd};
+            oops([]{ A a; a.push_back('a'); }();) {cmdd};
+            oops([]{ array<A> a(A('a')); }();) {cmdd};
+            oops([]{ auto a = A('a'); }();) {cmdd};
 
-            oops([]{ auto a = 'a' + array<ele>('b'); }();) 
+            vector<string> cmdmdd = { "ctor: a",
+                "move: a", "dtor: " ,
+                "move: a", "dtor: " ,
+                "dtor: a", };
+
+            oops([]{ V a; a.push_back('a'); a.reserve(9); }();) {cmdmdd};
+            oops([]{ A a; a.push_back('a'); a.reserve(9); }();) {cmdmdd};
+
+            oops([]{ vector<V> a = {{}}; a[0].push_back('a'); a.reserve(9); }();) {cmdd};
+            oops([]{ array <A> a = {{}}; a[0].push_back('a'); a.reserve(9); }();) {cmdd};
+
+            oops([]{ auto a = 'a' + A('b'); }();) 
             {
                 "ctor: b", "move: b", 
                 "ctor: a", "move: a", 
-                "copy: b", "dtor: b", 
+                "move: b", "dtor: " , 
                 "dtor: " , "dtor: " , 
                 "dtor: b", "dtor: a"
             };
-            oops([]{ auto a = array<ele>('a') + 'b'; }();)
+            oops([]{ auto a = A('a') + 'b'; }();)
             {
                 "ctor: b", "ctor: a", 
                 "move: a", "move: b", 
-                "copy: a", "dtor: a", 
+                "move: a", "dtor: " , 
                 "dtor: " , "dtor: " , 
                 "dtor: a", "dtor: b"
             };
-            oops([]{ auto a = array<ele>('a') * array<ele>('b'); }();)
+            oops([]{ auto a = A('a') * A('b'); }();)
             {
                 "ctor: b", "move: b", 
-                "ctor: a", "move: a", "move: b", 
-                "copy: a", "dtor: a", 
+                "ctor: a", "move: a",
+                "move: a", "dtor: " , "move: b",  
                 "dtor: " , "dtor: " , "dtor: " , 
                 "dtor: a", "dtor: b"
             };

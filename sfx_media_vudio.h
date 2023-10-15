@@ -2,7 +2,7 @@
 #include "sfx_media_audios.h"
 #include "sfx_media_image.h"
 #include "sfx_media_video.h"
-namespace sfx::media
+namespace sfx::media::vudio
 {
     struct player:
     widget<player>
@@ -22,8 +22,6 @@ namespace sfx::media
         using(status)
         using(error)
         #undef using
-
-        ~player () { reset(); }
 
         void load (array<byte> video_bytes, array<array<byte>> audio_bytes)
         {
@@ -137,4 +135,8 @@ namespace sfx::media
             }
         }
     };
+}
+namespace sfx::vudio {
+    using sfx::media::
+        vudio::player;
 }

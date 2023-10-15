@@ -29,3 +29,7 @@ using std::ranges::views::reverse;
 using std::numbers::pi;
 using std::sin;
 using std::cos;
+
+template <class... xx> using hashmap = std::unordered_map<xx...>;
+template <class... xx> using hashset = std::unordered_set<xx...>;
+

@@ -83,7 +83,7 @@ namespace doc::html::lexica
             co_yield last;
     }
 
-    inline std::map<str, const char8_t*> symbols
+    inline hashmap<str, const char8_t*> symbols
     {
         { "AElig", u8"Æ" },
         { "Aacute", u8"Á" },

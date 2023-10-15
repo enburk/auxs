@@ -134,11 +134,11 @@ namespace aux::unittest
     {
         string s;
 
-      ~ element () noexcept(false)         { out("dtor: " + s ); }
-        element () noexcept(false) :s("_") { out("ctor: " + s ); }
+      ~ element ()                         { out("dtor: " + s ); }
+        element ()                 :s("_") { out("ctor: " + s ); }
         element (char           c) :s(1,c) { out("ctor: " + s ); }
         element (element const& e) :s(e.s) { out("copy: " + s ); }
-        element (element     && e) :s(std::move(e.s))
+        element (element     && e) noexcept :s(std::move(e.s))
                                            { out("move: " + s ); }
         void operator = (char           c) { out("assg: " + s + "=" + c   ); s = c;   }
         void operator = (element const& e) { out("copy: " + s + "=" + e.s ); s = e.s; }

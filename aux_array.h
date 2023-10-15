@@ -44,8 +44,8 @@ namespace aux
         void  operator += (const type   & e) { base::push_back (e); }
         void  operator += (      type  && e) { base::push_back (std::move(e)); }
 
-        void  operator += (const array  & a) { base::insert (end(), a.begin(), a.end()); }
-        void  operator += (      array && a) { base::insert (end(),
+        void  operator += (const array  & a) { base::reserve(size()+a.size()); base::insert(end(), a.begin(), a.end()); }
+        void  operator += (      array && a) { base::reserve(size()+a.size()); base::insert(end(),
             std::make_move_iterator(a.begin()),
             std::make_move_iterator(a.end())); }
 
