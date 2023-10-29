@@ -30,6 +30,7 @@ namespace pix::coord
 
         xy fit (xy size)
         {
+            if (x <= 0 or y <= 0) return {0,0};
             double kx = double(size.x) / x;
             double ky = double(size.y) / y;
             return kx < ky ?

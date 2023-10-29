@@ -73,7 +73,8 @@ namespace sfx::media::audios
                 current++;
                 if (audios.size() > current)
                     audios[current].play();
-                    else medio.done();
+                    else current = 0,
+                    medio.done();
             }
             if (what == &loading)
             {

@@ -215,10 +215,10 @@ namespace gui::base
         void mouse_leave ()
         {
             if (mouse_hover_child) {
-                mouse_hover_child->mouse_leave ();
+                mouse_hover_child->mouse_leave();
                 mouse_hover_child = nullptr;
             }
-            else on_mouse_leave ();
+            on_mouse_leave();
         }
 
         bool mouse_wheel (xy p, int delta)
