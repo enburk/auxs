@@ -14,14 +14,19 @@ namespace gui::base
         unary_property<str> skin;
         unary_property<str> name;
 
-        void hide    (bool off, time t=time()) { alpha.go(off? 0 : 255, t); }
-        void show    (bool on , time t=time()) { alpha.go(on ? 255 : 0, t); }
-        void hide    (          time t=time()) { hide(true, t); }
-        void show    (          time t=time()) { show(true, t); }
-        void move_to (xywh  r,  time t=time()) { coord.go(r, t); }
-        void move_to (xy    p,  time t=time()) { coord.go(xywh(p.x, p.y, coord.to.w, coord.to.h), t); }
-        void shift   (xy    d,  time t=time()) { coord.go(xywh(coord.to.x+d.x, coord.to.y+d.y, coord.to.w, coord.to.h), t); }
-        void resize  (xy size,  time t=time()) { coord.go(xywh(coord.to.x, coord.to.y, size.x, size.y), t); }
+        void hide    (bool off, time t={}) { alpha.go(off? 0 : 255, t); }
+        void show    (bool on , time t={}) { alpha.go(on ? 255 : 0, t); }
+        void hide    (          time t={}) { hide(true, t); }
+        void show    (          time t={}) { show(true, t); }
+        void move_to (xywh  r,  time t={}) { coord.go(r, t); }
+        void move_to (xy    p,  time t={}) { coord.go(xywh(p.x, p.y, coord.to.w, coord.to.h), t); }
+        void shift   (xy    d,  time t={}) { coord.go(xywh(coord.to.x+d.x, coord.to.y+d.y, coord.to.w, coord.to.h), t); }
+        void resize  (xy size,  time t={}) { coord.go(xywh(coord.to.x, coord.to.y, size.x, size.y), t); }
+
+        bool shown  () { return alpha.to != 0; }
+        bool hidden () { return alpha.to == 0; }
+
+        virtual void fit (xy size, time t={}) { resize(size,t); }
 
         virtual void on_render (sys::window& window, xywh r, xy offset, uint8_t alpha) {}
         virtual void on_change (void* what) { on_change(); }
@@ -89,7 +94,7 @@ namespace gui::base
 
         virtual bool focusable_now ()
         {
-            if (alpha.now == 0)
+            if (hidden())
                 return false;
 
             if (focusable.now)
@@ -142,7 +147,7 @@ namespace gui::base
 
         bool mouse_sense (xy p)
         {
-            if (alpha.now == 0) return false;
+            if (hidden()) return false;
             if (coord.now.local().excludes(p)) return false;
             for (auto w : children)
                 if (w->mouse_sense (p - w->coord.now.origin))
@@ -223,7 +228,7 @@ namespace gui::base
 
         bool mouse_wheel (xy p, int delta)
         {
-            if (alpha.now == 0) return false;
+            if (hidden()) return false;
             if (coord.now.local().excludes(p)) return false;
             for (auto child: reverse(children))
                 if (child->mouse_wheel(p - 

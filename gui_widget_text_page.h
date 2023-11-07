@@ -104,7 +104,7 @@ namespace gui::text
                     size.x,
                     size.y);
 
-                timer.go(gui::time{}, gui::time{});
+                timer.go({},{});
                 touch = false;
             }
             if (what == &selections and not view.cell.carets.empty())
@@ -376,7 +376,7 @@ namespace gui::text
         xy    touch_point;
         
         property<time> timer;
-        time select_delay = time{};
+        time select_delay = {};
         time select_lapse = 100ms;
         time select_notch;
         xy   select_point;

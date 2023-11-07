@@ -12,7 +12,7 @@ namespace gui
     struct time
     {
         int64_t  ms = 0;
-        explicit time() = default;
+        time() = default;
         explicit time(int64_t ms) : ms(ms) {}
         template<class R, class P> time
         (std::chrono::duration<R, P> duration) {
@@ -112,9 +112,8 @@ namespace gui
         operator type const& () { return now; }
 
         template<typename X>
-        void operator = (X value) { go(value, time{}); }
-        void operator = (property const& x) {
-            go(x.now, time{}); }
+        void operator = (X value)           { go(value, {}); }
+        void operator = (property const& x) { go(x.now, {}); }
 
         void go (type to_) { go(to_, transition_time); }
 
@@ -219,10 +218,10 @@ namespace gui
 
     struct timer : protected property<time>
     {
-        void setup (time t) { now = time{}; go(time{1}, t); }
+        void setup (time t) { now = {}; go(time{1}, t); }
 
-        void start () { now = time{}; go(time::infinity, time::infinity); }
+        void start () { now = {}; go(time::infinity, time::infinity); }
 
-        void stop () { was = from = to = now = time{}; } // no notify
+        void stop () { was = from = to = now = {}; } // no notify
     };
 }

@@ -123,7 +123,7 @@ namespace sfx::media::image
         {
             if (what == &coord)
             {
-                if (frames[current].alpha.to != 0)
+                if (frames[current].shown())
                     frames[current].coord =
                     coord.now.local();
             }

@@ -24,7 +24,7 @@ namespace aux
     {
         int n = 0;
         for (auto& x : r)
-            co_yield {n++, x};
+        co_yield {n++, x};
     }
 
     template<
@@ -34,7 +34,7 @@ namespace aux
     {
         int n = 0;
         for (auto& x : r)
-            co_yield {n++, x};
+        co_yield {n++, x};
         co_yield {n, end};
     }
 

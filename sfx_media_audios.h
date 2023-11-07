@@ -56,7 +56,7 @@ namespace sfx::media::audios
             if (what == &playing
             and audios.size() > current)
             {
-                elapsed = time{};
+                elapsed = {};
                 for (auto& audio: audios)
                 elapsed += audio.
                 elapsed;
@@ -87,8 +87,8 @@ namespace sfx::media::audios
                     if (audio.status == state::loading)
                         return;
 
-                elapsed  = time{};
-                duration = time{};
+                elapsed  = {};
+                duration = {};
                 for (auto& audio: audios)
                 duration += audio.
                 duration;

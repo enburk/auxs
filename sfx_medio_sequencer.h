@@ -10,6 +10,7 @@ namespace sfx::media
         using widget<sequencer<Player>>::skin;
         using widget<sequencer<Player>>::coord;
         using widget<sequencer<Player>>::notify;
+        using widget<sequencer<Player>>::resize;
 
         widgetarium<Player> players;
         property<byte> volume = 255;
@@ -20,6 +21,7 @@ namespace sfx::media
         bool playing  = false;
         bool playall  = false;
         bool repeat   = false;
+        bool fitted   = false;
         int  current  = 0;
         int  clicked  = 0;
         gui::timer timer;
@@ -80,16 +82,28 @@ namespace sfx::media
             players[current].play();
         }
 
+        void fit (xy size, time t={}) override
+        {
+            xy maxsize;
+            for (auto&
+            player: players)
+            player.fit(size, t),
+            maxsize.x = max(maxsize.x, player.coord.to.w),
+            maxsize.y = max(maxsize.y, player.coord.to.h);
+            players.resize (maxsize);
+            fitted = true;
+            resize(maxsize);
+            fitted = false;
+        }
+
         void on_change (void* what) override
         {
             if (what == &coord and
                 coord.was.size !=
                 coord.now.size)
             {
-                for (auto&
-                player: players)
-                player .coord = coord.now.local();
-                players.coord = coord.now.local();
+                if (not fitted)
+                fit(coord.now.size);
             }
 
             if (what == &players)

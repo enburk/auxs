@@ -43,7 +43,7 @@ namespace gui
                 }
                 else
                 {
-                    timer.go(time{}, time{});
+                    timer.go({},{});
                     hide_tip();
                 }
             }
@@ -53,11 +53,11 @@ namespace gui
                 if (time::now - notch - delay > lapse)
                 {
                     notch = time::now;
-                    timer.go(time{}, time{});
+                    timer.go({},{});
                     hide_tip();
                 }
                 else
-                if (time::now - notch > delay and tip->alpha.to == 0)
+                if (time::now - notch > delay and tip->hidden())
                 {
                     if (area.now == xywh{})
                         area = parent->
@@ -68,7 +68,7 @@ namespace gui
                 }
             }
 
-            if (what == &area and tip->alpha.to > 0)
+            if (what == &area and tip->shown())
             {
                 position();
             }
