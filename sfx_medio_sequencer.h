@@ -127,7 +127,7 @@ namespace sfx::media
                     players[current].show(swiftly);
                     break;
                 case state::ready:
-                case state::paused:
+            //  case state::paused:
                     players[current].play();
                     players[current].show(swiftly);
                     break;

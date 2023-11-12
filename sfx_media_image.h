@@ -54,6 +54,7 @@ namespace sfx::media::image
                     {
                         pix::gif::decoder
                         gif(std::move(data));
+                        duration.ms = gif.duration;
                         while (true)
                         {
                             frame_ready.wait(true); // until it's false
@@ -80,6 +81,7 @@ namespace sfx::media::image
 
         void play ()
         {
+            // reload if finished ??
             pause = false;
             medio.play();
         }
@@ -106,6 +108,9 @@ namespace sfx::media::image
             frames[1].hide();
             sources[0].resize(xy{});
             sources[1].resize(xy{});
+            resolution = {};
+            duration = {};
+            elapsed = {};
             current = 0;
         }
 

@@ -251,6 +251,7 @@ namespace aux
         auto erase (const_iterator i                  ) { return base::erase(i); }
         auto erase (int            i                  ) { return base::erase(begin()+i); }
 
+        // capturing by value sometimes works well, see test("array.unexpected")
         void erase_all(const type & e) { erase_if([e](const auto & a){ return a == e; }); }
 
         void insert(iterator_ i, range_type r) { container::insert(i, r.begin(), r.end()); }

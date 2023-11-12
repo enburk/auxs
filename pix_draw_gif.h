@@ -210,6 +210,7 @@ namespace pix::gif
         array<byte> source;
         array<Image> Images;
         pix::image<rgba> image;
+        int duration = 0;
         int current = 0;
         int loops = 1;
         bool last = false;
@@ -346,6 +347,7 @@ namespace pix::gif
 
                 Image Image;
                 Image.gce = gce;
+                duration += gce.delay*10;
                 read(Image.descriptor);
                 Image.descriptor.normalize();
                 if (Image.descriptor.lct_flag())
@@ -358,6 +360,9 @@ namespace pix::gif
 
                 Images += Image;
             }
+
+            duration = loops == 0 ? max<int>() :
+            duration * loops;
         }
     };
 }
