@@ -25,7 +25,9 @@ namespace sfx::media::audios
         {
             int n = bytess.size();
             for (int i = 0; i<n; i++)
-            audios(i).load(std::move(bytess[i]));
+            audios(i).load(std::move(bytess[i])),
+            audios(i).volume = volume,
+            audios(i).mute = mute;
             audios.truncate(n);
             medio.load();
             current = 0;

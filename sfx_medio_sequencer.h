@@ -98,7 +98,10 @@ namespace sfx::media
 
         void on_change (void* what) override
         {
-            if (what == &coord and not fitted)
+            if (what == &coord and
+                coord.was.size !=
+                coord.now.size
+                and not fitted)
             {
                 for (auto&
                 player: players)
