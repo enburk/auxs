@@ -1,31 +1,7 @@
 #pragma once
-#include <fstream>
-#include <filesystem>
-#include "sys_aux.h"
+#include "sys_files.h"
 namespace sys::out
 {
-    using sys::byte;
-    using std::filesystem::path;
-    using std::filesystem::create_directories;
-
-    void write (path path, array<byte> const& data)
-    {
-        create_directories(path.parent_path());
-        std::ofstream ofstream(path, std::ios::binary);
-        ofstream.write((char*)(
-        data.data()),
-        data.size());
-    }
-
-    void write (path path, array<str> const& text)
-    {
-        create_directories(path.parent_path());
-        std::ofstream ofstream(path);
-        for (str line: text) {
-        ofstream << line;
-        ofstream << "\n"; }
-    }
-
     struct pool
     {
         array<byte> bytes;

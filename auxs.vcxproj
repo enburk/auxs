@@ -101,6 +101,7 @@
     <ClInclude Include="sfx_trees_bbst_splay.h" />
     <ClInclude Include="sfx_trees_bst.h" />
     <ClInclude Include="sys_aux.h" />
+    <ClInclude Include="sys_files.h" />
     <ClInclude Include="sys_io_in.h" />
     <ClInclude Include="sys_io_out.h" />
     <ClInclude Include="sys_ui.h" />

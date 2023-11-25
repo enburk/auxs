@@ -24,6 +24,16 @@ namespace aux
         constexpr str (const char *   f, const char *   l) : base(std::string(f, l)) {}
         explicit  str (std::filesystem::path p) : str(p.u8string().c_str()) {}
 
+        explicit  str (int                n) : base(std::to_string(n)) {}
+        explicit  str (long               n) : base(std::to_string(n)) {}
+        explicit  str (long long          n) : base(std::to_string(n)) {}
+        explicit  str (unsigned           n) : base(std::to_string(n)) {}
+        explicit  str (unsigned long      n) : base(std::to_string(n)) {}
+        explicit  str (unsigned long long n) : base(std::to_string(n)) {}
+        explicit  str (float              n) : base(std::to_string(n)) {}
+        explicit  str (double             n) : base(std::to_string(n)) {}
+        explicit  str (long double        n) : base(std::to_string(n)) {}
+
         explicit  str (array<char> text) { *this = std::string(text.data(), text.data()+text.size()); }
         explicit  str (array<str> lines, str delimiter = "\n") {
             for (auto line : lines) {

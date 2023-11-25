@@ -1,81 +1,7 @@
 #pragma once
-#include <fstream>
-#include <filesystem>
-#include "sys_aux.h"
+#include "sys_files.h"
 namespace sys::in
 {
-    using sys::byte;
-    using std::filesystem::path;
-    using std::filesystem::exists;
-    using aux::expected;
-
-    auto bytes (path path)
-    {
-        std::ifstream
-        ifstream(path, std::ios::binary);
-        ifstream.seekg(0, std::ios::end);
-        int size = (int)ifstream.tellg();
-        ifstream.seekg(0, std::ios::beg);
-
-        if (ifstream.fail())
-        throw std::runtime_error(
-        "couldn't read " + str(path));
-
-        array<byte> pool;
-        pool.resize(size);
-        ifstream.read((char*)
-        (pool.data()), size);
-        return pool;
-    }
-
-    auto bytes (path path, int offset, int size)
-    {
-        std::ifstream
-        ifstream(path, std::ios::binary);
-        ifstream.seekg(offset, std::ios::beg);
-
-        if (ifstream.fail())
-        throw std::runtime_error(
-        "couldn't read " + str(path));
-
-        array<byte> pool;
-        pool.resize(size);
-        ifstream.read((char*)
-        (pool.data()), size);
-        return pool;
-    }
-
-    auto text (path path)
-    {
-        std::ifstream stream(path); str text = std::string{
-        std::istreambuf_iterator<char>(stream),
-        std::istreambuf_iterator<char>()};
-
-        if (text.starts_with(
-        "\xEF""\xBB""\xBF")) // UTF-8 BOM
-        text.upto(3).erase();
-        return text;
-    }
-
-    auto text_lines (path path)
-    {
-        array<str> ss = text(path).lines();
-        return ss;
-    }
-
-    auto optional_text (path path)
-    {
-        return exists(path) ?
-        text(path) : "";
-    }
-
-    auto optional_text_lines (path path)
-    {
-        return exists(path) ?
-            text_lines(path) :
-            array<str>{};
-    }
-
     inline int32_t endianness = 0;
 
     struct pool
@@ -88,7 +14,7 @@ namespace sys::in
         pool (path path) {
             name = str(path);
             if (not exists(path)) return;
-            bytes = sys::in::bytes(path);
+            bytes = sys::bytes(path);
         }
 
         void get_endianness () {

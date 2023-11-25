@@ -220,7 +220,7 @@ namespace aux::unittest
             }
             {
                 auto bytes =
-                sys::in::bytes("../data/xtest.gif");
+                sys::bytes("../data/xtest.gif");
                 if (not bytes.empty())
                 {
                     gif::decoder x(bytes.whole());
