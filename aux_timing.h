@@ -51,4 +51,17 @@ namespace aux
         std::chrono::milliseconds>
         (duration).count());
     }
+
+    str format (str fmt, std::chrono::system_clock::time_point time)
+    {
+    //  return
+    //  std::format(fmt, time);
+        std::time_t ctime =
+        std::chrono::system_clock::to_time_t(time);
+        std::stringstream stringstream;
+        stringstream << std::put_time(
+        std::gmtime(&ctime), fmt.c_str());
+        str s = stringstream.str();
+        return s;
+    }
 }
