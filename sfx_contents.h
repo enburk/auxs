@@ -173,7 +173,8 @@ namespace sfx
                 for (auto& record: records.now) {
                 if (opens.contains(record.path)) record.open = true;
                 if (record.file and record.path == path) found = true; }
-                if (not found) path = "";
+                if (not found)
+                    path = "";
 
                 selected = path;
                 replane();
@@ -244,7 +245,7 @@ namespace sfx
 
         sys::directory_watcher watcher;
         std::atomic<bool> reload = true;
-        property<time> timer;
+        gui::timer timer;
 
         std::function<bool(path)> filter = [](path p){
             return not str(p.filename()).
@@ -279,10 +280,6 @@ namespace sfx
 
         void on_change (void* what) override
         {
-            if (timer.now == time())
-                timer.go(time::infinity,
-                         time::infinity);
-
             if (what == &coord)
                 contents.coord =
                 coord.now.local();
@@ -302,7 +299,7 @@ namespace sfx
                 reload = true; };
                 watcher.watch();
                 reload = true;
-                what = &timer;
+                timer.start();
             }
 
             if (what == &timer and reload)
@@ -321,7 +318,7 @@ namespace sfx
             if (what == &selected)
             {
                 contents.selected = str(
-                selected);
+                relative(selected));
                 notify();
             }
         }
