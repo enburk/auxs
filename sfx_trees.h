@@ -72,7 +72,7 @@ namespace sfx::trees::binary
                 return;
             }
 
-            int value = std::stoi(str(x->value.text));
+            int value = str(x->value.text).stoi();
             if (key < value) insert(key, x->left,  x); else
             if (key > value) insert(key, x->right, x); else
             {}

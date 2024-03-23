@@ -55,6 +55,9 @@ namespace aux
             return s;
         }
 
+        auto stoi() { return std::stoi(stripped()); }
+        auto stod() { return std::stod(stripped()); }
+
         void operator += (      char   c) { std::string::operator+=(c); }
         void operator += (const char * s) { std::string::operator+=(s); }
         void operator += (const str  & s) { std::string::operator+=(s); }

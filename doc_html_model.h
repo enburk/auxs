@@ -205,7 +205,7 @@ namespace doc::html
                         value.strip("\"");
                         if (value.ends_with("%")) {
                             value.truncate();
-                            int x = std::stoi(value);
+                            int x = value.stoi();
                             int size = gui::metrics::text::height;
                             style.font.size = size * x/100;
                         }

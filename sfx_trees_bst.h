@@ -147,7 +147,7 @@ namespace sfx::trees::binary
                         str s = counter.text;
                         if (s == "") s = "0";
                         counter.text = std::to_string
-                        (std::stoi(s)+1);
+                        (s.stoi()+1);
                     }
                     else maverick.hide();
                     place();
@@ -202,8 +202,8 @@ namespace sfx::trees::binary
             }
         }
 
-        static int value (node& node) { return std::stoi(str(node.value.text)); }
-        static int label (node& node) { return std::stoi(str(node.label.text)); }
+        static int value (node& node) { return str(node.value.text).stoi(); }
+        static int label (node& node) { return str(node.label.text).stoi(); }
         static int value (node* node) { return value(*node); }
         static int label (node* node) { return label(*node); }
 
