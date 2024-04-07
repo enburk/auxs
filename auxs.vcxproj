@@ -86,6 +86,7 @@
     <ClInclude Include="pix_util.h" />
     <ClInclude Include="sfx.h" />
     <ClInclude Include="sfx_contents.h" />
+    <ClInclude Include="sfx_contents2d.h" />
     <ClInclude Include="sfx_graph.h" />
     <ClInclude Include="sfx_media.h" />
     <ClInclude Include="sfx_media_audio.h" />

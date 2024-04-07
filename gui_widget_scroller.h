@@ -256,4 +256,95 @@ namespace gui
         struct X : scroller<horizontal> { mode mode = mode::automatic; }; X x;
         struct Y : scroller<vertical>   { mode mode = mode::automatic; }; Y y;
     };
+
+    struct wheeler:
+    widget<wheeler>
+    {
+        wheeler(
+        base::widget& view) : view(view) { scroller.step = gui::metrics::text::height*12/10; }
+        base::widget& view;
+
+        scroller<
+        vertical>
+        scroller;
+
+        void refresh()
+        {
+            int t =
+            scroller.top;
+            scroller.span = view.coord.now.h;
+            scroller.top  = t;
+            xywh r = view.coord;
+            r.y = -scroller.top;
+            view.coord = r;
+        }
+
+        void on_change (void* what) override
+        {
+            if (what == &coord and
+                coord.was.size !=
+                coord.now.size) {
+                scroller.coord = xyxy(0,0,0,coord.now.h);
+                refresh();
+            }
+
+            if (what == &scroller) {
+                xywh r = view.coord;
+                r.y = -scroller.top;
+                view.coord = r;
+            }
+        }
+
+        bool on_mouse_wheel (xy, int delta) override
+        {
+            int h = scroller.step;
+            delta /= abs(delta) < 20 ? abs(delta) : 20;
+            delta *= h > 0 ? h : gui::metrics::text::height;
+            if (sys::keyboard::ctrl ) delta *= 5;
+            if (sys::keyboard::shift) delta *= coord.now.h;
+            int d = coord.now.h - view.coord.now.h; // may be negative
+            int y = view.coord.now.y + delta;
+            if (y < d) y = d;
+            if (y > 0) y = 0;
+            scroller.top =-y;
+            return true;
+        }
+    };
+
+    struct list:
+    widget<list>
+    {
+        widgetarium<
+            button>
+            cells;
+
+        wheeler wheel{cells};
+
+        void refresh()
+        {
+            wheel.refresh();
+        }
+
+        void on_change (void* what) override
+        {
+            if (what == &coord and
+                coord.was.size !=
+                coord.now.size) {
+                cells.coord = coord.now.local();
+                wheel.coord = coord.now.local();
+                refresh();
+            }
+        }
+    };
+
+    struct table:
+    widget<table>
+    {
+        widgetarium<
+        widgetarium<
+            button>>
+            cells;
+
+        wheeler wheeler{cells};
+    };
 }
