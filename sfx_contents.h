@@ -176,6 +176,41 @@ namespace sfx
         }
     };
 
+    struct dirwatcher:
+    widget<dirwatcher>
+    {
+        binary_property<path> dir;
+        sys::directory_watcher watcher;
+        std::atomic<bool> reload = true;
+        gui::timer timer;
+
+        std::function<bool(path)> filter = [](path p){
+            return not str(p.filename()).
+                starts_with("."); };
+
+        void on_change (void* what) override
+        {
+            if (what == &dir)
+            {
+                watcher.cancel();
+                watcher.dir = dir.now;
+                watcher.action = [this]
+                (path path, str what) {
+                if (filter(path))
+                reload = true; };
+                watcher.watch();
+                reload = true;
+                timer.start();
+            }
+
+            if (what == &timer and reload)
+            {
+                reload = false;
+                notify();
+            }
+        }
+    };
+
     struct dirtree:
     widget<dirtree>
     {
@@ -186,10 +221,7 @@ namespace sfx
         contents contents;
         binary_property<path> root;
         binary_property<path> selected;
-
-        sys::directory_watcher watcher;
-        std::atomic<bool> reload = true;
-        gui::timer timer;
+        dirwatcher watcher;
 
         std::function<bool(path)> filter = [](path p){
             return not str(p.filename()).
@@ -234,37 +266,21 @@ namespace sfx
                 name;
 
             if (what == &root)
-            {
-                watcher.cancel();
+                watcher.filter = filter,
                 watcher.dir = root.now;
-                watcher.action = [this]
-                (path path, str what) {
-                if (filter(path))
-                reload = true; };
-                watcher.watch();
-                reload = true;
-                timer.start();
-            }
 
-            if (what == &timer and reload)
-            {
-                reload = false;
+            if (what == &watcher)
                 contents.records =
                 fill(root.now);
-            }
 
             if (what == &contents)
-            {
                 selected = sys::str2path(contents.
                 selected);
-            }
 
             if (what == &selected)
-            {
                 contents.selected = str(
-                relative(selected));
+                relative(selected)),
                 notify();
-            }
         }
     };
 }
