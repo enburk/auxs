@@ -5,20 +5,8 @@ namespace sfx
     struct contents:
     widget<contents>
     {
-        struct flist:
-        widget<flist>
-        {
-            int selected = 0;
-            array<int> indices;
-            gui::widgetarium<gui::button> list;
-            void on_change (void* w) override {
-                if (w == &list) {
-                selected = list.notifier_index;
-                notify(); } }
-        };
-
-        flist flist;
-        gui::wheeler wheeler{flist.list};
+        gui::list list;
+        array<int> indices;
 
         struct record
         {
@@ -41,22 +29,7 @@ namespace sfx
 
         void refresh ()
         {
-            int W = coord.now.w; if (W <= 0) return;
-            int H = coord.now.h; if (H <= 0) return;
-            int h = gui::metrics::text::height*12/10;
-            int l = gui::metrics::line::width;
-            int hh = h * flist.list.size();
-
-            flist     .coord = xyxy(0, 0, W, H);
-            wheeler   .coord = xyxy(0, 0, W, H);
-            flist.list.coord = xywh(0, 0, W, hh);
-
-            int y = 0;
-            for (auto & line : flist.list) {
-            line.coord = xywh(0, y, W, h);
-            y += h; }
-
-            wheeler.refresh();
+            list.refresh();
         }
 
         void replane ()
@@ -99,7 +72,7 @@ namespace sfx
             int index =-1;
             int level = 1;
             str list_of_opens;
-            flist.indices.clear();
+            indices.clear();
             for (auto& record: records.now)
             {
                 if (record.open and not record.file)
@@ -117,8 +90,8 @@ namespace sfx
                 html += record.file ? mspace : record.open ? minus : "+ ";
                 html += pretty(record);
 
-                flist.indices += index;
-                auto& it = flist.list(n++);
+                indices += index;
+                auto& it = list.lines(n++);
                 it.text.alignment = xy(pix::left, pix::center);
                 it.kind = record.file ? gui::button::sticky : gui::button::normal;
                 it.on = record.file and record.path == selected.now;
@@ -129,7 +102,7 @@ namespace sfx
                         record.level+1:
                         record.level;
             }
-            flist.list.truncate(n);
+            list.lines.truncate(n);
             if (name.now != "") sys::settings::save(
                 name.now + "::open", list_of_opens);
         }
@@ -138,7 +111,8 @@ namespace sfx
         {
             if (what == &coord and
                 coord.was.size !=
-                coord.now.size)
+                coord.now.size) list.coord =
+                coord.now.local(),
                 refresh();
 
             if (what == &records)
@@ -171,12 +145,12 @@ namespace sfx
                 refresh();
             }
 
-            if (what == &flist)
+            if (what == &list)
             {
-                int i = flist.selected;
-                if (i >= 0 and i < flist.indices.size())
+                int i = list.selected;
+                if (i >= 0 and i < indices.size())
                 {
-                    i = flist.indices[i];
+                    i = indices[i];
                     if (i >= 0 and i < records.now.size())
                     {
                         if (records.now[i].file) selected =

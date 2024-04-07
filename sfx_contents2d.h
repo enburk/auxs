@@ -18,9 +18,7 @@ namespace sfx
         };
 
         flist flist;
-        gui::scroller<
-        gui::vertical>
-             scroller;
+        gui::wheeler wheeler{flist.list};
 
         struct record
         {
@@ -43,30 +41,22 @@ namespace sfx
 
         void refresh ()
         {
-            int t = scroller.top;
             int W = coord.now.w; if (W <= 0) return;
             int H = coord.now.h; if (H <= 0) return;
             int h = gui::metrics::text::height*12/10;
             int l = gui::metrics::line::width;
-            int w = W;
-
             int hh = h * flist.list.size();
-            if (hh <= H) w = W;
 
-            flist     .coord = xyxy(0, 0, w, H);
-            scroller  .coord = xyxy(w, 0, W, H);
-            flist.list.coord = xywh(0, 0, w, hh);
+            flist     .coord = xyxy(0, 0, W, H);
+            wheeler   .coord = xyxy(0, 0, W, H);
+            flist.list.coord = xywh(0, 0, W, hh);
 
             int y = 0;
             for (auto & line : flist.list) {
-            line.coord = xywh(0, y, w, h);
+            line.coord = xywh(0, y, W, h);
             y += h; }
 
-            scroller.span = hh;
-            scroller.step = h;
-            scroller.top  = t; xywh r =
-            flist.list.coord; r.y = -scroller.top;
-            flist.list.coord = r;
+            wheeler.refresh();
         }
 
         void replane ()
@@ -209,26 +199,6 @@ namespace sfx
                 refresh();
                 notify();
             }
-
-            if (what == &scroller) { xywh r =
-                flist.list.coord; r.y = -scroller.top;
-                flist.list.coord = r;
-            }
-        }
-
-        bool on_mouse_wheel (xy p, int delta) override
-        {
-            int h = scroller.step;
-            delta /= abs(delta) < 20 ? abs(delta) : 20;
-            delta *= h > 0 ? h : gui::metrics::text::height;
-            if (sys::keyboard::ctrl ) delta *= 5;
-            if (sys::keyboard::shift) delta *= coord.now.h;
-            int d = flist.coord.now.h - flist.list.coord.now.h; // may be negative
-            int y = flist.list.coord.now.y + delta;
-            if (y < d) y = d;
-            if (y > 0) y = 0;
-            scroller.top =-y;
-            return true;
         }
     };
 

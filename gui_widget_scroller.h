@@ -316,23 +316,42 @@ namespace gui
     {
         widgetarium<
             button>
-            cells;
+            lines;
 
-        wheeler wheel{cells};
+        wheeler wheeler{lines};
+
+        int selected = 0;
 
         void refresh()
         {
-            wheel.refresh();
+            int W = coord.now.w; if (W <= 0) return;
+            int H = coord.now.h; if (H <= 0) return;
+            int h = gui::metrics::text::height*12/10;
+            int l = gui::metrics::line::width;
+            int hh = h * lines.size();
+
+            lines.coord = xywh(0, 0, W, hh);
+
+            int y = 0;
+            for (auto & line : lines) {
+            line.coord = xywh(0, y, W, h);
+            y += h; }
+
+            wheeler.refresh();
         }
 
         void on_change (void* what) override
         {
             if (what == &coord and
                 coord.was.size !=
-                coord.now.size) {
-                cells.coord = coord.now.local();
-                wheel.coord = coord.now.local();
+                coord.now.size) { wheeler.coord =
+                coord.now.local();
                 refresh();
+            }
+
+            if (what == &lines) {
+                selected = lines.notifier_index;
+                notify();
             }
         }
     };
