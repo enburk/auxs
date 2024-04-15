@@ -348,9 +348,6 @@
     <ClInclude Include="sys_files.h">
       <Filter>sys</Filter>
     </ClInclude>
-    <ClInclude Include="sfx_contents2d.h">
-      <Filter>sfx</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="test.cpp">

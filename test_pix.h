@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include <format>
 #include "aux_unittest.h"
 #include "gui_widget_console.h"
@@ -435,7 +435,7 @@ widget<TestPixFonts>
         str digit = "0123456789";
         str Latin = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
         str latin = "abcdefghijklmnopqrstuvwxyz";
-        str alnum = Latin + latin + digit;
+        str alnum = Latin + latin + digit + str(u8"е́");
         array<
         pix::font> fonts = {
         pix::font{"Consolas", gui::metrics::text::height*2},
@@ -458,7 +458,7 @@ widget<TestPixFonts>
             style.font.bold   = r == 2 || r == 3;
             style.font.italic = r == 1 || r == 3;
 
-            for (char c : alnum) {
+            for (auto c : aux::unicode::glyphs(alnum)) {
                 auto glyph = pix::glyph(c, style);
                 auto w = glyph.Width();
                 auto h = glyph.Height();

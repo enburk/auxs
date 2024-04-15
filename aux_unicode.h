@@ -16,13 +16,13 @@ namespace aux::unicode
             cc[3] = u[3];
         }
 
-        template<int N> glyph(const char(&CC)[N]) {
-            static_assert(0 <= N and N <= 4, "wrong glyph size");
-            int i = 0; for (auto C : CC) cc[i++] = C;
+        template<int N> glyph(const char(&CC)[N]) { // includes '\0'
+            static_assert(0 <= N and N <= 5, "wrong glyph size");
+            int i = 0; for (auto C : CC) if (i<4) cc[i++] = C;
         }
-        template<int N> glyph(const char8_t(&CC)[N]) {
-            static_assert(0 <= N and N <= 4, "wrong glyph size");
-            int i = 0; for (auto C : CC) cc[i++] = (char)(C);
+        template<int N> glyph(const char8_t(&CC)[N]) { // includes '\0'
+            static_assert(0 <= N and N <= 5, "wrong glyph size");
+            int i = 0; for (auto C : CC) if (i<4) cc[i++] = (char)(C);
         }
 
         bool operator ==  (glyph const&) const = default;
@@ -120,6 +120,15 @@ namespace aux::unicode
             if ((u & 0b11100000) == 0b11100000) { check(i); g.cc[n++] = *i++; // 1110xxxx 10xxxxxx 10xxxxxx
             if ((u & 0b11110000) == 0b11110000) { check(i); g.cc[n++] = *i++; // 11110xxx 10xxxxxx 10xxxxxx 10xxxxxx
             }}}
+
+            if (n <= 2 and i != s.end())
+            if (static_cast<uint8_t>(*i) == 0xCC  // combining accents etc...
+            or  static_cast<uint8_t>(*i) == 0xCD) // combining accents etc...
+            {
+                g.cc[n++] = *i++; check(i);
+                g.cc[n++] = *i++;
+            }
+
             co_yield g;
         }
     }

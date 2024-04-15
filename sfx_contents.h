@@ -179,6 +179,8 @@ namespace sfx
     struct dirwatcher:
     widget<dirwatcher>
     {
+        typedef
+        std::filesystem::path path;
         binary_property<path> dir;
         sys::directory_watcher watcher;
         std::atomic<bool> reload = true;

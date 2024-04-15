@@ -365,5 +365,47 @@ namespace gui
             cells;
 
         wheeler wheeler{cells};
+
+        xy selected;
+
+        void refresh()
+        {
+            int W = coord.now.w; if (W <= 0) return;
+            int H = coord.now.h; if (H <= 0) return;
+            int h = gui::metrics::text::height*12/10;
+            int Y = cells.size();
+            int X = 1;
+            int w = 0;
+
+            for (auto& row: cells)
+            X = max(X, row.size());
+            w = W/X;
+
+            for (int y=0; y<Y; y++)
+            for (int x=0; x<X; x++)
+            if (y < cells   .size())
+            if (x < cells[y].size())
+            cells[y][x].coord = xywh(x*w, 0, w, h),
+            cells[y]   .coord = xywh(0, y*h, W, h);
+            cells      .coord = xyxy(0, 0, W, Y*h);
+
+            wheeler.refresh();
+        }
+
+        void on_change (void* what) override
+        {
+            if (what == &coord and
+                coord.was.size !=
+                coord.now.size) { wheeler.coord =
+                coord.now.local();
+                refresh();
+            }
+
+            if (what == &cells) {
+                selected.y = cells.notifier_index;
+                selected.x = cells.notifier->notifier_index;
+                notify();
+            }
+        }
     };
 }
