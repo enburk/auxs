@@ -154,17 +154,19 @@ namespace aux::unicode
         int  n = 0;
         auto i = s.begin();
         auto e = s.end();
-        auto c = [&i](){ return static_cast<uint8_t>(*i); };
         while (i != e)
         {
+            auto c = [&i](){ return static_cast<uint8_t>(*i); };
+            auto u = static_cast<uint8_t>(c());
+
             if ((c() == 0xCC)) { i++; // Combining Diacritical Marks
             if ((c() >= 0x80)) { i++; continue; } else i--; }
             if ((c() == 0xCD)) { i++; // Combining Diacritical Marks
             if ((c() <= 0xAF)) { i++; continue; } else i--; }
 
-            if ((c() & 0b11000000) == 0b11000000) { i++; if (i == e) break;
-            if ((c() & 0b11100000) == 0b11100000) { i++; if (i == e) break;
-            if ((c() & 0b11110000) == 0b11110000) { i++; if (i == e) break;
+            if ((u & 0b11000000) == 0b11000000) { i++; if (i == e) break;
+            if ((u & 0b11100000) == 0b11100000) { i++; if (i == e) break;
+            if ((u & 0b11110000) == 0b11110000) { i++; if (i == e) break;
             }}}
             i++;
             n++;

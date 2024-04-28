@@ -167,18 +167,21 @@ namespace aux::unittest
         }
         test("string.unicode");
         {
+            str apostrophe = u8"’"; // e2 80 99
             str creme_brulee = u8"crème brûlée";
             str matreska = u8"матрёшка";
             str paprika = u8"па́прика"; // cc 81 // COMBINING ACUTE ACCENT
             str T = u8"Ͳ"; // cd b2 // GREEK CAPITAL LETTER ARCHAIC SAMPI
             oops( out(unicode::length(""          )) ) {  "0" };
             oops( out(unicode::length("abc"       )) ) {  "3" };
+            oops( out(unicode::length(apostrophe  )) ) {  "1" };
             oops( out(unicode::length(creme_brulee)) ) { "12" };
             oops( out(unicode::length(matreska    )) ) {  "8" };
             oops( out(unicode::length(paprika     )) ) {  "7" };
             oops( out(unicode::length(T           )) ) {  "1" };
             oops( out(str(""          ). left_aligned(8)) ) {       "        "  };
             oops( out(str("abc"       ). left_aligned(8)) ) {       "abc     "  };
+            oops( out(str(apostrophe  ). left_aligned(8)) ) { str(u8"’       ") };
             oops( out(str(creme_brulee). left_aligned(8)) ) { str(u8"crème brûlée") };
             oops( out(str(matreska    ).right_aligned(8)) ) { str(u8"матрёшка") };
             oops( out(str(paprika     ).right_aligned(8)) ) { str(u8" па́прика") };
