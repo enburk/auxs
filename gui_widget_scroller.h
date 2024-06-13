@@ -368,6 +368,19 @@ namespace gui
 
         xy selected;
 
+        auto cell (int x, int y) -> gui::button&
+        {
+            while (
+            cells.size() < y)
+            cells.emplace_back();
+
+            for (int i=
+            cells[y].size(); i<x; i++)
+            cells[y][i].hide();
+
+            return cells[y][x];
+        };
+
         void refresh()
         {
             int W = coord.now.w; if (W <= 0) return;
