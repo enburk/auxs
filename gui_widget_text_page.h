@@ -32,6 +32,7 @@ namespace gui::text
         using(color)
         using(font)
         using(style)
+        using(columns)
         using(wordwrap)
         using(ellipsis)
         using(alignment)

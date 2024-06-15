@@ -14,6 +14,7 @@ namespace gui::text
 
         view () { frame.thickness = 0; }
 
+        property<int> columns = 1;
         property<bool> wordwrap = true;
         property<bool> ellipsis = false;
         binary_property<array<xy>> lwrap;
@@ -51,6 +52,7 @@ namespace gui::text
             if (what == &alignment
             or  what == &wordwrap
             or  what == &ellipsis
+            or  what == &columns
             or  what == &lwrap
             or  what == &rwrap
             or  what == &coord and
@@ -64,6 +66,7 @@ namespace gui::text
                 pix::text::format f;
                 f.lwrap = lwrap.now;
                 f.rwrap = rwrap.now;
+                f.columns = columns.now;
                 f.alignment = alignment.now;
                 f.wordwrap = wordwrap.now;
                 f.ellipsis = ellipsis.now;
