@@ -190,6 +190,27 @@ namespace gui
         radio::group buttons;
         property<int> selected = -1;
 
+        void layout ()
+        {
+            if (buttons.empty()) return;
+
+            int W = coord.now.w;
+            int H = coord.now.h;
+            int w = W/buttons.size();
+            int e = W - w;
+            int x = 0;
+
+            for (auto& button: buttons)
+            {
+                int v = w;
+                if (e > 0) v++;
+                if (e > 0) e--;
+                button.coord = xywh(
+                x, 0, v, H);
+                x += v;
+            }
+        }
+
         void on_change (void* what) override
         {
             if (what == &coord and
@@ -198,28 +219,15 @@ namespace gui
             {
                 canvas.coord  = coord.now.local();
                 buttons.coord = coord.now.local();
-
-                int W = coord.now.w;
-                int H = coord.now.h;
-                int w = W/buttons.size();
-                int e = W - w;
-                int x = 0;
-
-                for (auto& button: buttons)
-                {
-                    int v = w;
-                    if (e > 0) v++;
-                    if (e > 0) e--;
-                    button.coord = xywh(
-                    x, 0, v, H);
-                    x += v;
-                }
+                layout();
             }
 
             if (what == &skin)
             canvas.color = gui::skins[skin].light.first;
 
-            if (what == &selected)
+            if (what == &selected
+            and selected.now >= 0
+            and selected.now < buttons.size())
             buttons(selected.now).on = true;
 
             if (what == &buttons)
