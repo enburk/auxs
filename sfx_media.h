@@ -91,9 +91,7 @@ namespace sfx::media
         {
             stop.hide();
             prev.repeat_lapse = 60ms;
-            Prev.repeat_lapse = 60ms;
             next.repeat_lapse = 60ms;
-            Next.repeat_lapse = 60ms;
         }
 
         void on_change (void* what) override
