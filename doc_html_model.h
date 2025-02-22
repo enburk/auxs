@@ -148,7 +148,7 @@ namespace doc::html
             }
             else
             if (entity.name == "small") {
-                style.font.size = metrics.height * 85/100;
+                style.font.size = metrics.height * 95/100;
             }
             else
             if (entity.name == "big") {
