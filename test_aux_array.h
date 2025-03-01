@@ -156,6 +156,31 @@ namespace aux::unittest
                 "dtor: a", "dtor: b"
             };
         }
+        test("array.deduplicate");
+        {
+            oops( array<int> a = {};        a.deduplicate(); out(a) ) { "" };
+            oops( array<int> a = {0};       a.deduplicate(); out(a) ) { "0" };
+            oops( array<int> a = {0, 0};    a.deduplicate(); out(a) ) { "0" };
+            oops( array<int> a = {0, 1};    a.deduplicate(); out(a) ) { "0, 1" };
+            oops( array<int> a = {0, 0, 0}; a.deduplicate(); out(a) ) { "0" };
+            oops( array<int> a = {0, 0, 1}; a.deduplicate(); out(a) ) { "0, 1" };
+            oops( array<int> a = {0, 1, 0}; a.deduplicate(); out(a) ) { "0, 1" };
+            oops( array<int> a = {0, 1, 1}; a.deduplicate(); out(a) ) { "0, 1" };
+
+            oops( array<int> a = {};        a.stable_deduplicate(); out(a) ) { "" };
+            oops( array<int> a = {0};       a.stable_deduplicate(); out(a) ) { "0" };
+            oops( array<int> a = {0, 0};    a.stable_deduplicate(); out(a) ) { "0" };
+            oops( array<int> a = {0, 1};    a.stable_deduplicate(); out(a) ) { "0, 1" };
+            oops( array<int> a = {0, 0, 0}; a.stable_deduplicate(); out(a) ) { "0" };
+            oops( array<int> a = {0, 0, 1}; a.stable_deduplicate(); out(a) ) { "0, 1" };
+            oops( array<int> a = {0, 1, 0}; a.stable_deduplicate(); out(a) ) { "0, 1" };
+            oops( array<int> a = {0, 1, 1}; a.stable_deduplicate(); out(a) ) { "0, 1" };
+
+            oops( array<int> a = {1, 0, 1}; a.       deduplicate(); out(a) ) { "0, 1" };
+            oops( array<int> a = {1, 0, 1}; a.stable_deduplicate(); out(a) ) { "1, 0" };
+
+            oops( array<int> a = {0, 1, 0, 1, 0, 2, 1, 0}; a.stable_deduplicate(); out(a) ) { "0, 1, 2" };
+        }
         test("array.unexpected");
         {
             // law of exclusivity

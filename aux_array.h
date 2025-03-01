@@ -23,6 +23,7 @@ namespace aux
         using base::end;
         using base::rbegin;
         using base::rend;
+        using base::empty;
         
         int  size    () const { return (int) base::size(); }
         void resize  (int n)  { base::resize (max(0,n)); }
@@ -310,6 +311,21 @@ namespace aux
             sort(std::less{});
             erase(std::unique(
                 begin(), end()),
+                end()); }
+
+        void stable_deduplicate () {
+            if (empty()) return;
+            auto copy = *this;
+            copy.sort(std::less{});
+            std::unordered_map<value_type, int> dupps;
+            for (auto it = copy.begin()+1; it != copy.end(); it++)
+            if (*it == *(it-1)) dupps[*it] = 1;
+            erase(std::remove_if(
+                begin(), end(),
+                [&dupps](const auto& e)
+                { auto i = dupps.find(e);
+                  return i != dupps.end()
+                  and --(i->second) < 0; }),
                 end()); }
     };
 
