@@ -9,7 +9,6 @@ namespace gui::text
         struct text_type { box& x; text_type(box& x) : x(x) {}
         void operator =  (text_type const& tt) { *this = str(tt); }
         auto operator == (str text) { return str(*this) ==  text; }
-        auto operator != (str text) { return str(*this) !=  text; }
         auto operator <=>(str text) { return str(*this) <=> text; }
         void operator  = (str text) { if (x.model.now->set_text(std::move(text))) x.on_change(this); }
         void operator += (str text) { if (x.model.now->add_text(std::move(text))) x.on_change(this); }
@@ -18,7 +17,6 @@ namespace gui::text
         struct html_type { box& x; html_type(box& x) : x(x) {}
         void operator =  (html_type const& tt) { *this = str(tt); }
         auto operator == (str text) { return str(*this) ==  text; }
-        auto operator != (str text) { return str(*this) !=  text; }
         auto operator <=>(str text) { return str(*this) <=> text; }
         void operator  = (str html) { if (x.model.now->set_html(std::move(html))) x.on_change(this); }
         void operator += (str html) { if (x.model.now->add_html(std::move(html))) x.on_change(this); }

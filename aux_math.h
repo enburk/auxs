@@ -305,7 +305,7 @@ namespace aux
             return (p2-p1).rotated(pi/2).
                 normalized(); }
 
-        auto intersection (line a, line b) -> optional<v> requires (v.dim == 2)
+        auto intersection (line a, line b) -> optional<v> // requires (v.dim == 2)
         {
             auto A1 = a.p2.y - a.p1.y;
             auto A2 = b.p2.y - b.p1.y;
@@ -324,7 +324,7 @@ namespace aux
             (C1 * A2 - C2 * A1) / D);
         }
 
-        v projection (v p) requires (v.dim == 2)
+        v projection (v p) // requires (v.dim == 2)
         {
             line n {p, p + normal()};
             auto projection = intersection(*this, n);
