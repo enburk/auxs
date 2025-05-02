@@ -6,7 +6,7 @@
 #include <gdiplus.h>
 #pragma comment (lib, "gdiplus.lib")
 using namespace Gdiplus;
-#define GDI_PLUS_DONE GdiplusShutdown(gdiplusToken);
+#define GDI_PLUS_DONE // GdiplusShutdown(gdiplusToken);
 #define GDI_PLUS_INIT GdiplusStartupInput gdiplusStartupInput; ULONG_PTR gdiplusToken; \
                       GdiplusStartup(&gdiplusToken, &gdiplusStartupInput, NULL);
 
