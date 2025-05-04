@@ -120,6 +120,13 @@ namespace sys::in
 
         file (path path, bool required = false) : pool(path), required(required) {}
 
+        void get_endianness ()
+        {
+            if (required or
+            not pool.bytes.empty())
+                pool.get_endianness();
+        }
+
         template<class entity> 
         file& operator >> (entity& e)
         {
