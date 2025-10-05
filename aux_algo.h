@@ -199,3 +199,9 @@ auto stable_partition (auto predicat)
     return std::stable_partition(
         begin(), end(), predicat);
 }
+
+auto reverse ()
+{
+    return std::reverse(
+        begin(), end());
+}
