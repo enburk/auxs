@@ -37,6 +37,13 @@ namespace aux
         std::normal_distribution<>((l+u)/2,(u-l)/6)(generator)));
         if (l <= x and x <= u) return x; }
     }
+    template <typename It>
+    void shuffle (It f, It l)
+    {
+        thread_local std::random_device seed;
+        thread_local std::mt19937 generator(seed());
+        std::shuffle(f, l, generator);
+    }
 
     auto sum (auto... xs) { return (xs + ...); }
 
