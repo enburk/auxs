@@ -16,6 +16,7 @@ namespace sfx::media
         state status = state::finished;
         property<bool> mute = false;
         property<byte> volume = 255;
+        property<double> speed = 1.0;
         gui::timer loading;
         gui::timer playing;
         xy resolution;

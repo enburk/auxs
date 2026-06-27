@@ -17,6 +17,7 @@ namespace sfx::media::image
 
 #define using(x) decltype(medio.x)& x = medio.x;
         using(mute)
+        using(speed)
         using(volume)
         using(loading)
         using(playing)

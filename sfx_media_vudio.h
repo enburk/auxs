@@ -13,6 +13,7 @@ namespace sfx::media::vudio
 
 #define using(x) decltype(medio.x)& x = medio.x;
         using(mute)
+        using(speed)
         using(volume)
         using(loading)
         using(playing)
@@ -86,6 +87,11 @@ namespace sfx::media::vudio
             {
                 video.mute = mute;
                 audio.mute = mute;
+            }
+            if (what == &speed)
+            {
+                video.speed = speed;
+                audio.speed = speed;
             }
 
             if (what == &playing)

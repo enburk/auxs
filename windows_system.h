@@ -319,6 +319,11 @@ namespace sys::settings
 
 extern HWND MainWindowHwnd;
 
+#ifdef AUXS_USE_SOUNDTOUCH
+#include "vcpkg_installed/vcpkg/pkgs/soundtouch_x64-windows/include/soundtouch/SoundTouch.h"
+#pragma comment(lib, "vcpkg_installed/vcpkg/pkgs/soundtouch_x64-windows/lib/SoundTouch.lib")
+#endif
+
 #include <dsound.h>
 #pragma comment(lib, "dsound.lib")
 namespace sys::audio
@@ -331,6 +336,8 @@ namespace sys::audio
         LPDIRECTSOUNDBUFFER B2 = nullptr; // secondary buffer
 
         int bytes = 0;
+
+        double speed = 1.0;
 
         DATA ()
         {
@@ -370,6 +377,43 @@ namespace sys::audio
 
     void player::load(array<byte> input, int channels, int samples, int bps)
     {
+        #ifdef AUXS_USE_SOUNDTOUCH
+        if (speed() < 0.9 or 1.1 < speed())
+        {
+            soundtouch::SoundTouch soundTouch;
+            soundTouch.setSampleRate(samples);
+            soundTouch.setChannels(channels);
+            soundTouch.setTempo(speed());
+            // use settings for speech processing
+            soundTouch.setSetting(SETTING_SEQUENCE_MS, 40);
+            soundTouch.setSetting(SETTING_SEEKWINDOW_MS, 15);
+            soundTouch.setSetting(SETTING_OVERLAP_MS, 8);
+
+            array<byte> output;
+            output.reserve(input.size());
+            soundtouch::SAMPLETYPE* buffer_data = (
+            soundtouch::SAMPLETYPE*) input.data();
+            unsigned sample_size = sizeof(soundtouch::SAMPLETYPE);
+            unsigned buffer_size = input.size()/channels/sample_size;
+            soundTouch.putSamples(buffer_data, buffer_size);
+            int nSamples = 0;
+            do
+            {
+                nSamples = soundTouch.receiveSamples(buffer_data, buffer_size);
+                output += input.upto(nSamples * channels * sample_size);
+            }
+            while (nSamples != 0);
+            soundTouch.flush();
+            do
+            {
+                nSamples = soundTouch.receiveSamples(buffer_data, buffer_size);
+                output += input.upto(nSamples * channels * sample_size);
+            }
+            while (nSamples != 0);
+            std::swap(input, output);
+        }
+        #endif
+
         if (!data_) data_ = new DATA;
         DATA & data = *(DATA*)(data_);
         data.bytes = input.size();
@@ -503,6 +547,18 @@ namespace sys::audio
         return duration*
         dwCurrentPlayCursor/
             data.bytes;
+    }
+    void player::speed(double x)
+    {
+        if (!data_) data_ = new DATA;
+        DATA& data = *(DATA*)(data_);
+        data.speed = x;
+    }
+    auto player::speed() -> double
+    {
+        if (!data_) return 1.0;
+        DATA& data = *(DATA*)(data_);
+        return data.speed;
     }
 }
 

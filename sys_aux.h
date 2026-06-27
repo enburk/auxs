@@ -127,8 +127,10 @@ namespace sys
             bool finished ();
             void position (double sec);
             auto position () -> double;
-            void volume   (double O_1);
+            void volume   (double O_9);
             auto volume   () -> double;
+            void speed    (double O_9);
+            auto speed    () -> double;
             double duration = 0.0;
 
             void* data_ = nullptr;

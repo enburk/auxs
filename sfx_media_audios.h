@@ -11,6 +11,7 @@ namespace sfx::media::audios
 
 #define using(x) decltype(medio.x)& x = medio.x;
         using(mute)
+        using(speed)
         using(volume)
         using(loading)
         using(playing)
@@ -110,6 +111,13 @@ namespace sfx::media::audios
                 audio: audios)
                 audio.mute =
                 mute;
+            }
+            if (what == &speed)
+            {
+                for (auto&
+                audio: audios)
+                audio.speed =
+                speed;
             }
         }
     };

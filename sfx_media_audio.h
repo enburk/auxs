@@ -11,6 +11,7 @@ namespace sfx::media::audio
 
 #define using(x) decltype(medio.x)& x = medio.x;
         using(mute)
+        using(speed)
         using(volume)
         using(loading)
         using(playing)
@@ -37,6 +38,8 @@ namespace sfx::media::audio
                 sys::audio::decoder decoder(data);
 
                 if (cancel) return;
+
+                audio.speed(speed.now);
 
                 audio.load(
                 decoder.output,
