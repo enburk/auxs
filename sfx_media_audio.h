@@ -115,6 +115,10 @@ namespace sfx::media::audio
                 volume/
                 255.0);
             }
+            if (what == &speed)
+            {
+                audio.speed(speed);
+            }
         }
     };
 }
