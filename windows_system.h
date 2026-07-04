@@ -324,6 +324,17 @@ extern HWND MainWindowHwnd;
 #pragma comment(lib, "vcpkg_installed/vcpkg/pkgs/soundtouch_x64-windows/lib/SoundTouch.lib")
 auto speeded(array<byte> const& input, int channels, int samplerate, int bps, double speed)
 {
+    if (bps != 16 or not std::is_same_v<soundtouch::SAMPLETYPE, float>) return input;
+
+    int samples = input.size() / (bps/8);
+
+    array<float> floats;
+    floats.resize(samples);
+    short* src = (short*)input.data();
+    float* dst = (float*)floats.data();
+    for (int i=0; i<samples; i++)
+    dst[i] = src[i] / 32767.0f;
+
     soundtouch::SoundTouch soundTouch;
     soundTouch.setSampleRate(samplerate);
     soundTouch.setChannels(channels);
@@ -334,58 +345,46 @@ auto speeded(array<byte> const& input, int channels, int samplerate, int bps, do
     soundTouch.setSetting(SETTING_OVERLAP_MS, 8);
     //soundTouch.setSetting(SETTING_USE_QUICKSEEK, 1); // gain speed, lose quality
 
-    using SAMPLETYPE = soundtouch::SAMPLETYPE;
-    unsigned sample_size = sizeof(SAMPLETYPE);
-    unsigned sample_nums = input.size() / 2; // / bps
-
-    array<float> floats;
- 
-    if (bps == 16 and sample_size == 4)
-    {
-        floats.resize(sample_nums);
-        short* src = (short*)input.data();
-        float* dst = (float*)floats.data();
-        for (unsigned i=0; i<sample_nums; i++)
-        dst[i] = src[i] / 32767.0f;
-    }
-
-    array<float> output;
+    array<byte> output;
     output.reserve(input.size());
 
     const int buffer_size = 6720; // divisible by 2, 4, 6, 8, 10, 12, 14, 16 channels
-    SAMPLETYPE buffer[buffer_size];
-    int nSamples = 0;
+    float buffer[buffer_size];
+
+    short sample;
+    byte& byte0 = *((byte*)(&sample) + 0);
+    byte& byte1 = *((byte*)(&sample) + 1);
 
     for (int offset = 0; offset<floats.size(); offset += buffer_size)
     {
-        SAMPLETYPE* data = floats.data() + offset;
-        unsigned int size = min(buffer_size, floats.size() - offset);
+        float* data = floats.data() + offset;
+        int size = min(buffer_size, floats.size() - offset);
         soundTouch.putSamples(data, size/channels);
-        do
+
+        while (true)
         {
-            nSamples = soundTouch.receiveSamples(buffer, buffer_size/channels);
-            output += std::vector<float>(buffer, buffer + nSamples * channels);
+            int n = soundTouch.receiveSamples(buffer, buffer_size/channels);
+            if (n == 0) break;
+
+            for (int i=0; i<n*channels; i++)
+            sample = aux::clamp<short>(buffer[i] * 32767.0f),
+            output += byte0,
+            output += byte1;
         }
-        while (nSamples != 0);
     }
     soundTouch.flush();
-    do
+    while (true)
     {
-        nSamples = soundTouch.receiveSamples(buffer, buffer_size/channels);
-        output += std::vector<float>(buffer, buffer + nSamples * channels);
-    }
-    while (nSamples != 0);
+        int n = soundTouch.receiveSamples(buffer, buffer_size/channels);
+        if (n == 0) break;
 
-    array<byte> outout = input;
-    if (bps == 16 and sample_size == 4)
-    {
-        outout.resize(output.size()*2);
-        short* dst = (short*)outout.data();
-        float* src = (float*)output.data();
-        for (int i=0; i<output.size(); i++)
-        dst[i] = aux::clamp<short>(src[i] * 32767.0f);
+        for (int i=0; i<n*channels; i++)
+        sample = aux::clamp<short>(buffer[i] * 32767.0f),
+        output += byte0,
+        output += byte1;
     }
-    return outout;
+
+    return output;
 }
 #else
 auto speeded(array<byte> const& input, int channels, int samplerate, int bps, double speed){ return input; }
