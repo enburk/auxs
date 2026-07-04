@@ -142,7 +142,7 @@ namespace sys
             array<byte>& input);
             array<byte> output;
             int channels = 0;
-            int samples = 0;
+            int samplerate = 0;
             int bps = 0;
         };
     }

@@ -44,7 +44,7 @@ namespace sfx::media::audio
                 audio.load(
                 decoder.output,
                 decoder.channels,
-                decoder.samples,
+                decoder.samplerate,
                 decoder.bps);
             };
         }

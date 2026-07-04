@@ -672,6 +672,16 @@ namespace sys::audio
     }
 }
 
+#ifdef AUXS_USE_MP3
+//#define MINIMP3_ONLY_MP3
+//#define MINIMP3_ONLY_SIMD
+//#define MINIMP3_NO_SIMD
+//#define MINIMP3_NONSTANDARD_BUT_LOGICAL
+//#define MINIMP3_FLOAT_OUTPUT
+#define MINIMP3_IMPLEMENTATION
+#include "minimp3.h"
+#endif
+
 #ifdef AUXS_USE_OGG
 #include <vorbis/codec.h>
 #include <vorbis/vorbisfile.h>
@@ -698,13 +708,45 @@ namespace sys::audio
         auto size = input.size();
 
         rc = ov_open_callbacks(0, &vf, data, size, OV_CALLBACKS_DEFAULT);
+        
+#ifdef AUXS_USE_MP3
+        if (rc < 0)
+        {
+            static mp3dec_t mp3d;
+            mp3dec_init(&mp3d);
+
+            mp3dec_frame_info_t info;
+            short pcm[MINIMP3_MAX_SAMPLES_PER_FRAME];
+            byte* bytes = (byte*)pcm;
+
+            output.reserve(size);
+
+            while (size > 0)
+            {
+                int samples = mp3dec_decode_frame(&mp3d, (byte*)data, size, pcm, &info);
+
+                output.insert(output.end(), bytes, bytes + samples*info.channels*2);
+
+                data += info.frame_bytes;
+                size -= info.frame_bytes;
+                if (info.frame_bytes == 0)
+                    break;
+            }
+
+            channels = info.channels;
+            samplerate = info.hz;
+            bps = 16;
+            return;
+        }
+#endif
+
         if (rc < 0) throw std::runtime_error(
             "Input does not appear to be "
             "an Ogg bitstream.");
 
         vorbis_info *vi=ov_info(&vf,-1);
         channels = vi->channels;
-        samples = vi->rate;
+        samplerate = vi->rate;
         bps = 16;
           
         while (!eof)
