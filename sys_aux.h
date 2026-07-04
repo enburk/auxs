@@ -131,7 +131,7 @@ namespace sys
             auto volume   () -> double;
             void speed    (double O_9);
             auto speed    () -> double;
-            double duration = 0.0;
+            auto duration () -> double;
 
             void* data_ = nullptr;
         };

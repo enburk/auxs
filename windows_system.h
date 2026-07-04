@@ -322,6 +322,73 @@ extern HWND MainWindowHwnd;
 #ifdef AUXS_USE_SOUNDTOUCH
 #include "vcpkg_installed/vcpkg/pkgs/soundtouch_x64-windows/include/soundtouch/SoundTouch.h"
 #pragma comment(lib, "vcpkg_installed/vcpkg/pkgs/soundtouch_x64-windows/lib/SoundTouch.lib")
+auto speeded(array<byte> const& input, int channels, int samplerate, int bps, double speed)
+{
+    soundtouch::SoundTouch soundTouch;
+    soundTouch.setSampleRate(samplerate);
+    soundTouch.setChannels(channels);
+    soundTouch.setTempo(speed);
+    // use settings for speech processing
+    soundTouch.setSetting(SETTING_SEQUENCE_MS, 40);
+    soundTouch.setSetting(SETTING_SEEKWINDOW_MS, 15);
+    soundTouch.setSetting(SETTING_OVERLAP_MS, 8);
+    //soundTouch.setSetting(SETTING_USE_QUICKSEEK, 1); // gain speed, lose quality
+
+    using SAMPLETYPE = soundtouch::SAMPLETYPE;
+    unsigned sample_size = sizeof(SAMPLETYPE);
+    unsigned sample_nums = input.size() / 2; // / bps
+
+    array<float> floats;
+ 
+    if (bps == 16 and sample_size == 4)
+    {
+        floats.resize(sample_nums);
+        short* src = (short*)input.data();
+        float* dst = (float*)floats.data();
+        for (unsigned i=0; i<sample_nums; i++)
+        dst[i] = src[i] / 32767.0f;
+    }
+
+    array<float> output;
+    output.reserve(input.size());
+
+    const int buffer_size = 6720; // divisible by 2, 4, 6, 8, 10, 12, 14, 16 channels
+    SAMPLETYPE buffer[buffer_size];
+    int nSamples = 0;
+
+    for (int offset = 0; offset<floats.size(); offset += buffer_size)
+    {
+        SAMPLETYPE* data = floats.data() + offset;
+        unsigned int size = min(buffer_size, floats.size() - offset);
+        soundTouch.putSamples(data, size/channels);
+        do
+        {
+            nSamples = soundTouch.receiveSamples(buffer, buffer_size/channels);
+            output += std::vector<float>(buffer, buffer + nSamples * channels);
+        }
+        while (nSamples != 0);
+    }
+    soundTouch.flush();
+    do
+    {
+        nSamples = soundTouch.receiveSamples(buffer, buffer_size/channels);
+        output += std::vector<float>(buffer, buffer + nSamples * channels);
+    }
+    while (nSamples != 0);
+
+    array<byte> outout = input;
+    if (bps == 16 and sample_size == 4)
+    {
+        outout.resize(output.size()*2);
+        short* dst = (short*)outout.data();
+        float* src = (float*)output.data();
+        for (int i=0; i<output.size(); i++)
+        dst[i] = aux::clamp<short>(src[i] * 32767.0f);
+    }
+    return outout;
+}
+#else
+auto speeded(array<byte> const& input, int channels, int samplerate, int bps, double speed){ return input; }
 #endif
 
 #include <dsound.h>
@@ -335,9 +402,14 @@ namespace sys::audio
         LPDIRECTSOUNDBUFFER B1 = nullptr; // secondary buffer
         LPDIRECTSOUNDBUFFER B2 = nullptr; // secondary buffer
 
-        int bytes = 0;
-
-        double speed = 1.0;
+        array<byte> input;
+        array<byte> tempo;
+        double old_speed = 1.0;
+        double new_speed = 1.0;
+        double duration = 0.0;
+        int channels = 1;
+        int samplerate = 44100;
+        int bps = 16;
 
         DATA ()
         {
@@ -367,6 +439,163 @@ namespace sys::audio
             if (PB) PB->Release();
             if (DS) DS->Release();
         }
+
+        void speed(double x)
+        {
+            new_speed = x; speedup();
+        }
+        auto speed() -> double
+        {
+            return new_speed;
+        }
+        void speedup()
+        {
+            double dur = duration;
+            
+            if (not playing()
+            or  not temp())
+                return;
+
+            stop();
+            double pos = position();
+            pos /= dur;
+            pos *= duration;
+
+            preset();
+            position(pos);
+            play();
+        }
+        bool temp()
+        {
+            if (abs(new_speed - old_speed) < 0.1
+            or  duration - position() < 2.0)
+                return false;
+
+            if (abs(new_speed - 1.0) < 0.1 or duration < 2.0)
+            {
+                tempo = input;
+                old_speed = 1.0;
+            }
+            else
+            {
+                tempo = speeded(input, channels, samplerate, bps, new_speed);
+                old_speed = new_speed;
+            }
+            int align = channels * bps / 8;
+            duration = (double) tempo.size() / (align*samplerate);
+            return true;
+        }
+        void load()
+        {
+            int align = channels * bps / 8;
+            duration = (double) input.size() / (align*samplerate);
+            tempo = input;
+            old_speed = 1.0;
+            preset();
+        }
+        void preset()
+        {
+            if (B1) B1->Release(), B1 = nullptr;
+
+            if (tempo.empty()) return;
+
+            int align = channels * bps / 8;
+
+            WAVEFORMATEX wfmt;
+            ZeroMemory (&wfmt, sizeof(wfmt));
+            wfmt.wFormatTag      = WAVE_FORMAT_PCM;
+            wfmt.nChannels       = channels;
+            wfmt.nSamplesPerSec  = samplerate;
+            wfmt.nAvgBytesPerSec = samplerate * align;
+            wfmt.nBlockAlign     = align;
+            wfmt.wBitsPerSample  = bps;
+
+            DSBUFFERDESC desc;
+            ZeroMemory (&desc, sizeof(desc));
+            desc.dwSize          = sizeof(desc);
+            desc.guid3DAlgorithm = GUID_NULL;
+            desc.dwFlags         = DSBCAPS_CTRLVOLUME;
+            desc.dwBufferBytes   = tempo.size();
+            desc.lpwfxFormat     = & wfmt;
+
+            HRESULT hr;
+            hr = DS->CreateSoundBuffer(&desc, &B1, 0);
+            if (FAILED(hr)) throw std::runtime_error(
+                "CreateSoundBuffer failed");
+
+            byte* p1; DWORD s1;
+            byte* p2; DWORD s2;
+
+            B1->Lock(0, 0,
+                (void**) &p1, &s1,
+                (void**) &p2, &s2,
+                DSBLOCK_ENTIREBUFFER);
+
+            memcpy (p1, tempo.data(), s1);
+
+            B1->Unlock(p1, s1, p2, s2);
+            B1->SetCurrentPosition(0);
+        }
+        void play()
+        {
+            if (temp()) preset();
+            if (B1) B1->Play(0,0,0);
+        }
+        void stop()
+        {
+            if (B1) B1->Stop();
+        }
+        bool playing()
+        {
+            if (!B1) return false;
+            DWORD status; B1->GetStatus(&status);
+            return status & DSBSTATUS_PLAYING;
+        }
+        bool finished()
+        {
+            if (!B1) return true;
+            DWORD dwCurrentPlayCursor;
+            B1->GetCurrentPosition(&dwCurrentPlayCursor, nullptr);
+            return (DWORD)tempo.size() <= dwCurrentPlayCursor;
+        }
+        void volume(double x)
+        {
+            if (!B1) return;
+            B1->SetVolume(
+            DSBVOLUME_MIN + (LONG)((
+            DSBVOLUME_MAX -
+            DSBVOLUME_MIN ) *
+            x));
+        }
+        auto volume() -> double
+        {
+            if (!B1) return 0.0;
+            LONG volume;
+            B1->GetVolume(&volume);
+            return (double)(volume -
+            DSBVOLUME_MIN) / (
+            DSBVOLUME_MAX -
+            DSBVOLUME_MIN );
+        }
+        void position(double sec)
+        {
+            if (!B1) return;
+            B1->SetCurrentPosition(max(0, min((int)(
+            tempo.size()*sec/duration),
+            tempo.size()-1)));
+        }
+        auto position() -> double
+        {
+            if (!B1) return 0.0;
+            DWORD dwCurrentPlayCursor;
+            DWORD dwCurrentWriteCursor;
+            B1->GetCurrentPosition(
+            &dwCurrentPlayCursor,
+            &dwCurrentWriteCursor);
+            return duration*
+            dwCurrentPlayCursor/
+            tempo.size();
+        }
     };
 
     player:: player() {}
@@ -375,218 +604,72 @@ namespace sys::audio
         if (data_) delete (DATA*)(data_);
     }
 
-    void player::load(array<byte> input, int channels, int samples, int bps)
+    void player::load(array<byte> input, int channels, int samplerate, int bps)
     {
-        #ifdef AUXS_USE_SOUNDTOUCH
-        if (speed() < 0.9 or 1.1 < speed())
-        {
-            soundtouch::SoundTouch soundTouch;
-            soundTouch.setSampleRate(samples);
-            soundTouch.setChannels(channels);
-            soundTouch.setTempo(speed());
-            // use settings for speech processing
-            soundTouch.setSetting(SETTING_SEQUENCE_MS, 40);
-            soundTouch.setSetting(SETTING_SEEKWINDOW_MS, 15);
-            soundTouch.setSetting(SETTING_OVERLAP_MS, 8);
-
-            using SAMPLETYPE = soundtouch::SAMPLETYPE;
-            unsigned sample_size = sizeof(SAMPLETYPE);
-            unsigned sample_nums = input.size() / 2; // / bps
-
-            array<float> floats;
- 
-            if (bps == 16 and sample_size == 4)
-            {
-                floats.resize(sample_nums);
-                short* src = (short*)input.data();
-                float* dst = (float*)floats.data();
-                for (unsigned i=0; i<sample_nums; i++)
-                dst[i] = src[i] / 32767.0f;
-            }
-
-            array<float> output;
-            output.reserve(input.size());
-
-            const int buffer_size = 6720; // Processing chunk size (size chosen to be divisible by 2, 4, 6, 8, 10, 12, 14, 16 channels ...)
-            SAMPLETYPE buffer[buffer_size];
-            int nSamples = 0;
-
-            for (int offset = 0; offset<floats.size(); offset += buffer_size)
-            {
-                SAMPLETYPE* data = floats.data() + offset;
-                unsigned int size = min(buffer_size, floats.size() - offset);
-                soundTouch.putSamples(data, size/channels);
-                do
-                {
-                    nSamples = soundTouch.receiveSamples(buffer, buffer_size/channels);
-                    output += std::vector<float>(buffer, buffer + nSamples * channels);
-                }
-                while (nSamples != 0);
-            }
-            soundTouch.flush();
-            do
-            {
-                nSamples = soundTouch.receiveSamples(buffer, buffer_size/channels);
-                output += std::vector<float>(buffer, buffer + nSamples * channels);
-            }
-            while (nSamples != 0);
-
-            if (bps == 16 and sample_size == 4)
-            {
-                input.resize(output.size()*2);
-                short* dst = (short*)input.data();
-                float* src = (float*)output.data();
-                for (int i=0; i<output.size(); i++)
-                dst[i] = aux::clamp<short>(src[i] * 32767.0f);
-            }
-        }
-        #endif
-
         if (!data_) data_ = new DATA;
-        DATA & data = *(DATA*)(data_);
-        data.bytes = input.size();
-
-        int align = channels * bps / 8;
-        duration = (double) input.size() / (align*samples);
-
-        if (data.B1) { data.B1->Release(); data.B1 = nullptr; }
-
-        if (input.empty()) return;
-
-        WAVEFORMATEX wfmt;
-        ZeroMemory (&wfmt, sizeof(wfmt));
-        wfmt.wFormatTag      = WAVE_FORMAT_PCM;
-        wfmt.nChannels       = channels;
-        wfmt.nSamplesPerSec  = samples;
-        wfmt.nAvgBytesPerSec = samples * align;
-        wfmt.nBlockAlign     = align;
-        wfmt.wBitsPerSample  = bps;
-
-        DSBUFFERDESC desc;
-        ZeroMemory (&desc, sizeof(desc));
-        desc.dwSize          = sizeof(desc);
-        desc.guid3DAlgorithm = GUID_NULL;
-        desc.dwFlags         = DSBCAPS_CTRLVOLUME;
-        desc.dwBufferBytes   = input.size();
-        desc.lpwfxFormat     = & wfmt;
-
-        HRESULT hr;
-        hr = data.DS->CreateSoundBuffer(&desc, &data.B1, 0);
-        if (FAILED(hr)) throw std::runtime_error(
-            "CreateSoundBuffer failed");
-
-        byte* p1; DWORD s1;
-        byte* p2; DWORD s2;
-
-        data.B1->Lock(0, 0,
-            (void**) &p1, &s1,
-            (void**) &p2, &s2,
-            DSBLOCK_ENTIREBUFFER);
-
-        memcpy (p1, input.data(), s1);
-
-        data.B1->Unlock(p1, s1, p2, s2);
-        data.B1->SetCurrentPosition(0);
+        DATA& data = *(DATA*)(data_);
+        data.input = std::move(input);
+        data.channels = channels;
+        data.samplerate = samplerate;
+        data.bps = bps;
+        data.load();
     }
     void player::play()
     {
         DATA& data = *(DATA*)(data_);
-        if (data_ and
-            data.B1)
-            data.B1->Play(0,0,0);
+        if (data_) data.play();
     }
     void player::stop()
     {
         DATA& data = *(DATA*)(data_);
-        if (data_ and
-            data.B1)
-            data.B1->Stop();
+        if (data_) data.stop();
     }
     bool player::playing()
     {
         DATA& data = *(DATA*)(data_);
-        if (!data_
-        or  !data.B1)
-            return false;
-            DWORD status;
-            data.B1->GetStatus(&status);
-            return status &
-            DSBSTATUS_PLAYING;
+        return data_ and data.playing();
     }
     bool player::finished()
     {
         DATA& data = *(DATA*)(data_);
-        if (!data_
-        or  !data.B1
-        or  !data.bytes)
-            return true;
-        DWORD dwCurrentPlayCursor;
-        data.B1->GetCurrentPosition(
-        &dwCurrentPlayCursor, nullptr);
-        return (DWORD)data.bytes <=
-        dwCurrentPlayCursor;
+        return data_ and data.finished();
     }
-    void player::volume(double O_1)
+    void player::volume(double x)
     {
-        HRESULT hr;
         DATA& data = *(DATA*)(data_);
-        if (data_ and
-            data.B1) hr =
-            data.B1->SetVolume(
-            DSBVOLUME_MIN + (LONG)((
-            DSBVOLUME_MAX -
-            DSBVOLUME_MIN ) *
-            O_1));
+        if (data_) data.volume(x);
     }
     auto player::volume() -> double
     {
         DATA& data = *(DATA*)(data_);
-        if (!data_
-        or  !data.B1)
-            return 0.0;
-            LONG volume;
-            data.B1->GetVolume(&volume);
-            return (double)(volume -
-            DSBVOLUME_MIN) / (
-            DSBVOLUME_MAX -
-            DSBVOLUME_MIN );
+        return data_ ? data.volume() : 0.0;
     }
     void player::position (double sec)
     {
         DATA& data = *(DATA*)(data_);
-        if (data_ and
-            data.B1)
-            data.B1->SetCurrentPosition(
-            max(0, min(data.bytes-1, (int)
-            (data.bytes*sec/duration))));
+        if (data_) data.position(sec);
     }
     auto player::position () -> double
     {
         DATA& data = *(DATA*)(data_);
-        if (!data_
-        or  !data.B1
-        or  !data.bytes)
-            return 0.0;
-        DWORD dwCurrentPlayCursor;
-        DWORD dwCurrentWriteCursor;
-        data.B1->GetCurrentPosition(
-        &dwCurrentPlayCursor,
-        &dwCurrentWriteCursor);
-        return duration*
-        dwCurrentPlayCursor/
-            data.bytes;
+        return data_ ? data.position() : 0.0;
     }
     void player::speed(double x)
     {
         if (!data_) data_ = new DATA;
         DATA& data = *(DATA*)(data_);
-        data.speed = x;
+        data.speed(x);
     }
     auto player::speed() -> double
     {
         if (!data_) return 1.0;
         DATA& data = *(DATA*)(data_);
-        return data.speed;
+        return data.speed();
+    }
+    auto player::duration () -> double
+    {
+        DATA& data = *(DATA*)(data_);
+        return data_ ? data.duration : 0.0;
     }
 }
 

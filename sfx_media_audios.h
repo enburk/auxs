@@ -61,9 +61,10 @@ namespace sfx::media::audios
             and audios.size() > current)
             {
                 elapsed = {};
+                duration = {};
                 for (auto& audio: audios)
-                elapsed += audio.
-                elapsed;
+                duration += audio.duration,
+                elapsed += audio.elapsed;
 
                 if (audios[current].status ==
                     state::playing)
@@ -94,8 +95,7 @@ namespace sfx::media::audios
                 elapsed  = {};
                 duration = {};
                 for (auto& audio: audios)
-                duration += audio.
-                duration;
+                duration += audio.duration;
 
                 medio.stay();
             }
@@ -119,6 +119,12 @@ namespace sfx::media::audios
                 audio: audios)
                 audio.speed =
                 speed;
+
+                elapsed = {};
+                duration = {};
+                for (auto& audio: audios)
+                duration += audio.duration,
+                elapsed += audio.elapsed;
             }
         }
     };

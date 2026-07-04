@@ -92,6 +92,14 @@ namespace sfx::media::vudio
             {
                 video.speed = speed;
                 audio.speed = speed;
+
+                duration = max(video.
+                duration, audio.
+                duration);
+
+                elapsed = max(video.
+                elapsed, audio.
+                elapsed);
             }
 
             if (what == &playing)
@@ -102,6 +110,10 @@ namespace sfx::media::vudio
                 and video.status == state::playing
                 and video.frame_last)
                     medio.done();
+
+                duration = max(video.
+                duration, audio.
+                duration);
 
                 elapsed = max(video.
                 elapsed, audio.
@@ -117,6 +129,9 @@ namespace sfx::media::vudio
                     duration = max(video.
                     duration, audio.
                     duration);
+                    elapsed = max(video.
+                    elapsed, audio.
+                    elapsed);
                 }
             }
             if (what == &playing

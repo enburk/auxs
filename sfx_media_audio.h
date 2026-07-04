@@ -82,8 +82,8 @@ namespace sfx::media::audio
         {
             if (what == &playing)
             {
-                elapsed = time{(int)(
-                audio.position()*1000)};
+                duration = time{(int)(audio.duration()*1000)};
+                elapsed = time{(int)(audio.position()*1000)};
 
                 if (
                 not audio.playing()
@@ -92,8 +92,8 @@ namespace sfx::media::audio
             }
             if (what == &loading and thread.done)
             {
-                duration = time{(int)(audio.
-                duration*1000)};
+                duration = time{(int)(audio.duration()*1000)};
+                elapsed = time{(int)(audio.position()*1000)};
 
                 try {
                 thread.join();
@@ -118,6 +118,8 @@ namespace sfx::media::audio
             if (what == &speed)
             {
                 audio.speed(speed);
+                duration = time{(int)(audio.duration()*1000)};
+                elapsed = time{(int)(audio.position()*1000)};
             }
         }
     };
