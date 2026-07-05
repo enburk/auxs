@@ -7,6 +7,7 @@ namespace sfx::media::audio
     {
         sys::thread thread;
         sys::audio::player audio;
+        array<byte> encoded;
         medio medio;
 
 #define using(x) decltype(medio.x)& x = medio.x;
@@ -32,6 +33,11 @@ namespace sfx::media::audio
                 medio.stay();
                 return; }
 
+            if (bytes.size() < 1*1024*1024) {
+                encoded = std::move(bytes);
+                medio.stay();
+                return; }
+
             medio.load();
             thread = [this, data = std::move(bytes)](auto& cancel)
             {
@@ -51,6 +57,17 @@ namespace sfx::media::audio
 
         void play ()
         {
+            if (encoded.size() > 0)
+            {
+                sys::audio::decoder decoder(std::move(encoded));
+
+                audio.load(
+                decoder.output,
+                decoder.channels,
+                decoder.samplerate,
+                decoder.bps);
+            }
+
             if (medio.play())
             {
                 audio.volume(
@@ -75,6 +92,7 @@ namespace sfx::media::audio
             thread.join();
             thread.check(); }
             catch (...) {}
+            encoded.clear();
             medio.done();
         }
 
