@@ -327,8 +327,9 @@ namespace sys::audio
         array<byte> tempo;
         double old_speed = 1.0;
         double new_speed = 1.0;
+        double the_position = 0.0;
+        double the_volume = 0.5;
         double duration = 0.0;
-        double volume_ = 1.0;
         int channels = 1;
         int samplerate = 44100;
         int bps = 16;
@@ -339,11 +340,11 @@ namespace sys::audio
         {
             double dur = duration;
             
-            if (not playing()
+            if (not playing(false)
             or  not temp())
                 return;
 
-            stop();
+            stop(false);
             double pos = position();
             pos /= dur;
             pos *= duration;
@@ -358,26 +359,22 @@ namespace sys::audio
             or  duration - position() < 2.0)
                 return false;
 
-            if (abs(new_speed - 1.0) < 0.1 or duration < 2.0)
-            {
-                tempo = input;
-                old_speed = 1.0;
-            }
-            else
-            {
-                tempo = speeded(input, channels, samplerate, bps, new_speed);
-                old_speed = new_speed;
-            }
+            if (abs(new_speed - 1.0) < 0.1
+            or  duration < 2.0) { reset();
+                return true; }
+
+            tempo = speeded(input, channels, samplerate, bps, new_speed);
+            old_speed = new_speed;
             int align = channels * bps / 8;
             duration = (double) tempo.size() / (align*samplerate);
             return true;
         }
-        void load()
+        void reset()
         {
-            int align = channels * bps / 8;
-            duration = (double) input.size() / (align*samplerate);
             tempo = input;
             old_speed = 1.0;
+            int align = channels * bps / 8;
+            duration = (double) input.size() / (align*samplerate);
         }
         void preset()
         {
@@ -385,19 +382,30 @@ namespace sys::audio
 
             device->load(tempo, channels, samplerate, bps);
         }
+        void load()
+        {
+            reset();
+            the_position = 0.0;
+            the_volume = 0.5;
+        }
         void play()
         {
             if (temp() or !device) preset();
-            if (device) device->volume(volume_), volume_ = device->volume();
-            if (device) device->play();
+            device->position(the_position);
+            device->volume(the_volume);
+            device->play();
         }
-        void stop()
+        void stop(bool autofree = true)
         {
-            if (device) device->stop();
+            if (device) device->stop(),
+            the_position = device->position();
+            if (autofree) device = nullptr;
         }
-        bool playing()
+        bool playing(bool autofree = true)
         {
-            return device and device->playing();
+            bool yes = device and device->playing();
+            if (not yes and autofree) device = nullptr;
+            return yes;
         }
         bool finished()
         {
@@ -405,20 +413,23 @@ namespace sys::audio
         }
         void volume(double x)
         {
-            volume_ = x;
-            if (playing()) device->volume(volume_), volume_ = device->volume();
+            the_volume = x;
+            if (playing()) device->volume(x);
         }
         auto volume() -> double
         {
-            return volume_;
+            if (device) the_volume = device->volume();
+            return the_volume;
         }
         void position(double sec)
         {
-            if (device) device->position(sec);
+            the_position = sec;
+            if (playing()) device->position(sec);
         }
         auto position() -> double
         {
-            return device? device->position() : 0.0;
+            if (device) the_position = device->position();
+            return the_position;
         }
     };
 
