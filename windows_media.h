@@ -173,23 +173,16 @@ auto speeded(array<byte> const& input, int channels, int samplerate, int bps, do
 #pragma comment(lib, "dsound.lib")
 namespace sys::audio
 {
-    struct DATA
+    struct Device
     {
         LPDIRECTSOUND8      DS = nullptr;
         LPDIRECTSOUNDBUFFER PB = nullptr; // primary buffer
         LPDIRECTSOUNDBUFFER B1 = nullptr; // secondary buffer
         LPDIRECTSOUNDBUFFER B2 = nullptr; // secondary buffer
 
-        array<byte> input;
-        array<byte> tempo;
-        double old_speed = 1.0;
-        double new_speed = 1.0;
-        double duration = 0.0;
-        int channels = 1;
-        int samplerate = 44100;
-        int bps = 16;
+        double duration = 0.0; DWORD size = 0;
 
-        DATA ()
+        Device ()
         {
             HRESULT hr;
             hr = DirectSoundCreate8(0, &DS, 0);
@@ -210,7 +203,7 @@ namespace sys::audio
             if (FAILED(hr)) throw std::runtime_error(
                 "CreateSoundBuffer failed");
         }
-        ~DATA ()
+        ~Device ()
         {
             if (B1) B1->Release();
             if (B2) B2->Release();
@@ -218,14 +211,130 @@ namespace sys::audio
             if (DS) DS->Release();
         }
 
-        void speed(double x)
+        void load(array<byte> const& input, int channels, int samplerate, int bps)
         {
-            new_speed = x; speedup();
+            if (B1) B1->Release(), B1 = nullptr;
+
+            int align = channels * bps / 8;
+
+            size = input.size();
+
+            duration = (double) size / (align*samplerate);
+
+            if (input.empty()) return;
+
+            WAVEFORMATEX wfmt;
+            ZeroMemory (&wfmt, sizeof(wfmt));
+            wfmt.wFormatTag      = WAVE_FORMAT_PCM;
+            wfmt.nChannels       = channels;
+            wfmt.nSamplesPerSec  = samplerate;
+            wfmt.nAvgBytesPerSec = samplerate * align;
+            wfmt.nBlockAlign     = align;
+            wfmt.wBitsPerSample  = bps;
+
+            DSBUFFERDESC desc;
+            ZeroMemory (&desc, sizeof(desc));
+            desc.dwSize          = sizeof(desc);
+            desc.guid3DAlgorithm = GUID_NULL;
+            desc.dwFlags         = DSBCAPS_CTRLVOLUME;
+            desc.dwBufferBytes   = input.size();
+            desc.lpwfxFormat     = & wfmt;
+
+            HRESULT hr;
+            hr = DS->CreateSoundBuffer(&desc, &B1, 0);
+            if (FAILED(hr)) throw std::runtime_error(
+                "CreateSoundBuffer failed");
+
+            byte* p1; DWORD s1;
+            byte* p2; DWORD s2;
+
+            B1->Lock(0, 0,
+                (void**) &p1, &s1,
+                (void**) &p2, &s2,
+                DSBLOCK_ENTIREBUFFER);
+
+            memcpy (p1, input.data(), s1);
+
+            B1->Unlock(p1, s1, p2, s2);
+            B1->SetCurrentPosition(0);
         }
-        auto speed() -> double
+        void play()
         {
-            return new_speed;
+            if (B1) B1->Play(0,0,0);
         }
+        void stop()
+        {
+            if (B1) B1->Stop();
+        }
+        bool playing()
+        {
+            if (!B1) return false;
+            DWORD status; B1->GetStatus(&status);
+            return status & DSBSTATUS_PLAYING;
+        }
+        bool finished()
+        {
+            if (!B1) return true;
+            DWORD dwCurrentPlayCursor;
+            B1->GetCurrentPosition(&dwCurrentPlayCursor, nullptr);
+            return size <= dwCurrentPlayCursor;
+        }
+        void volume(double x)
+        {
+            if (!B1) return;
+            B1->SetVolume(
+            DSBVOLUME_MIN + (LONG)((
+            DSBVOLUME_MAX -
+            DSBVOLUME_MIN ) *
+            x));
+        }
+        auto volume() -> double
+        {
+            if (!B1) return 0.0;
+            LONG volume;
+            B1->GetVolume(&volume);
+            return (double)(volume -
+            DSBVOLUME_MIN) / (
+            DSBVOLUME_MAX -
+            DSBVOLUME_MIN );
+        }
+        void position(double sec)
+        {
+            if (!B1) return;
+            B1->SetCurrentPosition(max(0, min((DWORD)(
+            size*sec/duration),
+            size-1)));
+        }
+        auto position() -> double
+        {
+            if (!B1) return 0.0;
+            DWORD dwCurrentPlayCursor;
+            DWORD dwCurrentWriteCursor;
+            B1->GetCurrentPosition(
+            &dwCurrentPlayCursor,
+            &dwCurrentWriteCursor);
+            return duration*
+            dwCurrentPlayCursor/
+            size;
+        }
+    };
+
+    struct DATA
+    {
+        std::unique_ptr<Device> device;
+
+        array<byte> input;
+        array<byte> tempo;
+        double old_speed = 1.0;
+        double new_speed = 1.0;
+        double duration = 0.0;
+        double volume_ = 1.0;
+        int channels = 1;
+        int samplerate = 44100;
+        int bps = 16;
+
+        void speed(double x) { new_speed = x; speedup(); }
+        auto speed() -> double { return new_speed; }
         void speedup()
         {
             double dur = duration;
@@ -269,110 +378,47 @@ namespace sys::audio
             duration = (double) input.size() / (align*samplerate);
             tempo = input;
             old_speed = 1.0;
-            preset();
         }
         void preset()
         {
-            if (B1) B1->Release(), B1 = nullptr;
+            if (!device) device = std::make_unique<Device>();
 
-            if (tempo.empty()) return;
-
-            int align = channels * bps / 8;
-
-            WAVEFORMATEX wfmt;
-            ZeroMemory (&wfmt, sizeof(wfmt));
-            wfmt.wFormatTag      = WAVE_FORMAT_PCM;
-            wfmt.nChannels       = channels;
-            wfmt.nSamplesPerSec  = samplerate;
-            wfmt.nAvgBytesPerSec = samplerate * align;
-            wfmt.nBlockAlign     = align;
-            wfmt.wBitsPerSample  = bps;
-
-            DSBUFFERDESC desc;
-            ZeroMemory (&desc, sizeof(desc));
-            desc.dwSize          = sizeof(desc);
-            desc.guid3DAlgorithm = GUID_NULL;
-            desc.dwFlags         = DSBCAPS_CTRLVOLUME;
-            desc.dwBufferBytes   = tempo.size();
-            desc.lpwfxFormat     = & wfmt;
-
-            HRESULT hr;
-            hr = DS->CreateSoundBuffer(&desc, &B1, 0);
-            if (FAILED(hr)) throw std::runtime_error(
-                "CreateSoundBuffer failed");
-
-            byte* p1; DWORD s1;
-            byte* p2; DWORD s2;
-
-            B1->Lock(0, 0,
-                (void**) &p1, &s1,
-                (void**) &p2, &s2,
-                DSBLOCK_ENTIREBUFFER);
-
-            memcpy (p1, tempo.data(), s1);
-
-            B1->Unlock(p1, s1, p2, s2);
-            B1->SetCurrentPosition(0);
+            device->load(tempo, channels, samplerate, bps);
         }
         void play()
         {
-            if (temp()) preset();
-            if (B1) B1->Play(0,0,0);
+            if (temp() or !device) preset();
+            if (device) device->volume(volume_), volume_ = device->volume();
+            if (device) device->play();
         }
         void stop()
         {
-            if (B1) B1->Stop();
+            if (device) device->stop();
         }
         bool playing()
         {
-            if (!B1) return false;
-            DWORD status; B1->GetStatus(&status);
-            return status & DSBSTATUS_PLAYING;
+            return device and device->playing();
         }
         bool finished()
         {
-            if (!B1) return true;
-            DWORD dwCurrentPlayCursor;
-            B1->GetCurrentPosition(&dwCurrentPlayCursor, nullptr);
-            return (DWORD)tempo.size() <= dwCurrentPlayCursor;
+            return device and device->finished();
         }
         void volume(double x)
         {
-            if (!B1) return;
-            B1->SetVolume(
-            DSBVOLUME_MIN + (LONG)((
-            DSBVOLUME_MAX -
-            DSBVOLUME_MIN ) *
-            x));
+            volume_ = x;
+            if (playing()) device->volume(volume_), volume_ = device->volume();
         }
         auto volume() -> double
         {
-            if (!B1) return 0.0;
-            LONG volume;
-            B1->GetVolume(&volume);
-            return (double)(volume -
-            DSBVOLUME_MIN) / (
-            DSBVOLUME_MAX -
-            DSBVOLUME_MIN );
+            return volume_;
         }
         void position(double sec)
         {
-            if (!B1) return;
-            B1->SetCurrentPosition(max(0, min((int)(
-            tempo.size()*sec/duration),
-            tempo.size()-1)));
+            if (device) device->position(sec);
         }
         auto position() -> double
         {
-            if (!B1) return 0.0;
-            DWORD dwCurrentPlayCursor;
-            DWORD dwCurrentWriteCursor;
-            B1->GetCurrentPosition(
-            &dwCurrentPlayCursor,
-            &dwCurrentWriteCursor);
-            return duration*
-            dwCurrentPlayCursor/
-            tempo.size();
+            return device? device->position() : 0.0;
         }
     };
 
@@ -412,7 +458,7 @@ namespace sys::audio
     }
     auto player::volume() -> double
     {
-        return data ? data->volume() : 1.0;
+        return data ? data->volume() : 0.5;
     }
     void player::position (double sec)
     {
