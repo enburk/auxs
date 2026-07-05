@@ -348,6 +348,9 @@
     <ClInclude Include="sys_files.h">
       <Filter>sys</Filter>
     </ClInclude>
+    <ClInclude Include="windows_media.h">
+      <Filter>sys</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="test.cpp">
