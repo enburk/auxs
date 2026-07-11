@@ -160,6 +160,6 @@ namespace gui::text
             }
         }
 
-        xy text_size () { return model.now->block.size; }
+        xy text_size () { return cell.text_size(); }
     };
 }

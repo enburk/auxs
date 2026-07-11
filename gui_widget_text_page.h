@@ -561,7 +561,7 @@ namespace gui::text
             {}
         }
 
-        xy textsize () { return model.now->block.size +
+        xy text_size () { return model.now->block.size +
             xy{gui::metrics::line::width, 0}; }
     };
 } 

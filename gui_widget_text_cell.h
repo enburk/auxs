@@ -192,5 +192,7 @@ namespace gui::text
         auto row(int n) { return model.now->block.row(n); }
         place lines2rows(place p) { return model.now->block.lines2rows(p); }
         place rows2lines(place p) { return model.now->block.rows2lines(p); }
+
+        xy text_size () { return box.text_size(); }
     };
 }
