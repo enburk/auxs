@@ -155,6 +155,17 @@ namespace sfx::media::vudio
                 }
             }
         }
+
+        bool mouse_sensible (xy) override { return true; }
+        void on_mouse_click (xy, str button, bool down) override
+        {
+            if (button == "left" and down)
+            if (status == state::finished
+            or  status == state::paused
+            or  status == state::ready)
+            play(); else
+            stop();
+        }
     };
 }
 namespace sfx::vudio {
