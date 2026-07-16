@@ -217,7 +217,7 @@ namespace pix::gif
         array<rgba> gct;
         lsd lsd;
 
-        bool next (std::atomic<bool>& cancel)
+        bool next (double speed, std::atomic<bool>& cancel)
         {
             if (cancel) return false;
             if (Images.size() == 0) return false;
@@ -241,7 +241,7 @@ namespace pix::gif
             using namespace std::chrono;
 
             high_resolution_clock::duration delay =
-            milliseconds(10 * img.gce.delay);
+            milliseconds(int(10 * img.gce.delay / speed));
             delay -= t1-t0;
 
             auto ms = duration_cast<milliseconds>(delay);

@@ -59,7 +59,7 @@ namespace sfx::media::image
                         while (true)
                         {
                             frame_ready.wait(true); // until it's false
-                            if (not gif.next(cancel)) break;
+                            if (not gif.next(speed, cancel)) break;
                             int i = (current+1) % 2;
                             sources[i] = gif.image;
                             frame_last  = gif.last;
