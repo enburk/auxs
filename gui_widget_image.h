@@ -174,9 +174,11 @@ namespace gui
                 rgba & dst = tinted(x,y);
                 dst = src;
 
-                if (src.r == 0
-                and src.g == 0
-                and src.b == 0) {
+            //  if (src.r == 0
+            //  and src.g == 0
+            //  and src.b == 0)
+                if (src.a != 0)
+                {
                     dst.r = color.now.r;
                     dst.g = color.now.g;
                     dst.b = color.now.b;
