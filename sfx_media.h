@@ -38,11 +38,16 @@ namespace sfx::media
             loading.stop();
             status = state::ready;
         }
+        bool playable ()
+        {
+            return
+            status == state::ready or
+            status == state::paused or
+            status == state::finished;
+        }
         bool play ()
         {
-            if (status != state::ready
-            and status != state::paused
-            and status != state::finished)
+            if (not playable())
             return false;
 
             playing.start();
@@ -87,12 +92,30 @@ namespace sfx::media
         gui::button next, Next;
         gui::property<bool> enabled = true;
         gui::property<double> roundness = 0.5;
+        gui::binary_property<state> status = state::finished;
 
         playback ()
         {
             stop.hide();
             prev.repeat_lapse = 60ms;
             next.repeat_lapse = 60ms;
+        }
+
+        void refresh ()
+        {
+            bool ok = enabled.now
+            and status.now != state::failed
+            and status.now != state::loading;
+
+            play.enabled = ok;
+            stop.enabled = ok;
+            next.enabled = ok;
+            prev.enabled = ok;
+            Next.enabled = ok;
+            Prev.enabled = ok;
+
+            play.show(status.now != state::playing);
+            stop.show(status.now == state::playing);
         }
 
         void on_change (void* what) override
@@ -123,34 +146,18 @@ namespace sfx::media
 
                 rgba c = rgba::white;
                 int r = (int)(roundness.now*H/4);
-                play.icon.load(pix::util::icon("play.play",  play.coord.now.size, c, r));
-                stop.icon.load(pix::util::icon("play.pause", stop.coord.now.size, c, r));
-                next.icon.load(pix::util::icon("play.next",  next.coord.now.size, c, r));
-                prev.icon.load(pix::util::icon("play.prev",  prev.coord.now.size, c, r));
-                Next.icon.load(pix::util::icon("play.Next",  Next.coord.now.size, c, r));
-                Prev.icon.load(pix::util::icon("play.Prev",  Prev.coord.now.size, c, r));
-            }
-            if (what == &enabled)
-            {
-                play.enabled = enabled.now;
-                stop.enabled = enabled.now;
-                next.enabled = enabled.now;
-                prev.enabled = enabled.now;
-                Next.enabled = enabled.now;
-                Prev.enabled = enabled.now;
-            }
-            if (what == &play)
-            {
-                play.hide();
-                stop.show();
-            }
-            if (what == &stop)
-            {
-                stop.hide();
-                play.show();
+                play.icon.load(pix::util::icon("play.play", play.coord.now.size, c, r));
+                stop.icon.load(pix::util::icon("play.stop", stop.coord.now.size, c, r));
+                next.icon.load(pix::util::icon("play.next", next.coord.now.size, c, r));
+                prev.icon.load(pix::util::icon("play.prev", prev.coord.now.size, c, r));
+                Next.icon.load(pix::util::icon("play.Next", Next.coord.now.size, c, r));
+                Prev.icon.load(pix::util::icon("play.Prev", Prev.coord.now.size, c, r));
             }
 
-            notify(what);
+            if (what == &enabled
+            or  what == &status)
+                refresh(); else
+                notify(what);
         }
     };
 
@@ -163,12 +170,31 @@ namespace sfx::media
         gui::button next, Next;
         gui::property<bool> enabled = true;
         gui::property<double> roundness = 0.5;
+        gui::binary_property<state> status = state::finished;
 
         Playback ()
         {
             stop.hide();
             prev.repeat_lapse = 60ms;
             next.repeat_lapse = 60ms;
+        }
+
+        void refresh ()
+        {
+            bool ok = enabled.now
+            and status.now != state::failed
+            and status.now != state::loading;
+
+            play.enabled = ok;
+            stop.enabled = ok;
+            Stop.enabled = ok;
+            next.enabled = ok;
+            prev.enabled = ok;
+            Next.enabled = ok;
+            Prev.enabled = ok;
+
+            play.show(status.now != state::playing);
+            stop.show(status.now == state::playing);
         }
 
         void on_change (void* what) override
@@ -208,28 +234,11 @@ namespace sfx::media
                 Next.icon.load(pix::util::icon("play.Next",  Next.coord.now.size, c, r));
                 Prev.icon.load(pix::util::icon("play.Prev",  Prev.coord.now.size, c, r));
             }
-            if (what == &enabled)
-            {
-                Stop.enabled = enabled.now;
-                play.enabled = enabled.now;
-                stop.enabled = enabled.now;
-                next.enabled = enabled.now;
-                prev.enabled = enabled.now;
-                Next.enabled = enabled.now;
-                Prev.enabled = enabled.now;
-            }
-            if (what == &play)
-            {
-                play.hide();
-                stop.show();
-            }
-            if (what == &stop or what == &Stop)
-            {
-                stop.hide();
-                play.show();
-            }
 
-            notify(what);
+            if (what == &enabled
+            or  what == &status)
+                refresh(); else
+                notify(what);
         }
     };
 }

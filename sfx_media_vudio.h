@@ -24,6 +24,8 @@ namespace sfx::media::vudio
         using(error)
         #undef using
 
+        ~player () { reset(); }
+
         void load (array<byte> video_bytes, array<array<byte>> audio_bytes)
         {
             reset();
