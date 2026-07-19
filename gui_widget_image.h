@@ -166,6 +166,12 @@ namespace gui
 
         void refresh()
         {
+            if (color.now == rgba{})
+            {
+                image.source = original.crop();
+                return;
+            }
+
             tinted.resize(original.size);
             for (int y=0; y<tinted.size.y; y++)
             for (int x=0; x<tinted.size.x; x++)
@@ -174,9 +180,6 @@ namespace gui
                 rgba & dst = tinted(x,y);
                 dst = src;
 
-            //  if (src.r == 0
-            //  and src.g == 0
-            //  and src.b == 0)
                 if (src.a != 0)
                 {
                     dst.r = color.now.r;
