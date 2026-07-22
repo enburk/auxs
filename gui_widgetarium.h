@@ -28,15 +28,19 @@ namespace gui
             children.reserve(n);
         }
 
-        void on_change (void* w) override
+        void on_change (void* what) override
         {
             for (int i = 0; i < size(); i++)
-                if (&at(i) == w)
+            {
+                if (&at(i) == what)
                 {
                     notifier = &(*this)(i);
                     notifier_index = i;
                     widget::notify();
+                    return;
                 }
+            }
+            widget::notify(what);
         }
 
         const T& at (int pos) const {
