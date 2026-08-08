@@ -30,7 +30,7 @@ namespace sfx::media
         void play ()
         {
             if (players.empty()) return;
-            if (players[current].status == state::finished)
+            if (players[current].playable())
                 players[current].play();
 
             players[current].show(smoothly);
