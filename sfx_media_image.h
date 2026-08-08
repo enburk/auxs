@@ -86,7 +86,8 @@ namespace sfx::media::image
 
         void play ()
         {
-            if (status == sfx::media::state::finished)
+            if (status == sfx::media::state::finished
+            and not bytes.empty())
                 autoplay = true,
                 load(bytes);
 
