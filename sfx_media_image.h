@@ -11,8 +11,10 @@ namespace sfx::media::image
         std::atomic<bool> thread_play = false;
         std::atomic<bool> frame_ready = false;
         std::atomic<bool> frame_last = false;
+        std::atomic<bool> autoplay = false;
         std::atomic<bool> pause = true;
         sys::thread thread;
+        array<byte> bytes;
         medio medio;
 
 #define using(x) decltype(medio.x)& x = medio.x;
@@ -53,6 +55,8 @@ namespace sfx::media::image
                     &&  data[4] == 0x39  // 9
                     &&  data[5] == 0x61) // a
                     {
+                        this->bytes = data;
+
                         pix::gif::decoder
                         gif(std::move(data));
                         duration.ms = gif.duration;
@@ -82,7 +86,13 @@ namespace sfx::media::image
 
         void play ()
         {
-            // reload if finished ??
+            if (status == sfx::media::state::finished)
+                autoplay = true,
+                load(bytes);
+
+            if (not medio.playable())
+                return;
+
             pause = false;
             medio.play();
         }
@@ -152,7 +162,10 @@ namespace sfx::media::image
 
                 if (frame_ready)
                 show_next_frame();
+
                 medio.stay();
+                if (autoplay)
+                medio.play();
             }
             if (what == &loading and thread.done)
             {

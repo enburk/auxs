@@ -162,9 +162,7 @@ namespace sfx::media::vudio
         void on_mouse_click (xy, str button, bool down) override
         {
             if (button == "left" and down)
-            if (status == state::finished
-            or  status == state::paused
-            or  status == state::ready)
+            if (medio.playable())
             play(); else
             stop();
         }
