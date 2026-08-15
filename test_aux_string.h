@@ -57,6 +57,16 @@ namespace aux::unittest
             oops( str s = "abc"; s.first().erase(); out(s) ) { "bc" };
             oops( str s = "abc"; s.last ().erase(); out(s) ) { "ab" };
 
+            oops( str s = "abcabc"; s = s.upto_first("c"); out(s) ) { "ab" };
+            oops( str s = "abcabc"; s = s.upto_last ("c"); out(s) ) { "abcab" };
+            oops( str s = "abcabc"; s = s.from_first("b"); out(s) ) { "bcabc" };
+            oops( str s = "abcabc"; s = s.from_last ("b"); out(s) ) { "bc" };
+
+            oops( str s = "abcabc"; s = s.upto_first("bc"); out(s) ) { "a" };
+            oops( str s = "abcabc"; s = s.upto_last ("bc"); out(s) ) { "abca" };
+            oops( str s = "abcabc"; s = s.from_first("ab"); out(s) ) { "abcabc" };
+            oops( str s = "abcabc"; s = s.from_last ("ab"); out(s) ) { "abc" };
+
             oops( str s = "abcba"; s.first("a").erase(); out(s) ) { "bcba" };
             oops( str s = "abcba"; s.first("b").erase(); out(s) ) { "acba" };
             oops( str s = "abcba"; s.first("c").erase(); out(s) ) { "abba" };

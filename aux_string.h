@@ -73,6 +73,9 @@ namespace aux
         str upto_first (str s) { return upto(first(s).offset()); }
         str from_first (str s) { return from(first(s).offset()); }
 
+        str upto_last (str s) { return upto(last(s).offset()); }
+        str from_last (str s) { return from(last(s).offset()); }
+
         /////////////////////////////////////////////////
 
         using base::insert;

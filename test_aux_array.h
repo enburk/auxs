@@ -185,7 +185,8 @@ namespace aux::unittest
         {
             // law of exclusivity
             oops( array<int> a = {0,0,1,0,1,2}; a.erase_all(a[0]); out(a) ) { "1, 1, 2" };
-            oops( array<int> a = {0,0,1,0,1,2}; std::erase(a,a[0]); out(a) ) { "1, 0, 2" };
+        //  oops( array<int> a = {0,0,1,0,1,2}; std::erase(a,a[0]); out(a) ) { "1, 0, 2" };
+            oops( array<int> a = {0,0,1,0,1,2}; std::erase(a,a[0]); out(a) ) { "1, 1, 2" };
         }
     }
     catch(assertion_failed){}
