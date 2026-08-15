@@ -9,6 +9,7 @@ namespace sfx::media::vudio
     {
         image::player video;
         audios::player audio;
+        bool click_playable = true;
         medio medio;
 
 #define using(x) decltype(medio.x)& x = medio.x;
@@ -158,7 +159,7 @@ namespace sfx::media::vudio
             }
         }
 
-        bool mouse_sensible (xy) override { return true; }
+        bool mouse_sensible (xy) override { return click_playable; }
         void on_mouse_click (xy, str button, bool down) override
         {
             if (button == "left" and down)
