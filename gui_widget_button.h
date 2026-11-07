@@ -8,6 +8,7 @@ namespace gui
     {
         binary_property<bool> on = false;
         binary_property<bool> enabled = true;
+        binary_property<bool> sensible = true;
         binary_property<bool> mouse_hover = false;
         binary_property<bool> mouse_clicked = false;
         binary_property<bool> enter_pressed = false;
@@ -94,7 +95,7 @@ namespace gui
             }
         }
 
-        bool mouse_sensible (xy) override { return enabled.now; }
+        bool mouse_sensible (xy) override { return sensible.now && enabled.now; }
         void on_mouse_hover (xy) override { mouse_hover = true; }
         void on_mouse_leave (  ) override { mouse_hover = false;}
         void on_mouse_click (xy, str button, bool down) override
@@ -235,6 +236,91 @@ namespace gui
 
             if (what == &buttons)
             notify();
+        }
+    };
+
+    struct multiselector:
+    widget<multiselector>
+    {
+        canvas canvas;
+        widgetarium<button> buttons;
+
+        void layout ()
+        {
+            if (buttons.empty()) return;
+
+            int W = coord.now.w;
+            int H = coord.now.h;
+            int w = W/buttons.size();
+            int e = W - w;
+            int x = 0;
+
+            for (auto& button: buttons)
+            {
+                int v = w;
+                if (e > 0) v++;
+                if (e > 0) e--;
+                button.kind = gui::button::toggle;
+                button.sensible = false;
+                button.coord = xywh(
+                x, 0, v, H);
+                x += v;
+            }
+        }
+
+        void on_change (void* what) override
+        {
+            if (what == &coord and
+                coord.was.size !=
+                coord.now.size)
+            {
+                canvas.coord  = coord.now.local();
+                buttons.coord = coord.now.local();
+                layout();
+            }
+
+            if (what == &skin)
+            canvas.color = gui::skins[skin].light.first;
+        }
+
+        int drag_was = -1;
+        int drag_now = -1;
+        int hovered (xy p)
+        {
+            int i = 0;
+            for (auto& button: buttons)
+                if (button.coord.now.x +
+                    button.coord.now.w >= p.x)
+                    return i; else i++;
+            return buttons.size() - 1;
+        }
+
+        bool mouse_sensible (xy) override { return true; }
+        void on_mouse_hover (xy p) override { drag_now = hovered(p); }
+        void on_mouse_click (xy p, str button, bool down) override
+        {
+            if (button != "left") return;
+            if (buttons.empty()) return;
+
+            if (down)
+            {
+                drag_was = drag_now = hovered(p);
+                for (auto& button: buttons) button.on = false;
+                buttons[drag_was].on = true;
+            }
+            else
+            {
+                if (drag_was < 0) return;
+                if (drag_now < 0) return;
+                if (drag_was > buttons.size()-1) return;
+                if (drag_now > buttons.size()-1) return;
+                if (drag_now < drag_was) std::swap(
+                    drag_now , drag_was);
+
+                for (int i=drag_was; i<=drag_now; i++)
+                buttons[i].on = true;
+                notify();
+            }
         }
     };
 }
