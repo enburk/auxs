@@ -284,7 +284,6 @@ namespace gui
         }
 
         int drag_was = -1;
-        int drag_now = -1;
         int hovered (xy p)
         {
             int i = 0;
@@ -294,33 +293,39 @@ namespace gui
                     return i; else i++;
             return buttons.size() - 1;
         }
+        void on(xy p)
+        {
+            int was = drag_was;
+            int now = hovered(p);
+            int nn = buttons.size();
+
+            if (was < 0) return;
+            if (now < 0) return;
+            if (was > nn-1) return;
+            if (now > nn-1) return;
+            if (was > now) std::swap(
+                was , now);
+
+            for (int i=0; i<=nn; i++)
+            buttons[i].on = was <= i and i <= now;
+        }
 
         bool mouse_sensible (xy) override { return true; }
-        void on_mouse_hover (xy p) override { drag_now = hovered(p); }
+        void on_mouse_hover (xy p) override { on(p); }
+        void on_mouse_leave () override { drag_was = -1; }
         void on_mouse_click (xy p, str button, bool down) override
         {
             if (button != "left") return;
             if (buttons.empty()) return;
 
             if (down)
-            {
-                drag_was = drag_now = hovered(p);
-                for (auto& button: buttons) button.on = false;
-                buttons[drag_was].on = true;
-            }
-            else
-            {
-                if (drag_was < 0) return;
-                if (drag_now < 0) return;
-                if (drag_was > buttons.size()-1) return;
-                if (drag_now > buttons.size()-1) return;
-                if (drag_now < drag_was) std::swap(
-                    drag_now , drag_was);
+                drag_was = hovered(p);
 
-                for (int i=drag_was; i<=drag_now; i++)
-                buttons[i].on = true;
+            on (p);
+
+            if (not down)
+                drag_was = -1,
                 notify();
-            }
         }
     };
 }
