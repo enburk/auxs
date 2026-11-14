@@ -86,11 +86,7 @@ namespace sfx::media::image
 
         void play ()
         {
-            if (status == sfx::media::state::finished
-            and not bytes.empty())
-                autoplay = true,
-                load(bytes);
-
+            rewind();
             if (not medio.playable())
                 return;
 
@@ -102,6 +98,14 @@ namespace sfx::media::image
         {
             pause = true;
             medio.stop();
+        }
+
+        void rewind ()
+        {
+            if (status == sfx::media::state::finished
+            and not bytes.empty())
+                autoplay = true,
+                load(bytes);
         }
 
         void reset ()

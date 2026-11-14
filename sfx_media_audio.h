@@ -82,7 +82,13 @@ namespace sfx::media::audio
         void stop ()
         {
             if (medio.stop())
-                audio.stop();
+                audio.stop(false);
+        }
+
+        void rewind ()
+        {
+            if (medio.rewind())
+                audio.position(0);
         }
 
         void reset ()

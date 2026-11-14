@@ -45,6 +45,14 @@ namespace sfx::media
             status == state::paused or
             status == state::finished;
         }
+        bool rewind ()
+        {
+            if (not playable())
+            return false;
+
+            status = state::ready;
+            return true;
+        }
         bool play ()
         {
             if (not playable())

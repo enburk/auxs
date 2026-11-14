@@ -451,9 +451,9 @@ namespace sys::audio
     {
         if (data) data->play();
     }
-    void player::stop()
+    void player::stop(bool autofree)
     {
-        if (data) data->stop();
+        if (data) data->stop(autofree);
     }
     bool player::playing()
     {

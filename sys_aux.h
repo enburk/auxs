@@ -122,7 +122,7 @@ namespace sys
 
             void load (array<byte>, int channels, int samples, int bps);
             void play ();
-            void stop ();
+            void stop (bool autofree = true);
             bool playing  ();
             bool finished ();
             void position (double sec);

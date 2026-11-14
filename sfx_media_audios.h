@@ -49,6 +49,15 @@ namespace sfx::media::audios
                 audios[current].stop();
         }
 
+        void rewind ()
+        {
+            if (medio.rewind()) {
+                current = 0;
+                for (auto& audio: audios)
+                audio.rewind();
+            }
+        }
+
         void reset ()
         {
             audios.clear();

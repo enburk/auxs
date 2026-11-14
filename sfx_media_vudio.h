@@ -66,6 +66,12 @@ namespace sfx::media::vudio
                 video.stop(),
                 audio.stop();
         }
+        void rewind ()
+        {
+            if (medio.rewind())
+                video.rewind(),
+                audio.rewind();
+        }
 
         void reset ()
         {
